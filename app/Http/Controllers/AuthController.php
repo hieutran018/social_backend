@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
@@ -14,8 +16,41 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login']]);
+        $this->middleware('auth:api', ['except' => ['login','register']]);
     }
+
+    /**
+     * Register a User.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    //TODO: đang hoàn thành
+    public function register(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'firstName' => 'required|string|between:2,100',
+            'lastName' => 'required|string|between:2,100',
+            'email' => 'required|string|email|max:100|unique:users',
+            'password' => 'required|string|min:6',
+            'confirmPassword' => 'required|string|min:6|same:password',
+        ]);
+        if($validator->fails()){
+            return response()->json($validator->errors()->toJson(), 400);
+        }
+            $user = new User();
+            $user->first_name = $request->firstName;
+            $user->last_name = $request->lastName;
+            $user->email = $request->email;
+            $user->password = bcrypt($request->password);
+            $user->isAdmin = 0;
+            $user->save();
+            return response()->json([
+            'message' => 'User successfully registered',
+            'user' => $user
+        ], 201);
+        
+    }
+
+
 
     /**
      * Get a JWT token via given credentials.
