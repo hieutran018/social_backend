@@ -23,6 +23,7 @@ class Post extends Model
         return $this->hasOne(User::class,'id','user_id');
     }
     protected $hidden = [
-        'user'
+        'user',
+        'user_id',
     ];
 }
