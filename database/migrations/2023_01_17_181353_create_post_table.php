@@ -18,7 +18,7 @@ class CreatePostTable extends Migration
             $table->text('post_content');
             $table->foreignId('user_id');
             $table->integer('privacy');
-            $table->foreignId('parrent_post');
+            $table->foreignId('parent_post')->nullable();
             $table->timestamps();
             $table->softDeletes();
             $table->integer('status');

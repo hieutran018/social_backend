@@ -13,7 +13,7 @@ class CreateMediaFilePost extends Migration
      */
     public function up()
     {
-        Schema::create('media_file_post', function (Blueprint $table) {
+        Schema::create('media_file_posts', function (Blueprint $table) {
             $table->id();
             $table->string('media_file_name');
             $table->string('media_type');
@@ -31,6 +31,6 @@ class CreateMediaFilePost extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('media_file_post');
+        Schema::dropIfExists('media_file_posts');
     }
 }

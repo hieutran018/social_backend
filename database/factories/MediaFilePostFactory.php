@@ -4,7 +4,7 @@ namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-class PostFactory extends Factory
+class MediaFilePostFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -14,12 +14,11 @@ class PostFactory extends Factory
     public function definition()
     {
         return [
-        'post_content'=>$this->faker->sentence(255),
-        'user_id'=>1,
-        'privacy'=>1,
-        'parent_post'=>null,
-        'status'=>1
+        'media_file_name'=>'11',
+        'media_type'=>'jpeg',
+        'post_id'=>'1',
+        'user_id'=>'1',
+        'status'=>'1'
         ];
     }
-
 }
