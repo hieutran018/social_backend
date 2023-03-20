@@ -29,6 +29,6 @@ class Post extends Model
     }
     protected $hidden = [
         'user',
-        'user_id',
+       
     ];
 }

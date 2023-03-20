@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,6 +23,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::get('fetch-post',[PostController::class,'fetchPost']);
 Route::post('fetch-comment-by-post',[CommentController::class,'fetchCommentByPost']);
+Route::post('profile-user',[UserController::class,'profileUser']);
 
 Route::group([
     'middleware' => 'api',
