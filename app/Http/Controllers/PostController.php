@@ -14,7 +14,9 @@ class PostController extends Controller
         foreach($lstPost as $post){
            $post->username = $post->user->first_name. ' ' . $post->user->last_name;
            $post->created_at = Carbon::parse($post->created_at)->format('Y/m/d h:m:s');
-           $post->avatarUser = URL::to('user/person/'.$post->user->id.'/'.$post->user->avatar);
+           $post->avatarUser = $post->user->avatar == null ? 
+                            URL::to('default/avatar_default_male.png'):
+                            URL::to('user/person/'.$post->user->id.'/'.$post->user->avatar);;
            $post->totalMediaFile = $post->mediafile->count();
            
            foreach($post->mediafile as $mediaFile){
