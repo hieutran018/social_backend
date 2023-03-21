@@ -8,6 +8,13 @@ use URL;
 
 class UserController extends Controller
 {
+
+    private $user;
+
+    public function __construct(User $user){
+        $this->user = $user;
+    }
+
     public function profileUser(Request $request){
         $profile = User::find($request->userId);
         $profile->username = $profile->first_name.' '.$profile->last_name;

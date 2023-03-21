@@ -25,6 +25,12 @@ Route::get('fetch-post',[PostController::class,'fetchPost']);
 Route::post('fetch-comment-by-post',[CommentController::class,'fetchCommentByPost']);
 Route::post('profile-user',[UserController::class,'profileUser']);
 
+
+//* COMMENT POST
+Route::group(['middleware' => 'jwt.auth','prefix'=>'v1'],function(){
+    Route::post('create-comment-post',[CommentController::class,'createCommentPost']);
+});
+
 Route::group([
     'middleware' => 'api',
     'namespace' => 'App\Http\Controllers',

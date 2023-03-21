@@ -3,12 +3,16 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Models\CommentPost;
+use App\Http\Controllers\AuthController;
 use Carbon\Carbon;
 use URL;
-
+use JWTAuth;
 class CommentController extends Controller
 {
+    
+
     public function fetchCommentByPost(Request $request){
         $lstComment = CommentPost::WHERE('post_id',$request->postId)->orderBy('created_at')->get();
         foreach($lstComment as $comment){
@@ -21,14 +25,18 @@ class CommentController extends Controller
         }
         return response()->json($lstComment,200);
     }
+
+
     //TODO: Validate input 
     public function createCommentPost(Request $request){
         $input = $request->all();
 
-        $comment = new Comment();
+        $comment = new CommentPost();
         $comment->post_id = $input['postId'];
         $comment->comment_content = $input['commentContent'];
-        $comment->user_id = $this->guard()->user()->id;
-        // $comment->created_at = Carbon:
+        $comment->user_id = JWTAuth::toUser($request->token)->id;
+        $comment->created_at = Carbon::Now('Asia/Ho_Chi_Minh');
+        $comment->save();
+        return response()->json('Success',200);
     }
 }
