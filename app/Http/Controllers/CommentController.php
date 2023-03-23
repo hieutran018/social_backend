@@ -21,7 +21,7 @@ class CommentController extends Controller
                             URL::to('default/avatar_default_male.png'):
                             URL::to('user/person/'.$comment->user->id.'/'.$comment->user->avatar);
             $comment->username = $comment->user->first_name. ' ' . $comment->user->last_name;
-            $comment->created_at = Carbon::parse($comment->created_at)->format('Y/m/d h:m:s');
+            $comment->created_at = Carbon::parse($comment->created_at)->format('Y/m/d H:m:s');
         }
         return response()->json($lstComment,200);
     }
@@ -30,7 +30,6 @@ class CommentController extends Controller
     //TODO: Validate input 
     public function createCommentPost(Request $request){
         $input = $request->all();
-
         $comment = new CommentPost();
         $comment->post_id = $input['postId'];
         $comment->comment_content = $input['commentContent'];

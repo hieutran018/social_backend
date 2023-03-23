@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
+use App\Models\CommentPost;
 use App\Models\MediaFilePost;
 
 class Post extends Model
@@ -29,6 +30,12 @@ class Post extends Model
     }
     protected $hidden = [
         'user',
+        'comment'
        
     ];
+
+    public function comment()
+    {
+        return $this->hasMany(CommentPost::class,'post_id','id');
+    }
 }
