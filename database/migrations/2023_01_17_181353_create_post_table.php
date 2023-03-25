@@ -15,7 +15,7 @@ class CreatePostTable extends Migration
     {
         Schema::create('posts', function (Blueprint $table) {
             $table->id();
-            $table->text('post_content');
+            $table->text('post_content')->nullable();
             $table->foreignId('user_id');
             $table->integer('privacy');
             $table->foreignId('parent_post')->nullable();
