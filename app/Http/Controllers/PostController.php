@@ -9,6 +9,7 @@ use App\Models\MediaFilePost;
 use Carbon\Carbon;
 use URL;
 use JWTAuth;
+use Illuminate\Support\Str;
 
 class PostController extends Controller
 {
@@ -16,7 +17,7 @@ class PostController extends Controller
     public function createPost(Request $request){
         $crPost = new Post();
         $crPost->user_id = JWTAuth::toUser($request->token)->id;
-        $crPost->post_content = $request->postContent;
+        $crPost->post_content = nl2br($request->postContent);
         $crPost->privacy = 1;
         $crPost->parent_post = null;
         $crPost->created_at = Carbon::now('Asia/Ho_Chi_Minh');
@@ -28,12 +29,12 @@ class PostController extends Controller
             foreach($request->file('files') as $key => $file)
             {
                 $fileExtentsion = $file->getClientOriginalExtension();
-                
-                $fileName = time().'.'.$fileExtentsion;
+                $random = Str::random(10);
+                $fileName = time().$random.'.'.$fileExtentsion;
                 $file->move('media_file_post/'.JWTAuth::toUser($request->token)->id, $fileName);
                 $media = new MediaFilePost();
                 $media->media_file_name = $fileName;
-                $media->media_type = "jpg";
+                $media->media_type = $fileExtentsion;
                 $media->post_id = $crPost->id;
                 $media->user_id = JWTAuth::toUser($request->token)->id;
                 $media->created_at = Carbon::now('Asia/Ho_Chi_Minh');
@@ -51,7 +52,8 @@ class PostController extends Controller
         
         foreach($lstPost as $post){
            $post->username = $post->user->first_name. ' ' . $post->user->last_name;
-           $post->created_at = Carbon::parse($post->created_at)->format('Y/m/d h:m:s');
+
+           $post->created_at = Carbon::parse($post->created_at)->format('Y/m/d H:m:s');
            $post->avatarUser = $post->user->avatar == null ? 
                             URL::to('default/avatar_default_male.png'):
                             URL::to('user/person/'.$post->user->id.'/'.$post->user->avatar);
