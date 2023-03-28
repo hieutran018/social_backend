@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use JWTAuth;
+use Illuminate\Support\Facades\Validator;
 use URL;
 
 
@@ -30,6 +31,15 @@ class UserController extends Controller
     }
 
     public function editUserInformation(Request $request){
+        $validator = Validator::make($request->all(), [
+            'firstName' => 'required|string|between:2,100',
+            'lastName' => 'required|string|between:2,100',
+        ]);
+        
+        if($validator->fails()){
+            return response()->json($validator->errors()->toJson(), 400);
+        }
+
         $userId = JWTAuth::toUser($request->token)->id;
 
         $user = User::find($userId);
