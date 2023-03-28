@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use JWTAuth;
 use URL;
+
 
 class UserController extends Controller
 {
@@ -21,6 +23,26 @@ class UserController extends Controller
         $profile->avatar = $profile->avatar == null ? 
                             URL::to('default/avatar_default_male.png'):
                             URL::to('user/person/'.$profile->id.'/'.$profile->avatar);
+        $profile->coverImage = $profile->cover_image == null ? 
+                            URL::to('default/avatar_default_male.png'):
+                            URL::to('user/person/'.$profile->id.'/'.$profile->cover_image);
         return response()->json($profile,200);
+    }
+
+    public function editUserInformation(Request $request){
+        $userId = JWTAuth::toUser($request->token)->id;
+
+        $user = User::find($userId);
+
+        $data = $request->all();
+
+        $user->first_name = $data['firstName'];
+        $user->last_name = $data['lastName'];
+        $user->date_of_birth = $data['dateOfBirth'];
+        $user->address = $data['address'];
+        $user->update();
+        
+        return response()->json($user,200);
+
     }
 }

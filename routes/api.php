@@ -31,10 +31,14 @@ Route::post('profile-user',[UserController::class,'profileUser']);
 Route::get('fetch-friend-suggestion',[FriendShipController::class,'fetchFriendSuggestion']);
 
 
-//* COMMENT POST
+
 Route::group(['middleware' => 'jwt.auth','prefix'=>'v1'],function(){
+    //* BÌNH LUẬN BÀI VIẾT
     Route::post('create-comment-post',[CommentController::class,'createCommentPost']);
+    //* TẠO BÀI VIẾT
     Route::post('create-post',[PostController::class,'createPost']);
+    //* CẬP NHẬT THÔNG TIN NGƯỜI DÙNG HIỆN TẠI
+    Route::post('edit-information-user',[UserController::class,'editUserInformation']);
 });
 
 
