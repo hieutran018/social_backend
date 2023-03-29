@@ -37,6 +37,8 @@ Route::group(['middleware' => 'jwt.auth','prefix'=>'v1'],function(){
     Route::post('create-comment-post',[CommentController::class,'createCommentPost']);
     //* TẠO BÀI VIẾT
     Route::post('create-post',[PostController::class,'createPost']);
+    //* CHIA SẺ BÀI VIẾT VỀ TRANG CÁ NHÂN
+    Route::post('share-post-to-profile',[PostController::class,'sharePost']);
     //* CẬP NHẬT THÔNG TIN NGƯỜI DÙNG HIỆN TẠI
     Route::post('edit-information-user',[UserController::class,'editUserInformation']);
 });

@@ -47,10 +47,36 @@ class PostController extends Controller
         
     }
 
+    public function sharePost(Request $request){
+        $postShare = new Post();
+        $postShare->user_id = JWTAuth::toUser($request->token)->id;
+        $postShare->privacy = 1;
+        $postShare->parent_post = $request->postId;
+        $postShare->post_content = $request->postContent;
+        $postShare->created_at = Carbon::now('Asia/Ho_Chi_Minh');
+        $postShare->status = 1;
+        $postShare->save();
+        return response()->json($postShare,200);
+    }
+
     public function fetchPost(){
         $lstPost = Post::orderBy('created_at','DESC')->paginate(10);
         
         foreach($lstPost as $post){
+            if($post->parent_post){
+                $post->parent_post = Post::find($post->parent_post);
+                $post->parent_post->username = $post->parent_post->user->first_name. ' ' . $post->parent_post->user->last_name;
+                $post->parent_post->created_at = Carbon::parse($post->parent_post->created_at)->format('Y/m/d H:m:s');
+                $post->parent_post->avatarUser = $post->parent_post->user->avatar == null ? 
+                                    URL::to('default/avatar_default_male.png'):
+                                    URL::to('user/person/'.$post->parent_post->user->id.'/'.$post->parent_post->user->avatar);
+                $post->parent_post->totalMediaFile = $post->parent_post->mediafile->count();
+                $post->parent_post->totalComment = $post->parent_post->comment->count();
+                foreach($post->parent_post->mediafile as $mediaFile){
+                        $mediaFile->media_file_name = URL::to('media_file_post/'.$post->parent_post->user->id.'/'.$mediaFile->media_file_name);
+                }
+            }
+            
            $post->username = $post->user->first_name. ' ' . $post->user->last_name;
 
            $post->created_at = Carbon::parse($post->created_at)->format('Y/m/d H:m:s');
