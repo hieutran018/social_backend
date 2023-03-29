@@ -48,7 +48,7 @@ class PostController extends Controller
     }
 
     public function fetchPost(){
-        $lstPost = Post::orderBy('created_at','DESC')->get();
+        $lstPost = Post::orderBy('created_at','DESC')->paginate(10);
         
         foreach($lstPost as $post){
            $post->username = $post->user->first_name. ' ' . $post->user->last_name;
