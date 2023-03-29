@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator;
+use URL;
 
 class AuthController extends Controller
 {
@@ -111,6 +112,9 @@ class AuthController extends Controller
      */
     protected function respondWithToken($token)
     {
+        $this->guard()->user()->avatar = $this->guard()->user()->avatar == null ? 
+                            URL::to('default/avatar_default_male.png'):
+                            URL::to('user/person/'.$this->guard()->user()->avatar->id.'/'.$this->guard()->user()->avatar->avatar);
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
