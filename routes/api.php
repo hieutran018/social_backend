@@ -27,12 +27,13 @@ Route::POST('fetch-post-by-id',[PostController::class,'fetchPostById']);
 Route::post('fetch-comment-by-post',[CommentController::class,'fetchCommentByPost']);
 Route::post('profile-user',[UserController::class,'profileUser']);
 
-//* DANH SÁCH GỢI Ý KẾT BẠN
-Route::get('fetch-friend-suggestion',[FriendShipController::class,'fetchFriendSuggestion']);
+
 
 
 
 Route::group(['middleware' => 'jwt.auth','prefix'=>'v1'],function(){
+    //* DANH SÁCH GỢI Ý KẾT BẠN
+    Route::get('fetch-friend-suggestion',[FriendShipController::class,'fetchFriendSuggestion']);
     //* BÌNH LUẬN BÀI VIẾT
     Route::post('create-comment-post',[CommentController::class,'createCommentPost']);
     //* TẠO BÀI VIẾT
