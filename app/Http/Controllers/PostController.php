@@ -18,7 +18,7 @@ class PostController extends Controller
         $crPost = new Post();
         $crPost->user_id = JWTAuth::toUser($request->token)->id;
         $crPost->post_content = nl2br($request->postContent);
-        $crPost->privacy = 1;
+        $crPost->privacy = $request->privacy;
         $crPost->parent_post = null;
         $crPost->created_at = Carbon::now('Asia/Ho_Chi_Minh');
         $crPost->status = 1;
