@@ -1,6 +1,9 @@
 /node_modules
 /public/hot
 /public/storage
+/public/media_file_post
+/public/user
+public/default
 /storage/*.key
 /vendor
 .env
