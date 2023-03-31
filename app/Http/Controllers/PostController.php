@@ -106,4 +106,8 @@ class PostController extends Controller
            }
         return response()->json($post,200);
     }
+
+    public function getPostById(){
+        
+    }
 }
