@@ -22,18 +22,20 @@ class UserController extends Controller
         $profile = User::find($request->userId);
         $profile->username = $profile->first_name.' '.$profile->last_name;
         $profile->avatar = $profile->avatar == null ? 
-                            URL::to('default/avatar_default_male.png'):
+                            ($profile->sex === 0 ? URL::to('default/avatar_default_female.png') :URL::to('default/avatar_default_male.png'))
+                            :
                             URL::to('user/person/'.$profile->id.'/'.$profile->avatar);
         $profile->coverImage = $profile->cover_image == null ? 
-                            URL::to('default/avatar_default_male.png'):
+                            URL::to('default/cover_image_default.jpeg'):
                             URL::to('user/person/'.$profile->id.'/'.$profile->cover_image);
+        
         return response()->json($profile,200);
     }
 
     public function editUserInformation(Request $request){
         $validator = Validator::make($request->all(), [
-            'firstName' => 'required|string|between:2,100',
-            'lastName' => 'required|string|between:2,100',
+            // 'firstName' => 'required|string|between:2,100',
+            // 'lastName' => 'required|string|between:2,100',
         ]);
         
         if($validator->fails()){
@@ -46,11 +48,19 @@ class UserController extends Controller
 
         $data = $request->all();
 
-        $user->first_name = $data['firstName'];
-        $user->last_name = $data['lastName'];
-        $user->date_of_birth = $data['dateOfBirth'];
-        $user->address = $data['address'];
+        $user->live_in = $data['liveIn'];
+        $user->went_to = $data['wentTo'];
+        $user->relationship = $data['relationship'];
+        $user->phone = $data['phone'];
         $user->update();
+
+        $user->avatar = $user->avatar == null ? 
+                            ($user->sex === 0 ? URL::to('default/avatar_default_female.png') :URL::to('default/avatar_default_male.png'))
+                            :
+                            URL::to('user/person/'.$user->id.'/'.$user->avatar);
+        $user->coverImage = $user->cover_image == null ? 
+                            URL::to('default/cover_image_default.jpeg'):
+                            URL::to('user/person/'.$user->id.'/'.$user->cover_image);
         
         return response()->json($user,200);
 
