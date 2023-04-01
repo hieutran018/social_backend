@@ -17,7 +17,7 @@ class PostController extends Controller
     public function createPost(Request $request){
         $crPost = new Post();
         $crPost->user_id = JWTAuth::toUser($request->token)->id;
-        $crPost->post_content = nl2br($request->postContent);
+        $crPost->post_content = $request->postContent;
         $crPost->privacy = $request->privacy;
         $crPost->parent_post = null;
         $crPost->created_at = Carbon::now('Asia/Ho_Chi_Minh');
@@ -48,19 +48,30 @@ class PostController extends Controller
     }
 
     public function sharePost(Request $request){
+        $isShared = Post::WHERE('id',$request->postId)->first();
         $postShare = new Post();
-        $postShare->user_id = JWTAuth::toUser($request->token)->id;
-        $postShare->privacy = 1;
-        $postShare->parent_post = $request->postId;
-        $postShare->post_content = $request->postContent;
-        $postShare->created_at = Carbon::now('Asia/Ho_Chi_Minh');
-        $postShare->status = 1;
+        if($isShared->parent_post){
+            $postShare->user_id = JWTAuth::toUser($request->token)->id;
+            $postShare->privacy = 1;
+            $postShare->parent_post = $isShared->parent_post;
+            $postShare->post_content = $request->postContent;
+            $postShare->created_at = Carbon::now('Asia/Ho_Chi_Minh');
+            $postShare->status = 1;
+        }else{
+            $postShare->user_id = JWTAuth::toUser($request->token)->id;
+            $postShare->privacy = 1;
+            $postShare->parent_post = $request->postId;
+            $postShare->post_content = $request->postContent;
+            $postShare->created_at = Carbon::now('Asia/Ho_Chi_Minh');
+            $postShare->status = 1;
+        }
+        
         $postShare->save();
         return response()->json($postShare,200);
     }
 
     public function fetchPost(){
-        $lstPost = Post::orderBy('created_at','DESC')->paginate(10);
+        $lstPost = Post::orderBy('created_at','DESC')->get();
         
         foreach($lstPost as $post){
             if($post->parent_post){
@@ -68,7 +79,7 @@ class PostController extends Controller
                 $post->parent_post->username = $post->parent_post->user->first_name. ' ' . $post->parent_post->user->last_name;
                 $post->parent_post->created_at = Carbon::parse($post->parent_post->created_at)->format('Y/m/d H:m:s');
                 $post->parent_post->avatarUser = $post->parent_post->user->avatar == null ? 
-                                    URL::to('default/avatar_default_male.png'):
+                                    ($post->parent_post->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')):
                                     URL::to('user/person/'.$post->parent_post->user->id.'/'.$post->parent_post->user->avatar);
                 $post->parent_post->totalMediaFile = $post->parent_post->mediafile->count();
                 $post->parent_post->totalComment = $post->parent_post->comment->count();
@@ -81,7 +92,7 @@ class PostController extends Controller
 
            $post->created_at = Carbon::parse($post->created_at)->format('Y/m/d H:m:s');
            $post->avatarUser = $post->user->avatar == null ? 
-                            URL::to('default/avatar_default_male.png'):
+                            ($post->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')):
                             URL::to('user/person/'.$post->user->id.'/'.$post->user->avatar);
            $post->totalMediaFile = $post->mediafile->count();
            $post->totalComment = $post->comment->count();
@@ -97,7 +108,7 @@ class PostController extends Controller
         $post->username = $post->user->first_name. ' ' . $post->user->last_name;
            $post->created_at = Carbon::parse($post->created_at)->format('Y/m/d h:m:s');
            $post->avatarUser = $post->user->avatar == null ? 
-                            URL::to('default/avatar_default_male.png'):
+                            ($post->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')):
                             URL::to('user/person/'.$post->user->id.'/'.$post->user->avatar);
            $post->totalMediaFile = $post->mediafile->count();
            $post->totalComment = $post->comment->count();
