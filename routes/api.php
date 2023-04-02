@@ -27,6 +27,9 @@ Route::POST('fetch-post-by-id',[PostController::class,'fetchPostById']);
 Route::post('fetch-comment-by-post',[CommentController::class,'fetchCommentByPost']);
 Route::post('profile-user',[UserController::class,'profileUser']);
 
+//* DANH SÁCH BẠN BÈ THEO ID NGƯỜI DÙNG
+    Route::post('fetch-friend-by-user-id',[FriendShipController::class,'fetchListFriendByUser']);
+
 
 
 
@@ -42,6 +45,13 @@ Route::group(['middleware' => 'jwt.auth','prefix'=>'v1'],function(){
     Route::post('share-post-to-profile',[PostController::class,'sharePost']);
     //* CẬP NHẬT THÔNG TIN NGƯỜI DÙNG HIỆN TẠI
     Route::post('edit-information-user',[UserController::class,'editUserInformation']);
+    //* GỬI LỜI MỜI KẾT BẠN
+    Route::post('request-add-friend',[FriendShipController::class,'requestAddFriend']);
+
+    //* DANH SÁCH LỜI MỚI KẾT BẠN
+    Route::post('fetch-friend-request-list',[FriendShipController::class,'fetchFriendRequestList']);
+    //*CHẤP NHẬN LỜI MỜI KẾT BẠN
+    Route::post('accept-friend-request',[FriendShipController::class,'acceptFriendRequest']);
 });
 
 
