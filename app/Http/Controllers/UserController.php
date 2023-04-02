@@ -53,7 +53,7 @@ class UserController extends Controller
         $user->relationship = $data['relationship'];
         $user->phone = $data['phone'];
         $user->update();
-
+        $user->username = $user->first_name.' '.$user->last_name;
         $user->avatar = $user->avatar == null ? 
                             ($user->sex === 0 ? URL::to('default/avatar_default_female.png') :URL::to('default/avatar_default_male.png'))
                             :
