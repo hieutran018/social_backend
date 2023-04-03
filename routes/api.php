@@ -52,6 +52,9 @@ Route::group(['middleware' => 'jwt.auth','prefix'=>'v1'],function(){
     Route::post('fetch-friend-request-list',[FriendShipController::class,'fetchFriendRequestList']);
     //*CHẤP NHẬN LỜI MỜI KẾT BẠN
     Route::post('accept-friend-request',[FriendShipController::class,'acceptFriendRequest']);
+
+    //* HỦY KẾT BẠN
+    Route::post('unfriend',[FriendShipController::class,'unFriend']);
 });
 
 

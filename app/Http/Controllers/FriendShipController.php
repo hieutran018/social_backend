@@ -32,6 +32,7 @@ class FriendShipController extends Controller
         foreach($lstFriend as $fr){
             if($fr->user_accept == $userId){
                 foreach($fr->user as $user){
+                $fr->friendId = $user->id;
                 $fr->username = $user->first_name.''.$user->last_name;
                 $fr->avatar = $user->avatar == null ? 
                             URL::to('default/avatar_default_male.png'):
@@ -39,6 +40,7 @@ class FriendShipController extends Controller
                 }
             }else{
                 foreach($fr->users as $users){
+                $fr->friendId = $users->id;
                 $fr->username = $users->first_name.''.$users->last_name;
                 $fr->avatar = $users->avatar == null ? 
                             URL::to('default/avatar_default_male.png'):
@@ -93,6 +95,24 @@ class FriendShipController extends Controller
 
         $invite->status = 1; 
         $invite->update();
+        return response()->json('success',200);
+    }
+
+    public function unFriend(Request $request){
+        $userIdUnfr = JWTAuth::toUser($request->token)->id;
+        $search1 = FriendShip::WHERE('user_request',$userIdUnfr)->WHERE('user_accept',$request->userId)->first();
+       
+        if($search1){
+            $search1->delete();
+        }
+        else{
+
+            $search1 = FriendShip::WHERE('user_request',$request->userId)->WHERE('user_accept',$userIdUnfr)->first();
+           
+            $search1->delete();
+        }
+
+
         return response()->json('success',200);
     }
 }
