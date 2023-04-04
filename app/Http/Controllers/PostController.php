@@ -52,14 +52,14 @@ class PostController extends Controller
         $postShare = new Post();
         if($isShared->parent_post){
             $postShare->user_id = JWTAuth::toUser($request->token)->id;
-            $postShare->privacy = 1;
+            $postShare->privacy = $request->privacy;
             $postShare->parent_post = $isShared->parent_post;
             $postShare->post_content = $request->postContent;
             $postShare->created_at = Carbon::now('Asia/Ho_Chi_Minh');
             $postShare->status = 1;
         }else{
             $postShare->user_id = JWTAuth::toUser($request->token)->id;
-            $postShare->privacy = 1;
+            $postShare->privacy = $request->privacy;
             $postShare->parent_post = $request->postId;
             $postShare->post_content = $request->postContent;
             $postShare->created_at = Carbon::now('Asia/Ho_Chi_Minh');

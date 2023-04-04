@@ -36,7 +36,7 @@ Route::post('profile-user',[UserController::class,'profileUser']);
 
 Route::group(['middleware' => 'jwt.auth','prefix'=>'v1'],function(){
     //* DANH SÁCH GỢI Ý KẾT BẠN
-    Route::get('fetch-friend-suggestion',[FriendShipController::class,'fetchFriendSuggestion']);
+    Route::GET('/fetch-friends-suggestion',[FriendShipController::class,'fetchFriendSuggestion']);
     //* BÌNH LUẬN BÀI VIẾT
     Route::post('create-comment-post',[CommentController::class,'createCommentPost']);
     //* TẠO BÀI VIẾT
