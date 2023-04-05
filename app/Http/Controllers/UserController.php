@@ -4,10 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\MediaFilePost;
 use JWTAuth;
 use Illuminate\Support\Facades\Validator;
 use URL;
-
+use DB;
 
 class UserController extends Controller
 {
@@ -64,5 +65,28 @@ class UserController extends Controller
         
         return response()->json($user,200);
 
+    }
+    //TODO: CẬP NHẬT ẢNH ĐẠI DIỆN
+    public function updateAvatarUser(){
+        
+    }
+
+    public function fetchlistImageUploaded($userId){
+        $lst = DB::table('media_file_posts')
+                ->select('*')
+                ->where('user_id','=',$userId)
+                ->Where(function($query){
+                        $query->where('media_type','=','png')
+                        ->orWhere('media_type','=','jpg')
+                        ->orWhere('media_type','=','jpeg');
+                })->get();
+        // $lst = MediaFilePost::WHERE('user_id','=',$userId)
+        //                     ->WHERE('media_type','=','jpg')
+        //                     ->orWhere('media_type','=','png')
+        //                     ->orWhere('media_type','=','jpeg')->get();
+        foreach($lst as $item){
+            $item->media_file_name = URL::to('media_file_post/'.$userId.'/'.$item->media_file_name);
+        }
+        return response()->json($lst,200);  
     }
 }

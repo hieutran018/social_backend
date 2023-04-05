@@ -16,4 +16,6 @@ class MediaFilePost extends Model
         'status'
     ];
     public $timestamps = false;
+
+    protected $table = 'media_file_posts';
 }

@@ -6,6 +6,7 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\FriendShipController;
+use App\Http\Controllers\MediaFileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -55,7 +56,12 @@ Route::group(['middleware' => 'jwt.auth','prefix'=>'v1'],function(){
 
     //* HỦY KẾT BẠN
     Route::post('unfriend',[FriendShipController::class,'unFriend']);
+
+    //*DANH SÁCH HÌNH ẢNH ĐÃ ĐĂNG TẢI
+    Route::get('fetch-image-uploaded/userId={userId}',[MediaFileController::class,'photoByUploaded']);
+
 });
+
 
 
 Route::group([
