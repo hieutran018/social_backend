@@ -19,7 +19,7 @@ class CommentController extends Controller
             $comment->userId = $comment->user_id;
             $comment->avatarUser = $comment->user->avatar == null ? 
                             URL::to('default/avatar_default_male.png'):
-                            URL::to('user/person/'.$comment->user->id.'/'.$comment->user->avatar);
+                            URL::to('media_file_post/'.$comment->user->id.'/'.$comment->user->avatar);
             $comment->username = $comment->user->first_name. ' ' . $comment->user->last_name;
             $comment->created_at = Carbon::parse($comment->created_at)->format('Y/m/d H:m:s');
         }

@@ -13,6 +13,7 @@ class MediaFilePost extends Model
         'media_type',
         'post_id',
         'user_id',
+        'isAvatar',
         'status'
     ];
     public $timestamps = false;

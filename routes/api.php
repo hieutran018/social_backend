@@ -59,6 +59,8 @@ Route::group(['middleware' => 'jwt.auth','prefix'=>'v1'],function(){
 
     //*DANH SÁCH HÌNH ẢNH ĐÃ ĐĂNG TẢI
     Route::get('fetch-image-uploaded/userId={userId}',[MediaFileController::class,'photoByUploaded']);
+    //* CẬP NHẬT ẢNH ĐẠI DIỆN
+    Route::post('upload-avatar',[UserController::class,'uploadAvatar']);
 
 });
 

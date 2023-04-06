@@ -114,7 +114,7 @@ class AuthController extends Controller
     {
         $this->guard()->user()->avatar = $this->guard()->user()->avatar == null ? 
                             ($this->guard()->user()->sex === 0 ? URL::to('default/avatar_default_female.png') :URL::to('default/avatar_default_male.png')):
-                            URL::to('user/person/'.$this->guard()->user()->id.'/'.$this->guard()->user()->avatar);
+                            URL::to('media_file_post/'.$this->guard()->user()->id.'/'.$this->guard()->user()->avatar);
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',

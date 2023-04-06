@@ -42,8 +42,19 @@ class PostController extends Controller
                 $media->save();
             }
         }
+        $crPost->username = $crPost->user->first_name. ' ' . $crPost->user->last_name;
 
-        return response()->json($crPost->mediafile,200);
+           $crPost->created_at = Carbon::parse($crPost->created_at)->format('Y/m/d H:m:s');
+           $crPost->avatarUser = $crPost->user->avatar == null ? 
+                            ($crPost->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')):
+                            URL::to('media_file_post/'.$crPost->user->id.'/'.$crPost->user->avatar);
+           $crPost->totalMediaFile = $crPost->mediafile->count();
+           $crPost->totalComment = $crPost->comment->count();
+            foreach($crPost->mediafile as $mediaFile){
+                    $mediaFile->media_file_name = URL::to('media_file_post/'.$crPost->user->id.'/'.$mediaFile->media_file_name);
+            }
+
+        return response()->json($crPost,200);
         
     }
 
@@ -67,6 +78,28 @@ class PostController extends Controller
         }
         
         $postShare->save();
+
+         $postShare->username = $postShare->user->first_name. ' ' . $postShare->user->last_name;
+
+           $postShare->created_at = Carbon::parse($postShare->created_at)->format('Y/m/d H:m:s');
+           $postShare->avatarUser = $postShare->user->avatar == null ? 
+                            ($postShare->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')):
+                            URL::to('media_file_post/'.$postShare->user->id.'/'.$postShare->user->avatar);
+           $postShare->totalMediaFile = $postShare->mediafile->count();
+           $postShare->totalComment = $postShare->comment->count();
+
+        $postShare->parent_post = Post::find($postShare->parent_post);
+                $postShare->parent_post->username = $postShare->parent_post->user->first_name. ' ' . $postShare->parent_post->user->last_name;
+                $postShare->parent_post->created_at = Carbon::parse($postShare->parent_post->created_at)->format('Y/m/d H:m:s');
+                $postShare->parent_post->avatarUser = $postShare->parent_post->user->avatar == null ? 
+                                    ($postShare->parent_post->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')):
+                                    URL::to('media_file_post/'.$postShare->parent_post->user->id.'/'.$postShare->parent_post->user->avatar);
+                $postShare->parent_post->totalMediaFile = $postShare->parent_post->mediafile->count();
+                $postShare->parent_post->totalComment = $postShare->parent_post->comment->count();
+                foreach($postShare->parent_post->mediafile as $mediaFile){
+                        $mediaFile->media_file_name = URL::to('media_file_post/'.$postShare->parent_post->user->id.'/'.$mediaFile->media_file_name);
+                }
+
         return response()->json($postShare,200);
     }
 
@@ -80,7 +113,7 @@ class PostController extends Controller
                 $post->parent_post->created_at = Carbon::parse($post->parent_post->created_at)->format('Y/m/d H:m:s');
                 $post->parent_post->avatarUser = $post->parent_post->user->avatar == null ? 
                                     ($post->parent_post->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')):
-                                    URL::to('user/person/'.$post->parent_post->user->id.'/'.$post->parent_post->user->avatar);
+                                    URL::to('media_file_post/'.$post->parent_post->user->id.'/'.$post->parent_post->user->avatar);
                 $post->parent_post->totalMediaFile = $post->parent_post->mediafile->count();
                 $post->parent_post->totalComment = $post->parent_post->comment->count();
                 foreach($post->parent_post->mediafile as $mediaFile){
@@ -93,7 +126,7 @@ class PostController extends Controller
            $post->created_at = Carbon::parse($post->created_at)->format('Y/m/d H:m:s');
            $post->avatarUser = $post->user->avatar == null ? 
                             ($post->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')):
-                            URL::to('user/person/'.$post->user->id.'/'.$post->user->avatar);
+                            URL::to('media_file_post/'.$post->user->id.'/'.$post->user->avatar);
            $post->totalMediaFile = $post->mediafile->count();
            $post->totalComment = $post->comment->count();
            foreach($post->mediafile as $mediaFile){
@@ -109,7 +142,7 @@ class PostController extends Controller
            $post->created_at = Carbon::parse($post->created_at)->format('Y/m/d h:m:s');
            $post->avatarUser = $post->user->avatar == null ? 
                             ($post->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')):
-                            URL::to('user/person/'.$post->user->id.'/'.$post->user->avatar);
+                            URL::to('media_file_post/'.$post->user->id.'/'.$post->user->avatar);
            $post->totalMediaFile = $post->mediafile->count();
            $post->totalComment = $post->comment->count();
            foreach($post->mediafile as $mediaFile){

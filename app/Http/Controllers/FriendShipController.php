@@ -19,7 +19,7 @@ class FriendShipController extends Controller
             $user->username = $user->first_name.''.$user->last_name;
             $user->avatar = $user->avatar == null ? 
                             URL::to('default/avatar_default_male.png'):
-                            URL::to('user/person/'.$user->id.'/'.$user->avatar);
+                            URL::to('media_file_post/'.$user->id.'/'.$user->avatar);
         }
         return response()->json($frs,200);
     }
@@ -44,7 +44,7 @@ class FriendShipController extends Controller
                 $fr->username = $users->first_name.''.$users->last_name;
                 $fr->avatar = $users->avatar == null ? 
                             URL::to('default/avatar_default_male.png'):
-                            URL::to('user/person/'.$users->id.'/'.$users->avatar);
+                            URL::to('media_file_post/'.$users->id.'/'.$users->avatar);
                 }
             }
             
@@ -77,7 +77,7 @@ class FriendShipController extends Controller
             $fr->username = $user->first_name.''.$user->last_name;
             $fr->avatar = $user->avatar == null ? 
                             ($user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')):
-                            URL::to('user/person/'.$user->id.'/'.$user->avatar);
+                            URL::to('media_file_post/'.$user->id.'/'.$user->avatar);
             $fr->cover_image = $user->cover_image == null ? URL::to('default/cover_image_default.jpeg') : URL::to('user/person/'.$user->id.'/'.$user->cover_image);
            }
             
