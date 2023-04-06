@@ -58,9 +58,11 @@ Route::group(['middleware' => 'jwt.auth','prefix'=>'v1'],function(){
     Route::post('unfriend',[FriendShipController::class,'unFriend']);
 
     //*DANH SÁCH HÌNH ẢNH ĐÃ ĐĂNG TẢI
-    Route::get('fetch-image-uploaded/userId={userId}',[MediaFileController::class,'photoByUploaded']);
+    Route::get('fetch-image-uploaded/userId={userId}/{limit?}',[MediaFileController::class,'photoByUploaded']);
     //* CẬP NHẬT ẢNH ĐẠI DIỆN
     Route::post('upload-avatar',[UserController::class,'uploadAvatar']);
+    //* CẬP NHẬT ẢNH BÌA
+    Route::post('upload-cover-image',[UserController::class,'uploadCoverImage']);
 
 });
 

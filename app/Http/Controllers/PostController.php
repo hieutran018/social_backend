@@ -104,7 +104,7 @@ class PostController extends Controller
     }
 
     public function fetchPost(){
-        $lstPost = Post::orderBy('created_at','DESC')->get();
+        $lstPost = Post::orderBy('created_at','DESC')->limit(10)->get();
         
         foreach($lstPost as $post){
             if($post->parent_post){

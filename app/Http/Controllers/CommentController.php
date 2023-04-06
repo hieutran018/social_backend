@@ -36,6 +36,8 @@ class CommentController extends Controller
         $comment->user_id = JWTAuth::toUser($request->token)->id;
         $comment->created_at = Carbon::Now('Asia/Ho_Chi_Minh');
         $comment->save();
-        return response()->json('Success',200);
+        $countComment = CommentPost::WHERE('post_id',$input['postId'])->count();
+        
+        return response()->json($countComment,200);
     }
 }

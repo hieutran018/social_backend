@@ -31,7 +31,7 @@ class UserController extends Controller
                             URL::to('media_file_post/'.$profile->id.'/'.$profile->avatar);
         $profile->coverImage = $profile->cover_image == null ? 
                             URL::to('default/cover_image_default.jpeg'):
-                            URL::to('user/person/'.$profile->id.'/'.$profile->cover_image);
+                            URL::to('media_file_post/'.$profile->id.'/'.$profile->cover_image);
         
         return response()->json($profile,200);
     }
@@ -64,7 +64,7 @@ class UserController extends Controller
                             URL::to('media_file_post/'.$user->id.'/'.$user->avatar);
         $user->coverImage = $user->cover_image == null ? 
                             URL::to('default/cover_image_default.jpeg'):
-                            URL::to('user/person/'.$user->id.'/'.$user->cover_image);
+                            URL::to('media_file_post/'.$user->id.'/'.$user->cover_image);
         
         return response()->json($user,200);
 
@@ -130,10 +130,56 @@ class UserController extends Controller
                             URL::to('media_file_post/'.$update->id.'/'.$update->avatar);
         $update->coverImage = $update->cover_image == null ? 
                             URL::to('default/cover_image_default.jpeg'):
-                            URL::to('user/person/'.$update->id.'/'.$update->cover_image);
+                            URL::to('media_file_post/'.$update->id.'/'.$update->cover_image);
         return response()->json($update,200);
         }
 
 
+    }
+
+    public function uploadCoverImage(Request $request){
+        $userId = JWTAuth::toUser($request->token)->id;
+
+        if($request->hasFile('file')){
+        $file = $request->file[0];
+        $fileExtentsion = $file->getClientOriginalExtension();
+                $random = Str::random(10);
+                $fileName = time().$random.'.'.$fileExtentsion;
+                $file->move('media_file_post/'.JWTAuth::toUser($request->token)->id, $fileName);
+                
+        $update = User::find($userId);
+        $update->cover_image = $fileName;
+        $update->update();
+
+        $crPost = new Post();
+        $crPost->user_id = $userId;
+        $crPost->post_content = 'Đã cập nhật ảnh bìa.';
+        $crPost->privacy = 1;
+        $crPost->parent_post = null;
+        $crPost->created_at = Carbon::now('Asia/Ho_Chi_Minh');
+        $crPost->status = 1;
+        $crPost->save();
+
+        $upload = new MediaFilePost();
+        $upload->media_file_name = $fileName;
+        $upload->media_type = $fileExtentsion;
+        $upload->post_id = $crPost->id;
+        $upload->user_id = $userId;
+        $upload->isCover = 1;
+        $upload->status =1;
+        $upload->created_at = Carbon::now('Asia/Ho_Chi_Minh');
+        $upload->save();
+        
+
+        $update->username = $update->first_name.' '.$update->last_name;
+        $update->avatar = $update->avatar == null ? 
+                            ($update->sex === 0 ? URL::to('default/avatar_default_female.png') :URL::to('default/avatar_default_male.png'))
+                            :
+                            URL::to('media_file_post/'.$update->id.'/'.$update->avatar);
+        $update->coverImage = $update->cover_image == null ? 
+                            URL::to('default/cover_image_default.jpeg'):
+                            URL::to('media_file_post/'.$update->id.'/'.$update->cover_image);
+        return response()->json($update,200);
+        }
     }
 }

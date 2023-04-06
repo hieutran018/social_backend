@@ -20,6 +20,7 @@ class CreateMediaFilePost extends Migration
             $table->foreignId('post_id');
             $table->foreignId('user_id');
             $table->boolean('isAvatar');
+            $table->boolean('isCover');
             $table->integer('status');
             $table->timestamps();
         });
