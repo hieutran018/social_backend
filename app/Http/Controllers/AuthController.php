@@ -7,6 +7,10 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 use URL;
+use Mail;
+use Redirect;
+use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class AuthController extends Controller
 {
@@ -17,7 +21,7 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login','register']]);
+        $this->middleware('auth:api', ['except' => ['login','register','verificationUser']]);
     }
 
     /**
@@ -41,14 +45,36 @@ class AuthController extends Controller
             $user->first_name = $request->firstName;
             $user->last_name = $request->lastName;
             $user->email = $request->email;
+
             $user->password = bcrypt($request->password);
             $user->isAdmin = 0;
+            $user->token = Str::random(10);
             $user->save();
+            
+            Mail::send('email',compact('user'),function($email) use($user){
+            $email->subject('Xác nhận đăng ký tài khoản');
+            $email->to($user->email,'CKC Social network');
+        });
+
             return response()->json([
             'message' => 'User successfully registered',
             'user' => $user
         ], 201);
         
+    }
+
+    public function verificationUser(User $user, $token){
+        if($user->token == null){
+            return Redirect::to('/')->with('verified','Bạn đã hoàn tất xác minh trước đó rồi !');
+        }
+        
+        if($user->token === $token){
+            $user->update(['status'=>1,'token'=>null,'email_verified_at'=>Carbon::now('Asia/Ho_Chi_Minh')]);
+            return Redirect::to('/')->with('success_verify','Xác minh thành công !');
+        }
+        else{
+            return Redirect::to('/')->with('failed_verify','Xác minh thẩ bại, vui lòng thử lại !');
+        }
     }
 
 
