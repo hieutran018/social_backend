@@ -74,6 +74,8 @@ Route::group([
     'prefix' => 'auth'
 ], function ($router) {
     Route::post('register', 'AuthController@register');
+    Route::post('forgot-password','AuthController@forgotPassword');
+    Route::post('completed-forgot-password','AuthController@verificationForgotPassword');
     Route::post('login', 'AuthController@login');
     Route::post('logout', 'AuthController@logout');
     Route::post('refresh', 'AuthController@refresh');

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Models\ForgotPassword;
 use Illuminate\Support\Facades\Validator;
 use URL;
 use Mail;
@@ -21,7 +22,7 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login','register','verificationUser']]);
+        $this->middleware('auth:api', ['except' => ['login','register','verificationUser','forgotPassword','verificationForgotPassword']]);
     }
 
     /**
@@ -37,9 +38,17 @@ class AuthController extends Controller
             'email' => 'required|string|email|max:100|unique:users',
             'password' => 'required|string|min:6',
             'confirmPassword' => 'required|string|min:6|same:password',
+        ],[
+            'firstName.required' => 'Họ tên không được bỏ trống!',
+            'lastName.required' => 'Tên không được bỏ trống!',
+            'email.required' => 'Email không được bỏ trống!',
+            'email.unique' => 'Email đã được sử dụng!',
+            'password.required' => 'Mật khẩu không được bỏ trống!',
+            'password.min' => 'Mật khẩu phải nhiều hơn 6 ký tự!',
+            'password.same' => 'Xác nhận mật khẩu và mật khẩu không khớp'
         ]);
         if($validator->fails()){
-            return response()->json($validator->errors()->toJson(), 400);
+            return response()->json($validator->errors()->toJson(),400);
         }
             $user = new User();
             $user->first_name = $request->firstName;
@@ -60,6 +69,46 @@ class AuthController extends Controller
             'message' => 'User successfully registered',
             'user' => $user
         ], 201);
+        
+    }
+
+    public function forgotPassword(Request $request){
+        $email = $request->email;
+        $user = User::WHERE('email',$email)->first();
+        
+        if(empty($user)){
+            return response()->json('Không tìm thấy tài khoản của Email này!',400);
+        }else{
+            $reset = new ForgotPassword();
+            $reset->email = $email;
+            $reset->token = Str::random(8);
+            $reset->created_at = Carbon::now('Asia/Ho_Chi_Minh');
+            $reset->save();
+            Mail::send('forgot_password',compact('user','reset'),function($email) use($user,$reset){
+            $email->subject('Xác nhận đặt lại mật khẩu');
+            $email->to($user->email,'CKC Social network');
+            });
+        }
+    }
+    public function verificationForgotPassword(Request $request){
+        $check = ForgotPassword::WHERE('token',$request->tokenReset)->first();
+       
+        if(empty($check)){
+            return response()->json('Không tìm thấy tài khoản của Email này!',400);
+        }else{
+            
+            $pass = Str::random(10);
+            $updatePass = User::WHERE('email',$check->email)->first();
+            
+            $updatePass->password = bcrypt($pass);
+            $updatePass->update();
+            Mail::send('complete_forgot_password',compact('updatePass','pass'),function($email) use($updatePass,$pass){
+            $email->subject('Đặt lại mật khẩu');
+            $email->to($updatePass->email,'CKC Social network');
+            });
+           
+        }
+
         
     }
 
@@ -149,7 +198,7 @@ class AuthController extends Controller
             'expires_in' => $this->guard()->factory()->getTTL() * 60,
             'user' => $this->guard()->user()
             
-        ]);
+        ],200);
     }
 
     /**
