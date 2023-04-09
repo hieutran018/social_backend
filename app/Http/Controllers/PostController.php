@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Post;
 use App\Models\CommentPost;
 use App\Models\MediaFilePost;
+use App\Models\PostLike;
 use Carbon\Carbon;
 use URL;
 use JWTAuth;
@@ -103,8 +104,10 @@ class PostController extends Controller
         return response()->json($postShare,200);
     }
 
-    public function fetchPost(){
-        $lstPost = Post::orderBy('created_at','DESC')->limit(10)->get();
+    public function fetchPost(Request $request){
+        $userId = JWTAuth::toUser($request->token)->id;
+
+        $lstPost = Post::orderBy('created_at','DESC')->limit(20)->get();
         
         foreach($lstPost as $post){
             if($post->parent_post){
@@ -129,6 +132,9 @@ class PostController extends Controller
                             URL::to('media_file_post/'.$post->user->id.'/'.$post->user->avatar);
            $post->totalMediaFile = $post->mediafile->count();
            $post->totalComment = $post->comment->count();
+           $post->totalLike = $post->like->count();
+           $post->totalShare = Post::WHERE('parent_post',$post->id)->count();
+           $post->isLike = !empty(PostLike::WHERE('user_id',$userId)->WHERE('post_id',$post->id)->first());
            foreach($post->mediafile as $mediaFile){
                 $mediaFile->media_file_name = URL::to('media_file_post/'.$post->user->id.'/'.$mediaFile->media_file_name);
            }

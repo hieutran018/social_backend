@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
 use App\Models\CommentPost;
+use App\Models\PostLike;
 use App\Models\MediaFilePost;
 
 class Post extends Model
@@ -37,5 +38,9 @@ class Post extends Model
     public function comment()
     {
         return $this->hasMany(CommentPost::class,'post_id','id');
+    }
+    public function like()
+    {
+        return $this->hasMany(PostLike::class,'post_id','id');
     }
 }

@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\PostLikeController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\FriendShipController;
@@ -23,7 +24,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('fetch-post',[PostController::class,'fetchPost']);
+
 Route::POST('fetch-post-by-id',[PostController::class,'fetchPostById']);
 Route::post('fetch-comment-by-post',[CommentController::class,'fetchCommentByPost']);
 Route::post('profile-user',[UserController::class,'profileUser']);
@@ -40,6 +41,10 @@ Route::group(['middleware' => 'jwt.auth','prefix'=>'v1'],function(){
     Route::GET('/fetch-friends-suggestion',[FriendShipController::class,'fetchFriendSuggestion']);
     //* BÌNH LUẬN BÀI VIẾT
     Route::post('create-comment-post',[CommentController::class,'createCommentPost']);
+
+    //* DANH SÁCH BÀI VIẾT
+    Route::get('fetch-post',[PostController::class,'fetchPost']);
+    
     //* TẠO BÀI VIẾT
     Route::post('create-post',[PostController::class,'createPost']);
     //* CHIA SẺ BÀI VIẾT VỀ TRANG CÁ NHÂN
@@ -63,6 +68,9 @@ Route::group(['middleware' => 'jwt.auth','prefix'=>'v1'],function(){
     Route::post('upload-avatar',[UserController::class,'uploadAvatar']);
     //* CẬP NHẬT ẢNH BÌA
     Route::post('upload-cover-image',[UserController::class,'uploadCoverImage']);
+
+    //* THÍCH BÀI VIẾT
+    Route::get('post/like-post/{postId}',[PostLikeController::class,'like']);
 
 });
 
