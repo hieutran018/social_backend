@@ -111,7 +111,7 @@
     <!-- start preheader -->
     <div class="preheader"
       style="display: none; max-width: 0; max-height: 0; overflow: hidden; font-size: 1px; line-height: 1px; color: #fff; opacity: 0;">
-      A preheader is the short summary text that follows the subject line when an email is viewed in the inbox.
+      Thư gửi xác nhận yêu cầu đặt lại mật khẩu.
     </div>
     <!-- end preheader -->
 
@@ -201,7 +201,7 @@
                     <td align="center" bgcolor="#ffffff" style="padding: 12px;">
                       <table border="0" cellpadding="0" cellspacing="0">
                         <tr>
-                          <td align="center" bgcolor="#1a82e2" style="border-radius: 6px;">
+                          <td align="center" style="font-size:50px">
                             {{$reset->token}}
                           </td>
                         </tr>

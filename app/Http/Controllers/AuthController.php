@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\ForgotPassword;
+use App\Models\SocialAccount;
 use Illuminate\Support\Facades\Validator;
 use URL;
 use Mail;
@@ -22,7 +23,7 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login','register','verificationUser','forgotPassword','verificationForgotPassword']]);
+        $this->middleware('auth:api', ['except' => ['login','register','verificationUser','forgotPassword','verificationForgotPassword','loginWithGoogle']]);
     }
 
     /**
@@ -74,21 +75,30 @@ class AuthController extends Controller
 
     public function forgotPassword(Request $request){
         $email = $request->email;
-        $user = User::WHERE('email',$email)->first();
         
-        if(empty($user)){
-            return response()->json('Không tìm thấy tài khoản của Email này!',400);
+        $check = SocialAccount::WHERE('email',$email)->first();
+
+        if(empty($check)){
+            $user = User::WHERE('email',$email)->first();
+            if(empty($user)){
+                return response()->json(['error'=>'Không tìm thấy địa chỉ email này!'],404);
+            }else{
+                $reset = new ForgotPassword();
+                $reset->email = $email;
+                $reset->token = Str::upper(Str::random(8));
+                $reset->created_at = Carbon::now('Asia/Ho_Chi_Minh');
+                $reset->save();
+                Mail::send('forgot_password',compact('user','reset'),function($email) use($user,$reset){
+                $email->subject('Xác nhận đặt lại mật khẩu');
+                $email->to($user->email,'CKC Social network');
+                });
+                return response()->json('Mã xác nhận đã được gửi đến địa chỉ email của bạn!',201);
+            }
         }else{
-            $reset = new ForgotPassword();
-            $reset->email = $email;
-            $reset->token = Str::random(8);
-            $reset->created_at = Carbon::now('Asia/Ho_Chi_Minh');
-            $reset->save();
-            Mail::send('forgot_password',compact('user','reset'),function($email) use($user,$reset){
-            $email->subject('Xác nhận đặt lại mật khẩu');
-            $email->to($user->email,'CKC Social network');
-            });
+            return response()->json(['error'=>'Không tìm thấy tài khoản!'],404);
         }
+        
+
     }
     public function verificationForgotPassword(Request $request){
         $check = ForgotPassword::WHERE('token',$request->tokenReset)->first();
@@ -97,7 +107,7 @@ class AuthController extends Controller
             return response()->json('Không tìm thấy tài khoản của Email này!',400);
         }else{
             
-            $pass = Str::random(10);
+            $pass = Str::upper(Str::random(6));
             $updatePass = User::WHERE('email',$check->email)->first();
             
             $updatePass->password = bcrypt($pass);
@@ -146,6 +156,51 @@ class AuthController extends Controller
         }
 
         return response()->json(['error' => 'Unauthorized'], 401);
+    }
+
+    public function loginWithGoogle(Request $request){
+
+        $data = $request->all();
+        $check = SocialAccount::WHERE('email',$data['email'])->first();
+        if(empty($check)){
+            
+            $user = User::WHERE('email',$data['email'])->first();
+            if(empty($user)){
+                $new = new User();
+                $new->first_name = $data['firstName'];
+                $new->last_name = $data['lastName'];
+                $new->email = $data['email'];
+                $new->email_verified_at = Carbon::now('Asia/Ho_Chi_Minh');
+                $new->created_at = Carbon::now('Asia/Ho_Chi_Minh');
+                $new->isAdmin =0;
+                $new->save();
+
+                $cr = new SocialAccount();
+                $cr->provider = $data['provider'];
+                $cr->provider_id = $data['uid'];
+                $cr->email = $data['email'];
+                $cr->user_id = $new->id;
+                $cr->created_at = Carbon::now('Asia/Ho_Chi_Minh');
+                $cr->save();
+                if ($token = Auth::login($new)) {
+                    return $this->respondWithToken($token);
+                }else{
+                     return response()->json(['error' => 'Unauthorized'], 401);
+                }
+            }else{
+                return response()->json('Email này đã được đăng ký bởi một tài khoản khác!',402);
+            }
+            
+        }else{
+            $user = User::WHERE('email',$check->email)->first();
+            if ($token = Auth::login($user)) {
+                    return $this->respondWithToken($token);
+                }else{
+                     return response()->json(['error' => 'Unauthorized'], 401);
+                }
+        }
+        return response()->json(['error' => 'Unauthorized'], 401);
+
     }
 
     /**
