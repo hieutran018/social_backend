@@ -8,6 +8,7 @@ use App\Models\FriendShip; //TODO: SAU KHI CÓ DỮ LIỆU THAY BẰNG MODEL FRI
 use URL;
 use JWTAuth;
 use Carbon\Carbon;
+use DB;
 
 class FriendShipController extends Controller
 {
@@ -24,10 +25,39 @@ class FriendShipController extends Controller
         return response()->json($frs,200);
     }
 
-    public function fetchListFriendByUser(Request $request){
-        $userId = $request->userId;
+    public function fetchListFriendByUser($userId,$limit = null){
+        
+        if($limit != null){
+            $lstFriend = FriendShip::WHERE('status',1)->WHERE('user_accept',$userId)->orWhere('user_request',$userId)->orderBy('created_at','DESC')->limit(6)->get();
+            // $lstFriend = DB::table('list_friend')
+            //     ->select('*')
+            //     ->where('status','=','1')
+            //     ->Where(function($query){
+            //             $query->where('user_accept','=',$userId)
+            //             ->orWhere('user_request','=',$userId);
+            //     })->orderBy('created_at','DESC')->limit(6)->get();
 
-        $lstFriend = FriendShip::WHERE('status',1)->WHERE('user_accept',$userId)->orWhere('user_request',$userId)->get();
+        foreach($lstFriend as $fr){
+            if($fr->user_accept == $userId){
+                foreach($fr->user as $user){
+                $fr->friendId = $user->id;
+                $fr->username = $user->first_name.''.$user->last_name;
+                $fr->avatar = $user->avatar == null ? 
+                            URL::to('default/avatar_default_male.png'):
+                            URL::to('user/person/'.$user->id.'/'.$user->avatar);
+                }
+            }else{
+                foreach($fr->users as $users){
+                $fr->friendId = $users->id;
+                $fr->username = $users->first_name.''.$users->last_name;
+                $fr->avatar = $users->avatar == null ? 
+                            URL::to('default/avatar_default_male.png'):
+                            URL::to('media_file_post/'.$users->id.'/'.$users->avatar);
+                }
+            }   
+        }
+        }else{
+            $lstFriend = FriendShip::WHERE('status',1)->WHERE('user_accept',$userId)->orWhere('user_request',$userId)->orderBy('created_at','DESC')->get();
 
         foreach($lstFriend as $fr){
             if($fr->user_accept == $userId){
@@ -51,6 +81,8 @@ class FriendShipController extends Controller
             
             
         }
+        }
+        
         return response()->json($lstFriend,200);
     }
 

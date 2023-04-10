@@ -29,8 +29,7 @@ Route::POST('fetch-post-by-id',[PostController::class,'fetchPostById']);
 Route::post('fetch-comment-by-post',[CommentController::class,'fetchCommentByPost']);
 Route::post('profile-user',[UserController::class,'profileUser']);
 
-//* DANH SÁCH BẠN BÈ THEO ID NGƯỜI DÙNG
-    Route::post('fetch-friend-by-user-id',[FriendShipController::class,'fetchListFriendByUser']);
+
 
 
 
@@ -61,6 +60,9 @@ Route::group(['middleware' => 'jwt.auth','prefix'=>'v1'],function(){
 
     //* HỦY KẾT BẠN
     Route::post('unfriend',[FriendShipController::class,'unFriend']);
+
+    //* DANH SÁCH BẠN BÈ THEO ID NGƯỜI DÙNG
+    Route::get('fetch-friend-by-user-id/{userId}/{limit?}',[FriendShipController::class,'fetchListFriendByUser']);
 
     //*DANH SÁCH HÌNH ẢNH ĐÃ ĐĂNG TẢI
     Route::get('fetch-image-uploaded/userId={userId}/{limit?}',[MediaFileController::class,'photoByUploaded']);
