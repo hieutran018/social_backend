@@ -147,4 +147,14 @@ class FriendShipController extends Controller
 
         return response()->json('success',200);
     }
+
+    public function cancelAddFriend(Request $request){
+        $userIdUnfr = JWTAuth::toUser($request->token)->id;
+        $search1 = FriendShip::WHERE('user_request',$userIdUnfr)->WHERE('user_accept',$request->userId)->first();
+       
+        if($search1){
+            $search1->delete();
+        }
+        return response()->json('success',200);
+    }
 }

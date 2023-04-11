@@ -8,6 +8,7 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\FriendShipController;
 use App\Http\Controllers\MediaFileController;
+use App\Http\Controllers\AlbumController;
 
 /*
 |--------------------------------------------------------------------------
@@ -61,6 +62,8 @@ Route::group(['middleware' => 'jwt.auth','prefix'=>'v1'],function(){
     //* HỦY KẾT BẠN
     Route::post('unfriend',[FriendShipController::class,'unFriend']);
 
+    //* HOÀN TÁC YÊU CẦU KẾT BẠN
+    Route::post('cancle-add-friend',[FriendShipController::class,'cancelAddFriend']);
     //* DANH SÁCH BẠN BÈ THEO ID NGƯỜI DÙNG
     Route::get('fetch-friend-by-user-id/{userId}/{limit?}',[FriendShipController::class,'fetchListFriendByUser']);
 
@@ -73,6 +76,9 @@ Route::group(['middleware' => 'jwt.auth','prefix'=>'v1'],function(){
 
     //* THÍCH BÀI VIẾT
     Route::get('post/like-post/{postId}',[PostLikeController::class,'like']);
+
+    //*  DANH SÁCH ALBUM ẢNH NGƯỜI DÙNG
+    Route::get('fetch-album-by-userid/userId={userId}',[AlbumController::class,'fetcAlbumByIdUser']);
 
 });
 

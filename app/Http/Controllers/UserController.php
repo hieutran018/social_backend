@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Post;
 use App\Models\MediaFilePost;
+use App\Models\Album;
 use JWTAuth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -69,10 +70,7 @@ class UserController extends Controller
         return response()->json($user,200);
 
     }
-    //TODO: CẬP NHẬT ẢNH ĐẠI DIỆN
-    public function updateAvatarUser(){
-        
-    }
+
 
     public function fetchlistImageUploaded($userId){
         $lst = DB::table('media_file_posts')
@@ -112,16 +110,37 @@ class UserController extends Controller
         $crPost->status = 1;
         $crPost->save();
 
-        $upload = new MediaFilePost();
-        $upload->media_file_name = $fileName;
-        $upload->media_type = $fileExtentsion;
-        $upload->post_id = $crPost->id;
-        $upload->user_id = $userId;
-        $upload->isAvatar = 1;
-        $upload->status =1;
-        $upload->created_at = Carbon::now('Asia/Ho_Chi_Minh');
-        $upload->save();
-        
+        $checkAlbum = MediaFilePost::WHERE('user_id',$userId)->WHERE('isAvatar',1)->first();
+        if(!empty($checkAlbum)){
+            $upload = new MediaFilePost();
+            $upload->media_file_name = $fileName;
+            $upload->media_type = $fileExtentsion;
+            $upload->post_id = $crPost->id;
+            $upload->user_id = $userId;
+            $upload->isAvatar = 1;
+            $upload->status =1;
+            $upload->album_id = $checkAlbum->album_id;
+            $upload->created_at = Carbon::now('Asia/Ho_Chi_Minh');
+            $upload->save();
+        }else{
+            $newAlbum = new Album();
+            $newAlbum->album_name = 'Ảnh đại diện';
+            $newAlbum->user_id = $userId;
+            $newAlbum->privacy = 1;
+            $newAlbum->created_at = Carbon::now('Asia/Ho_Chi_Minh');
+            $newAlbum->save();
+
+            $upload = new MediaFilePost();
+            $upload->media_file_name = $fileName;
+            $upload->media_type = $fileExtentsion;
+            $upload->post_id = $crPost->id;
+            $upload->user_id = $userId;
+            $upload->isAvatar = 1;
+            $upload->status =1;
+            $upload->album_id = $newAlbum->id;
+            $upload->created_at = Carbon::now('Asia/Ho_Chi_Minh');
+            $upload->save();
+        }
 
         $update->username = $update->first_name.' '.$update->last_name;
         $update->avatar = $update->avatar == null ? 
@@ -160,15 +179,38 @@ class UserController extends Controller
         $crPost->status = 1;
         $crPost->save();
 
-        $upload = new MediaFilePost();
-        $upload->media_file_name = $fileName;
-        $upload->media_type = $fileExtentsion;
-        $upload->post_id = $crPost->id;
-        $upload->user_id = $userId;
-        $upload->isCover = 1;
-        $upload->status =1;
-        $upload->created_at = Carbon::now('Asia/Ho_Chi_Minh');
-        $upload->save();
+        $checkAlbum = MediaFilePost::WHERE('user_id',$userId)->WHERE('isCover',1)->first();
+        if(!empty($checkAlbum)){
+            $upload = new MediaFilePost();
+            $upload->media_file_name = $fileName;
+            $upload->media_type = $fileExtentsion;
+            $upload->post_id = $crPost->id;
+            $upload->user_id = $userId;
+            $upload->isCover = 1;
+            $upload->status =1;
+            $upload->album_id = $checkAlbum->album_id;
+            $upload->created_at = Carbon::now('Asia/Ho_Chi_Minh');
+            $upload->save();
+        }else{
+            $newAlbum = new Album();
+            $newAlbum->album_name = 'Ảnh bìa';
+            $newAlbum->user_id = $userId;
+            $newAlbum->privacy = 1;
+            $newAlbum->created_at = Carbon::now('Asia/Ho_Chi_Minh');
+            $newAlbum->save();
+
+            $upload = new MediaFilePost();
+            $upload->media_file_name = $fileName;
+            $upload->media_type = $fileExtentsion;
+            $upload->post_id = $crPost->id;
+            $upload->user_id = $userId;
+            $upload->isCover = 1;
+            $upload->status =1;
+            $upload->album_id = $newAlbum->id;
+            $upload->created_at = Carbon::now('Asia/Ho_Chi_Minh');
+            $upload->save();
+        }
+        
         
 
         $update->username = $update->first_name.' '.$update->last_name;
