@@ -80,6 +80,11 @@ Route::group(['middleware' => 'jwt.auth','prefix'=>'v1'],function(){
     //*  DANH SÁCH ALBUM ẢNH NGƯỜI DÙNG
     Route::get('fetch-album-by-userid/userId={userId}',[AlbumController::class,'fetcAlbumByIdUser']);
 
+    //* TẠO ALBUM ẢNH
+    Route::post('create-album',[AlbumController::class,'createAlbum']);
+    //* XEM CHI TIẾT ALBUM
+    Route::get('fetch-image-album/{albumId}',[AlbumController::class,'fetchImageByAlbumId']);
+
 });
 
 
