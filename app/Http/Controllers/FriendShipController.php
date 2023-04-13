@@ -44,7 +44,7 @@ class FriendShipController extends Controller
                 $fr->username = $user->first_name.''.$user->last_name;
                 $fr->avatar = $user->avatar == null ? 
                             URL::to('default/avatar_default_male.png'):
-                            URL::to('user/person/'.$user->id.'/'.$user->avatar);
+                            URL::to('media_file_post/'.$user->id.'/'.$user->avatar);
                 }
             }else{
                 foreach($fr->users as $users){
@@ -66,7 +66,7 @@ class FriendShipController extends Controller
                 $fr->username = $user->first_name.''.$user->last_name;
                 $fr->avatar = $user->avatar == null ? 
                             URL::to('default/avatar_default_male.png'):
-                            URL::to('user/person/'.$user->id.'/'.$user->avatar);
+                            URL::to('media_file_post/'.$user->id.'/'.$user->avatar);
                 }
             }else{
                 foreach($fr->users as $users){

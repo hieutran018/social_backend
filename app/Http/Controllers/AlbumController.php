@@ -78,8 +78,6 @@ class AlbumController extends Controller
             return response()->json('Không tìm thấy album yêu cầu!',404);
         }
         else{
-            
-        
             foreach ($isAlbum->mediaFiles as $image){
                 $image->media_file_name = URL::to('media_file_post/'.$image->user_id.'/'.$image->media_file_name);
             }
@@ -139,4 +137,28 @@ class AlbumController extends Controller
         }
 
     }
+
+    public function deleteAlbum(Request $request){
+        $userId = JWTAuth::toUser($request->token)->id;
+        $albumId = $request->albumId;
+        $isAlbum = Album::WHERE('id',$albumId)->first();
+        if(empty($isAlbum)){
+            return response()->json('Không tìm thấy album yêu cầu!',404);
+        }
+        else{
+            $files = MediaFilePost::WHERE('album_id',$isAlbum->id)->get();
+           
+            foreach($files as $file){
+                $post = Post::WHERE('id',$file->post_id)->first();
+                if(!empty($post)){
+                    $post->delete();
+                    $file->delete();
+                }
+            }
+            $isAlbum->delete();
+            return response()->json('Xóa thành công!',200);
+        }
+        
+    }
+
 }

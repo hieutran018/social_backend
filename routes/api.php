@@ -89,6 +89,8 @@ Route::group(['middleware' => 'jwt.auth','prefix'=>'v1'],function(){
     Route::get('fetch-image-album/{userId}/{albumId}',[AlbumController::class,'fetchImageByAlbumId']);
     //* CẬP NHẬT CHI TIẾT ALBUM
     Route::post('edit-album',[AlbumController::class,'editAlbum']);
+    //* XÓA ALBUM
+    Route::post('delete-album',[AlbumController::class,'deleteAlbum']);
 
 });
 
