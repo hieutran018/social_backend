@@ -42,6 +42,9 @@ Route::group(['middleware' => 'jwt.auth','prefix'=>'v1'],function(){
     //* BÌNH LUẬN BÀI VIẾT
     Route::post('create-comment-post',[CommentController::class,'createCommentPost']);
 
+    //*PHẢN HỒI BÌNH LUẬN
+    Route::post('reply-comment',[CommentController::class,'commentReply']);
+
     //* DANH SÁCH BÀI VIẾT
     Route::get('fetch-post',[PostController::class,'fetchPost']);
     
@@ -83,7 +86,9 @@ Route::group(['middleware' => 'jwt.auth','prefix'=>'v1'],function(){
     //* TẠO ALBUM ẢNH
     Route::post('create-album',[AlbumController::class,'createAlbum']);
     //* XEM CHI TIẾT ALBUM
-    Route::get('fetch-image-album/{albumId}',[AlbumController::class,'fetchImageByAlbumId']);
+    Route::get('fetch-image-album/{userId}/{albumId}',[AlbumController::class,'fetchImageByAlbumId']);
+    //* CẬP NHẬT CHI TIẾT ALBUM
+    Route::post('edit-album',[AlbumController::class,'editAlbum']);
 
 });
 

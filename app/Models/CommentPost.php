@@ -18,9 +18,13 @@ class CommentPost extends Model
 
     public $timestamps = false;
 
-     public function user()
+    public function user()
     {
         return $this->hasOne(User::class,'id','user_id');
+    }
+    public function replies()
+    {
+        return $this->hasMany(CommentPost::class,'parent_comment','id');
     }
     protected $hidden = [
         'user',

@@ -12,10 +12,7 @@ class Album extends Model
     protected $fillable = ['album_name','user_id','privacy'];
     protected $table = 'albums';
     public $timestamps = false;
-    protected $hidden = [
-        'mediaFiles',
-       
-    ];
+    
 
     public function mediaFiles()
     {
