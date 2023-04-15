@@ -9,6 +9,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\FriendShipController;
 use App\Http\Controllers\MediaFileController;
 use App\Http\Controllers\AlbumController;
+use App\Http\Controllers\GroupController;
 
 /*
 |--------------------------------------------------------------------------
@@ -91,7 +92,10 @@ Route::group(['middleware' => 'jwt.auth','prefix'=>'v1'],function(){
     Route::post('edit-album',[AlbumController::class,'editAlbum']);
     //* XÓA ALBUM
     Route::post('delete-album',[AlbumController::class,'deleteAlbum']);
-
+    //* TẠP NHÓM MỚI
+    Route::post('create-group',[GroupController::class,'createGroup']);
+    //*DANH SÁCH CÁC GROUP ĐÃ THAM GIA->TÍNH LUÔN CẢ GROUP ĐÃ TẠO
+    Route::get('fetch-group-joined',[GroupController::class,'fetchGroupJoined']);
 });
 
 
