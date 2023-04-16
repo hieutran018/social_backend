@@ -20,4 +20,11 @@ class MediaFilePost extends Model
     public $timestamps = false;
 
     protected $table = 'media_file_posts';
+    protected $hidden = [
+        'user'
+    ];
+    public function user()
+    {
+        return $this->hasOne(User::class,'id','user_id');
+    }
 }

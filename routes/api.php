@@ -96,6 +96,8 @@ Route::group(['middleware' => 'jwt.auth','prefix'=>'v1'],function(){
     Route::post('create-group',[GroupController::class,'createGroup']);
     //*DANH SÁCH CÁC GROUP ĐÃ THAM GIA->TÍNH LUÔN CẢ GROUP ĐÃ TẠO
     Route::get('fetch-group-joined',[GroupController::class,'fetchGroupJoined']);
+    //* DANH SÁCH TIN TỨC VIDEO
+    Route::get('fetch-reels-video',[MediaFileController::class,'fetchMediaFileVieo']);
 });
 
 
