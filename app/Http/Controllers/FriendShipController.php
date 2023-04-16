@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User; 
 use App\Models\FriendShip; //TODO: SAU KHI CÓ DỮ LIỆU THAY BẰNG MODEL FRIENDSHIP
+use App\Models\MemberGroup;
 use URL;
 use JWTAuth;
 use Carbon\Carbon;
@@ -156,5 +157,44 @@ class FriendShipController extends Controller
             $search1->delete();
         }
         return response()->json('success',200);
+    }
+
+    public function fetchFriendToInviteGroup(Request $request,$groupId){
+        $userId = JWTAuth::toUser($request->token)->id;
+        $lstMember = MemberGroup::WHERE('group_id',$groupId)->get();
+        foreach ($lstMember as $member) {
+                $data[] = $member->user_id;
+            }  
+        $lstFriend = FriendShip::
+                select('*')
+                ->where('status',1)
+                ->Where(function($query)use ($userId){
+                        $query->where('user_request',$userId)
+                        ->orWhere('user_accept',$userId);
+                })->Where(function($query)use ($data){
+                        $query->whereNotIn('user_request',$data)
+                        ->orWhereNotIn('user_accept',$data);
+                })->get();
+        
+        foreach($lstFriend as $fr){
+            if($fr->user_accept == $userId){
+                foreach($fr->user as $user){
+                $fr->friendId = $user->id;
+                $fr->username = $user->first_name.''.$user->last_name;
+                $fr->avatar = $user->avatar == null ? 
+                            URL::to('default/avatar_default_male.png'):
+                            URL::to('media_file_post/'.$user->id.'/'.$user->avatar);
+                }
+            }else{
+                foreach($fr->users as $users){
+                $fr->friendId = $users->id;
+                $fr->username = $users->first_name.''.$users->last_name;
+                $fr->avatar = $users->avatar == null ? 
+                            URL::to('default/avatar_default_male.png'):
+                            URL::to('media_file_post/'.$users->id.'/'.$users->avatar);
+                }
+            }   
+        }
+        return response()->json($lstFriend,200);
     }
 }

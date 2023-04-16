@@ -96,8 +96,17 @@ Route::group(['middleware' => 'jwt.auth','prefix'=>'v1'],function(){
     Route::post('create-group',[GroupController::class,'createGroup']);
     //*DANH SÁCH CÁC GROUP ĐÃ THAM GIA->TÍNH LUÔN CẢ GROUP ĐÃ TẠO
     Route::get('fetch-group-joined',[GroupController::class,'fetchGroupJoined']);
+    //*XEM CHI TIẾT VỀ NHÓM
+    Route::get('fetch-group-by-id/{groupId}',[GroupController::class,'fetchGroupById']);
     //* DANH SÁCH TIN TỨC VIDEO
     Route::get('fetch-reels-video',[MediaFileController::class,'fetchMediaFileVieo']);
+
+    //* DANH SÁCH BẠN BÈ CHƯA THAM GIA NHÓM
+    Route::get('fetch-friend-to-invite-group/{groupId}',[FriendShipController::class,'fetchFriendToInviteGroup']);
+    //* GỬI LỜI MỜI BẠN BÈ THAM GIA NHÓM
+    Route::post('send-invite-to-group',[GroupController::class,'sendInviteFriendToGroup']);
+    //* CẬP NHẬT CÁC THÔNG TIN CỦA NHÓM
+    Route::post('edit-information-group',[GroupController::class,'editGroupByAdmin']);
 });
 
 

@@ -17,6 +17,9 @@ class FriendShip extends Model
         'use_accept',
         'status'
     ];
+    protected $hidden = [
+        'users'
+    ];
 
     public function user(){
         return $this->hasMany(User::class,'id','user_request');
