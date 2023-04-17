@@ -105,8 +105,16 @@ Route::group(['middleware' => 'jwt.auth','prefix'=>'v1'],function(){
     Route::get('fetch-friend-to-invite-group/{groupId}',[FriendShipController::class,'fetchFriendToInviteGroup']);
     //* GỬI LỜI MỜI BẠN BÈ THAM GIA NHÓM
     Route::post('send-invite-to-group',[GroupController::class,'sendInviteFriendToGroup']);
+    //* HOÀN TÁC LỜI MỜI THAM GIA NHÓM
+    Route::post('cancel-invite-to-group',[GroupController::class,'cancelSendInvite']);
+    //* DANH SÁCH CÁC NHÓM ĐƯỢC MỜI THAM GIA
+    Route::get('fetch-invite-to-group',[GroupController::class,'fetchInviteToGroup']);
+    //* CHẤP NHẬN LỜI MỜI THAM GIA NHÓM
+    Route::post('accept-invite-to-group',[GroupController::class,'acceptInviteGroup']);
     //* CẬP NHẬT CÁC THÔNG TIN CỦA NHÓM
     Route::post('edit-information-group',[GroupController::class,'editGroupByAdmin']);
+    //* DANH SÁCH BÀI VIẾT CỦA NHÓM
+    Route::get('fetch-post-by-group-id/{groupId}',[PostController::class,'fetchPostByGroupId']);
 });
 
 

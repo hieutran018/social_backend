@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Group;
 use App\Models\MemberGroup;
+use App\Models\Post;
 use URL;
 use Carbon\Carbon;
 use JWTAuth;
@@ -27,7 +28,18 @@ class GroupController extends Controller
         $adminGroup->group_id = $newGroup->id;
         $adminGroup->isAdminGroup = 1;
         $adminGroup->created_at = Carbon::now('Asia/Ho_Chi_Minh');
+        $adminGroup->status = 1;
         $adminGroup->save();
+
+        $post = new Post();
+        $post->user_id = $userId;
+        $post->post_content = 'Đã tạo nhóm.';
+        $post->privacy = $request->privacy;
+        $post->parent_post = null;
+        $post->group_id = $newGroup->id;
+        $post->created_at = Carbon::now('Asia/Ho_Chi_Minh');
+        $post->status = 1;
+        $post->save();
         return response()->json('success',200);
 
     }
@@ -72,6 +84,42 @@ class GroupController extends Controller
         
     }
 
+    public function cancelSendInvite(Request $request){
+        $cancel = MemberGroup::WHERE('user_id',$request->userId)->WHERE('group_id',$request->groupId)->first();
+        if(empty($cancel)){
+            return response()->json('Yêu cầu không hợp lệ!',404);
+        }else{
+            $cancel->delete();
+            return response()->json('Hoàn tác thành công!',200);
+        }
+    }
+
+    public function acceptInviteGroup(Request $request){
+        $userId = JWTAuth::toUser($request->token)->id;
+        $accept = MemberGroup::WHERE('user_id',$userId)->WHERE('group_id',$request->groupId)->WHERE('status',2)->first();
+        if(empty($accept)){
+            return response()->json('Có lỗi xảy ra',400);
+        }else{
+            $accept->status = 1;
+            $accept->update();
+            return response()->json('Bạn đã chấp nhận lời mời nhóm!',200);
+        }
+    }
+
+    public function fetchInviteToGroup(Request $request){  
+        $userId = JWTAuth::toUser($request->token)->id;
+
+        $listGroup = MemberGroup::WHERE('user_id',$userId)->WHERE('status',2)->get();
+        foreach($listGroup as $gr){
+            $gr->groupId = $gr->group->id;
+            $gr->groupName = $gr->group->group_name;
+            $gr->avatarGroup = $gr->group->avatar === null ? URL::to('default/avatar_group_default.jpg') : 
+                URL::to('media_file_post/'.$gr->group->avatar);
+        }
+        return response()->json($listGroup,200);
+
+    }
+
     public function editGroupByAdmin(Request $request){
         $userId = JWTAuth::toUser($request->token)->id;
 
@@ -89,4 +137,5 @@ class GroupController extends Controller
             return response()->json('Yêu cầu không hợp lệ!',400);
         }
     }
+
 }

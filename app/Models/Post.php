@@ -25,13 +25,18 @@ class Post extends Model
     {
         return $this->hasOne(User::class,'id','user_id');
     }
+    public function group()
+    {
+        return $this->hasOne(Group::class,'id','group_id');
+    }
     public function mediafile()
     {
         return $this->hasMany(MediaFilePost::class,'post_id','id');
     }
     protected $hidden = [
         'user',
-        'comment'
+        'comment',
+        'group'
        
     ];
 

@@ -16,5 +16,11 @@ class MemberGroup extends Model
     ];
     protected $table = 'member_group';
     public $timestamps = false;
-    
+    protected $hidden = [
+        'group'
+    ];
+    public function group()
+    {
+        return $this->hasOne(Group::class,'id','group_id');
+    }
 }

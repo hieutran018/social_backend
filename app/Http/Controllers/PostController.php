@@ -121,9 +121,18 @@ class PostController extends Controller
                 $post->parent_post->totalComment = $post->parent_post->comment->count();
                 foreach($post->parent_post->mediafile as $mediaFile){
                         $mediaFile->media_file_name = URL::to('media_file_post/'.$post->parent_post->user->id.'/'.$mediaFile->media_file_name);
+                    if($post->parent_post->group_id != null){
+                        $post->parent_post->groupName = $post->parent_post->group->group_name;
+                        $post->parent_post->groupAvatar = $post->parent_post->group->avatar === null ? URL::to('default/avatar_group_default.jpg') : 
+                                            URL::to('media_file_post/'.$post->parent_post->group->avatar);
+                    }
                 }
             }
-            
+            if($post->group_id != null){
+                $post->groupName = $post->group->group_name;
+                $post->groupAvatar = $post->group->avatar === null ? URL::to('default/avatar_group_default.jpg') : 
+                                    URL::to('media_file_post/'.$post->group->avatar);
+            }
            $post->username = $post->user->first_name. ' ' . $post->user->last_name;
 
            $post->created_at = Carbon::parse($post->created_at)->format('Y/m/d H:m:s');
@@ -157,7 +166,26 @@ class PostController extends Controller
         return response()->json($post,200);
     }
 
-    public function getPostById(){
-        
+    public function fetchPostByGroupId(Request $request,$groupId){
+        $userId = JWTAuth::toUser($request->token)->id;
+        $lst = Post::WHERE('group_id',$groupId)->get();
+        foreach($lst as $post){
+            $post->username = $post->user->first_name.' '.$post->user->last_name;
+            $post->avataruser = $post->user->avatar == null ? 
+                            ($post->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')):
+                            URL::to('media_file_post/'.$post->user->id.'/'.$post->user->avatar);
+            $post->groupName = $post->group->group_name;
+            $post->groupAvatar = $post->group->avatar === null ? URL::to('default/avatar_group_default.jpg') : 
+                URL::to('media_file_post/'.$post->group->avatar);
+            $post->totalMediaFile = $post->mediafile->count();
+            $post->totalComment = $post->comment->count();
+            $post->totalLike = $post->like->count();
+            $post->totalShare = Post::WHERE('parent_post',$post->id)->count();
+            $post->isLike = !empty(PostLike::WHERE('user_id',$userId)->WHERE('post_id',$post->id)->first());
+            foreach($post->mediafile as $mediaFile){
+                    $mediaFile->media_file_name = URL::to('media_file_post/'.$post->user->id.'/'.$mediaFile->media_file_name);
+            }
+        }
+        return response()->json($lst,200);
     }
 }
