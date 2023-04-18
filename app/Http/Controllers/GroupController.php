@@ -40,7 +40,9 @@ class GroupController extends Controller
         $post->created_at = Carbon::now('Asia/Ho_Chi_Minh');
         $post->status = 1;
         $post->save();
-        return response()->json('success',200);
+
+        $newGroup->avatar = URL::to('default/avatar_group_default.jpg');
+        return response()->json($newGroup,200);
 
     }
 
