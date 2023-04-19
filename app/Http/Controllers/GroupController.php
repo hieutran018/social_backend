@@ -67,6 +67,8 @@ class GroupController extends Controller
             return response()->json('Không tìm thấy group yêu cầu!',404);
         }
         else{
+            $idAdmin = MemberGroup::WHERE('group_id',$group->id)->WHERE('isAdminGroup',1)->first();
+            $group->isAdminGroup = $idAdmin->id;
             $group->avatar = $group->avatar === null ? URL::to('default/avatar_group_default.jpg') : 
                 URL::to('media_file_post/'.$group->avatar);
                 return response()->json($group,200);
@@ -145,7 +147,7 @@ class GroupController extends Controller
         if(empty($isGroup)){
             return response()->json('Không tìm thấy nhóm yêu cầu!',404);
         }else{
-            $members = MemberGroup::WHERE('group_id',$isGroup->id)->get();
+            $members = MemberGroup::WHERE('group_id',$isGroup->id)->WHERE('status',1)->get();
             foreach($members as $member){
                 $member->username = $member->user->first_name.' '.$member->user->last_name;
                 $member->avatar = $member->user->avatar == null ? 
