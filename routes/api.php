@@ -115,6 +115,8 @@ Route::group(['middleware' => 'jwt.auth','prefix'=>'v1'],function(){
     Route::post('edit-information-group',[GroupController::class,'editGroupByAdmin']);
     //* DANH SÁCH BÀI VIẾT CỦA NHÓM
     Route::get('fetch-post-by-group-id/{groupId}',[PostController::class,'fetchPostByGroupId']);
+    //* DANH SACH THÀNH VIÊN TRONG NHÓM
+    Route::get('fetch-member-group/{groupId}',[GroupController::class,'fetchMemberGroup']);
 });
 
 

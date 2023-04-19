@@ -17,6 +17,7 @@ class Post extends Model
         'user_id',
         'privacy',
         'parent_post',
+        'group_id',
         'status'
     ];
     public $timestamps = false;

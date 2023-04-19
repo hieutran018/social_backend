@@ -140,4 +140,21 @@ class GroupController extends Controller
         }
     }
 
+    public function fetchMemberGroup($groupId){
+        $isGroup = Group::WHERE('id',$groupId)->first();
+        if(empty($isGroup)){
+            return response()->json('Không tìm thấy nhóm yêu cầu!',404);
+        }else{
+            $members = MemberGroup::WHERE('group_id',$isGroup->id)->get();
+            foreach($members as $member){
+                $member->username = $member->user->first_name.' '.$member->user->last_name;
+                $member->avatar = $member->user->avatar == null ? 
+                            ($member->user->sex === 0 ? URL::to('default/avatar_default_female.png') :URL::to('default/avatar_default_male.png'))
+                            :
+                            URL::to('media_file_post/'.$member->user->id.'/'.$member->user->avatar);
+            }
+            return response()->json($members,200);
+        }
+    }
+
 }
