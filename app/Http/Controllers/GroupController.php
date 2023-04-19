@@ -60,15 +60,16 @@ class GroupController extends Controller
         return response()->json($lstGroup,200);
     }
 
-    public function fetchGroupById($groupId){
+    public function fetchGroupById(Request $request,$groupId){
+        $userId = JWTAuth::toUser($request->token)->id;
         $group = Group::WHERE('id',$groupId)->first();
 
         if(empty($group)){
             return response()->json('Không tìm thấy group yêu cầu!',404);
         }
         else{
-            $idAdmin = MemberGroup::WHERE('group_id',$group->id)->WHERE('isAdminGroup',1)->first();
-            $group->isAdminGroup = $idAdmin->id;
+            $idAdmin = MemberGroup::WHERE('user_id',$userId)->WHERE('group_id',$group->id)->WHERE('isAdminGroup',1)->first();
+            $group->isAdminGroup = !empty($idAdmin);
             $group->avatar = $group->avatar === null ? URL::to('default/avatar_group_default.jpg') : 
                 URL::to('media_file_post/'.$group->avatar);
                 return response()->json($group,200);
@@ -156,6 +157,26 @@ class GroupController extends Controller
                             URL::to('media_file_post/'.$member->user->id.'/'.$member->user->avatar);
             }
             return response()->json($members,200);
+        }
+    }
+
+    public function addMemberToAdmin(Request $request){
+        $currentAdmin = JWTAuth::toUser($request->token)->id;
+
+        $isGroup = Group::WHERE('id',$request->groupId)->first();
+        if(empty($isGroup)){
+            return response()->json('Yêu cầu không hợp lệ',400);
+        }
+        else{
+            $isAdmin = MemberGroup::WHERE('user_id',$currentAdmin)->WHERE('group_id',$isGroup->id)->first();
+            if(empty($isAdmin)){
+                return response()->json('Yêu cầu không hợp lệ',400);
+            }else{
+                $update = MemberGroup::WHERE('user_id',$request->userId)->WHERE('group_id',$isGroup->id)->first();
+                $update->isAdminGroup = 1;
+                $update->update();
+                return response()->json('success',200);
+            }
         }
     }
 
