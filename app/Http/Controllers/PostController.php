@@ -22,6 +22,7 @@ class PostController extends Controller
         $crPost->post_content = $request->postContent;
         $crPost->privacy = $request->privacy;
         $crPost->parent_post = null;
+        $crPost->group_id = $request->groupId;
         $crPost->created_at = Carbon::now('Asia/Ho_Chi_Minh');
         $crPost->status = 1;
         $crPost->save();
@@ -38,6 +39,7 @@ class PostController extends Controller
                 $media->media_file_name = $fileName;
                 $media->media_type = $fileExtentsion;
                 $media->post_id = $crPost->id;
+                // $media->group_id = $request->groupId;
                 $media->user_id = JWTAuth::toUser($request->token)->id;
                 $media->created_at = Carbon::now('Asia/Ho_Chi_Minh');
                 $media->status = 1;

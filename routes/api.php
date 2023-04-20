@@ -10,6 +10,7 @@ use App\Http\Controllers\FriendShipController;
 use App\Http\Controllers\MediaFileController;
 use App\Http\Controllers\AlbumController;
 use App\Http\Controllers\GroupController;
+use App\Http\Controllers\SearchController;
 
 /*
 |--------------------------------------------------------------------------
@@ -121,8 +122,10 @@ Route::group(['middleware' => 'jwt.auth','prefix'=>'v1'],function(){
     Route::post('add-admin-group',[GroupController::class,'addMemberToAdmin']);
     //* XÓA QUYỀN QUẢN TRỊ VIÊN TRONG GROUP
     Route::post('remove-admin-to-group',[GroupController::class,'removeAdminToGroup']);
-    //! TEST
+    //* DANH SÁCH BÀI VIẾT TẤT CẢ CÁC NHÓM
     Route::get('fetch-post-group',[PostController::class,'fetchPostGroup']);
+    //* TÌM KIẾM NGƯỜI DÙNG VÀ NHÓM
+    Route::get('search-users-and-groups/{input?}',[SearchController::class,'searchData']);
 });
 
 
