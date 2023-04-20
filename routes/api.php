@@ -119,6 +119,10 @@ Route::group(['middleware' => 'jwt.auth','prefix'=>'v1'],function(){
     Route::get('fetch-member-group/{groupId}',[GroupController::class,'fetchMemberGroup']);
     //* THÊM QUẢN TRỊ VIÊN CHO NHÓM
     Route::post('add-admin-group',[GroupController::class,'addMemberToAdmin']);
+    //* XÓA QUYỀN QUẢN TRỊ VIÊN TRONG GROUP
+    Route::post('remove-admin-to-group',[GroupController::class,'removeAdminToGroup']);
+    //! TEST
+    Route::get('fetch-post-group',[PostController::class,'fetchPostGroup']);
 });
 
 

@@ -10,6 +10,7 @@ use App\Models\Post;
 use URL;
 use Carbon\Carbon;
 use JWTAuth;
+use Illuminate\Support\Str;
 
 class GroupController extends Controller
 {
@@ -134,10 +135,20 @@ class GroupController extends Controller
             $edit = Group::WHERE('id',$request->groupId)->first();
             $edit->group_name = $request->groupName === null ? $edit->group_name : $request->groupName;
             $edit->privacy = $request->privacy === null ? $edit->privacy : $request->privacy;
+
+            if($request->hasFile('file')){
+                $file = $request->file;
+                $fileExtentsion = $file->getClientOriginalExtension();
+                $random = Str::random(10);
+                $fileName = time().$random.'.'.$fileExtentsion;
+                $file->move('media_file_post', $fileName);
+                $edit->avatar= $fileName;
+            }
+
             $edit->update();
             $edit->avatar = $edit->avatar === null ? URL::to('default/avatar_group_default.jpg') : 
-                URL::to('media_file_post/'.$edit->avatar);
-                return response()->json($edit,200);
+                            URL::to('media_file_post/'.$edit->avatar);
+            return response()->json($edit,200);
         }else{
             return response()->json('Yêu cầu không hợp lệ!',400);
         }
@@ -174,6 +185,26 @@ class GroupController extends Controller
             }else{
                 $update = MemberGroup::WHERE('user_id',$request->userId)->WHERE('group_id',$isGroup->id)->first();
                 $update->isAdminGroup = 1;
+                $update->update();
+                return response()->json('success',200);
+            }
+        }
+    }
+
+    public function removeAdminToGroup(Request $request){
+        $currentAdmin = JWTAuth::toUser($request->token)->id;
+
+        $isGroup = Group::WHERE('id',$request->groupId)->first();
+        if(empty($isGroup)){
+            return response()->json('Yêu cầu không hợp lệ',400);
+        }
+        else{
+            $isAdmin = MemberGroup::WHERE('user_id',$currentAdmin)->WHERE('group_id',$isGroup->id)->first();
+            if(empty($isAdmin)){
+                return response()->json('Yêu cầu không hợp lệ',400);
+            }else{
+                $update = MemberGroup::WHERE('user_id',$request->userId)->WHERE('group_id',$isGroup->id)->first();
+                $update->isAdminGroup = 0;
                 $update->update();
                 return response()->json('success',200);
             }

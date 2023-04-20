@@ -7,6 +7,7 @@ use App\Models\Post;
 use App\Models\CommentPost;
 use App\Models\MediaFilePost;
 use App\Models\PostLike;
+use App\Models\MemberGroup;
 use Carbon\Carbon;
 use URL;
 use JWTAuth;
@@ -187,5 +188,38 @@ class PostController extends Controller
             }
         }
         return response()->json($lst,200);
+    }
+
+    public function fetchPostGroup(Request $request){
+        $userId = JWTAuth::toUser($request->token)->id;
+        $isJoined = MemberGroup::WHERE('user_id',$userId)->WHERE('status',1)->get();
+        foreach($isJoined as $group){
+            $data[] = $group->group_id; 
+        }
+        
+        $posts = Post::
+                select('*')
+                ->where('status',1)
+                ->Where(function($query)use($data){
+                        $query->WhereIn('group_id',$data);
+                })->get();
+        foreach($posts as $post){
+            $post->username = $post->user->first_name.' '.$post->user->last_name;
+            $post->avataruser = $post->user->avatar == null ? 
+                            ($post->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')):
+                            URL::to('media_file_post/'.$post->user->id.'/'.$post->user->avatar);
+            $post->groupName = $post->group->group_name;
+            $post->groupAvatar = $post->group->avatar === null ? URL::to('default/avatar_group_default.jpg') : 
+                URL::to('media_file_post/'.$post->group->avatar);
+            $post->totalMediaFile = $post->mediafile->count();
+            $post->totalComment = $post->comment->count();
+            $post->totalLike = $post->like->count();
+            $post->totalShare = Post::WHERE('parent_post',$post->id)->count();
+            $post->isLike = !empty(PostLike::WHERE('user_id',$userId)->WHERE('post_id',$post->id)->first());
+            foreach($post->mediafile as $mediaFile){
+                    $mediaFile->media_file_name = URL::to('media_file_post/'.$post->user->id.'/'.$mediaFile->media_file_name);
+            }
+        }
+        return response()->json($posts,200);
     }
 }
