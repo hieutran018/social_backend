@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Group;
+use App\Models\MemberGroup;
 use URL;
 
 class SearchController extends Controller
@@ -21,6 +23,14 @@ class SearchController extends Controller
                             :
                             URL::to('media_file_post/'.$user->id.'/'.$user->avatar);
                 }
-        return response($dataUser,200);
+                $dataGroup = Group::WHERE('group_name','LIKE',"%$input%")->limit(4)->get();
+                 foreach($dataGroup as $group){
+                    
+                    $group->avatar = $group->avatar == null ? 
+                            URL::to('default/avatar_group_default.jpg'):
+                            URL::to('media_file_post/'.$group->avatar);
+                            $group->totalMember = MemberGroup::WHERE('group_id',$group->id)->WHERE('status',1)->count();
+                }
+        return response(['users'=>$dataUser,'groups'=>$dataGroup],200);
     }
 }

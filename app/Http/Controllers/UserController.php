@@ -23,8 +23,8 @@ class UserController extends Controller
         $this->user = $user;
     }
 
-    public function profileUser(Request $request){
-        $profile = User::find($request->userId);
+    public function profileUser($userId){
+        $profile = User::find($userId);
         $profile->username = $profile->first_name.' '.$profile->last_name;
         $profile->avatar = $profile->avatar == null ? 
                             ($profile->sex === 0 ? URL::to('default/avatar_default_female.png') :URL::to('default/avatar_default_male.png'))

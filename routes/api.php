@@ -30,7 +30,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::POST('fetch-post-by-id',[PostController::class,'fetchPostById']);
 Route::post('fetch-comment-by-post',[CommentController::class,'fetchCommentByPost']);
-Route::post('profile-user',[UserController::class,'profileUser']);
+Route::GET('profile-user/userId={userId}',[UserController::class,'profileUser']);
 
 
 

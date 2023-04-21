@@ -196,12 +196,12 @@ class PostController extends Controller
     public function fetchPostByGroupId(Request $request, $groupId)
     {
         $userId = JWTAuth::toUser($request->token)->id;
-        $lst = Post::WHERE('group_id', $groupId)->get();
-        foreach ($lst as $post) {
-            $post->username = $post->user->first_name . ' ' . $post->user->last_name;
+        $lst = Post::WHERE('group_id',$groupId)->orderBy('created_at','DESC')->get();
+        foreach($lst as $post){
+            $post->username = $post->user->first_name.' '.$post->user->last_name;
             $post->avataruser = $post->user->avatar == null ?
-                ($post->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
-                URL::to('media_file_post/' . $post->user->id . '/' . $post->user->avatar);
+                            ($post->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')):
+                            URL::to('media_file_post/'.$post->user->id.'/'.$post->user->avatar);
             $post->groupName = $post->group->group_name;
             $post->groupAvatar = $post->group->avatar === null ? URL::to('default/avatar_group_default.jpg') :
                 URL::to('media_file_post/' . $post->group->avatar);
@@ -225,16 +225,17 @@ class PostController extends Controller
             $data[] = $group->group_id;
         }
 
-        $posts = Post::select('*')
-            ->where('status', 1)
-            ->Where(function ($query) use ($data) {
-                $query->WhereIn('group_id', $data);
-            })->get();
-        foreach ($posts as $post) {
-            $post->username = $post->user->first_name . ' ' . $post->user->last_name;
+        $posts = Post::
+                select('*')
+                ->where('status',1)
+                ->Where(function($query)use($data){
+                        $query->WhereIn('group_id',$data);
+                })->orderBy('created_at','DESC')->get();
+        foreach($posts as $post){
+            $post->username = $post->user->first_name.' '.$post->user->last_name;
             $post->avataruser = $post->user->avatar == null ?
-                ($post->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
-                URL::to('media_file_post/' . $post->user->id . '/' . $post->user->avatar);
+                            ($post->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')):
+                            URL::to('media_file_post/'.$post->user->id.'/'.$post->user->avatar);
             $post->groupName = $post->group->group_name;
             $post->groupAvatar = $post->group->avatar === null ? URL::to('default/avatar_group_default.jpg') :
                 URL::to('media_file_post/' . $post->group->avatar);
