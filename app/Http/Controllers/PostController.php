@@ -171,7 +171,7 @@ class PostController extends Controller
 
     public function fetchPostByGroupId(Request $request,$groupId){
         $userId = JWTAuth::toUser($request->token)->id;
-        $lst = Post::WHERE('group_id',$groupId)->get();
+        $lst = Post::WHERE('group_id',$groupId)->orderBy('created_at','DESC')->get();
         foreach($lst as $post){
             $post->username = $post->user->first_name.' '.$post->user->last_name;
             $post->avataruser = $post->user->avatar == null ? 
@@ -204,7 +204,7 @@ class PostController extends Controller
                 ->where('status',1)
                 ->Where(function($query)use($data){
                         $query->WhereIn('group_id',$data);
-                })->get();
+                })->orderBy('created_at','DESC')->get();
         foreach($posts as $post){
             $post->username = $post->user->first_name.' '.$post->user->last_name;
             $post->avataruser = $post->user->avatar == null ? 
