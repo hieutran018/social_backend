@@ -79,8 +79,8 @@ Route::group(['middleware' => 'jwt.auth','prefix'=>'v1'],function(){
     //* CẬP NHẬT ẢNH BÌA
     Route::post('upload-cover-image',[UserController::class,'uploadCoverImage']);
 
-    //* THÍCH BÀI VIẾT
-    Route::get('post/like-post/{postId}',[PostLikeController::class,'like']);
+    //? THÍCH BÀI VIẾT
+    Route::post('post/like-post',[PostLikeController::class,'like']);
 
     //*  DANH SÁCH ALBUM ẢNH NGƯỜI DÙNG
     Route::get('fetch-album-by-userid/userId={userId}',[AlbumController::class,'fetcAlbumByIdUser']);
