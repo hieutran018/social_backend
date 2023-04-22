@@ -187,7 +187,7 @@
             <tr>
               <td align="left" bgcolor="#ffffff"
                 style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;">
-                Xin chào {{$updatePass->first_name}} {{$updatePass->last_name}}<br>
+                Xin chào {{$updatePass->displayName}}<br>
                 <p style="margin: 0;">Chúng tôi nhận được yêu cầu đặt lại mật khẩu cho tài khoản được đăng ký bởi địa chỉ email này. Đây là mật khẩu được đặt lại cho tài khoản của bạn.</p>
               </td>
             </tr>

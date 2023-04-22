@@ -13,7 +13,7 @@ class CreateMemberGroupTable extends Migration
      */
     public function up()
     {
-        Schema::create('member_group', function (Blueprint $table) {
+        Schema::create('member_groups', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id');
             $table->foreignId('group_id');

@@ -20,8 +20,7 @@ class User extends Authenticatable implements JWTSubject
      * @var array<int, string>
      */
     protected $fillable = [
-        'first_name',
-        'last_name',
+        'displayName',
         'email',
         'password',
         'avatar',
@@ -31,7 +30,7 @@ class User extends Authenticatable implements JWTSubject
         'token',
         'email_verified_at',
         'isAdmin',
-        
+
     ];
 
     /**
@@ -48,7 +47,7 @@ class User extends Authenticatable implements JWTSubject
         'created_at',
         'updated_at',
         'deleted_at'
-        
+
     ];
 
     /**
@@ -65,7 +64,8 @@ class User extends Authenticatable implements JWTSubject
      *
      * @return mixed
      */
-    public function getJWTIdentifier() {
+    public function getJWTIdentifier()
+    {
         return $this->getKey();
     }
 
@@ -74,12 +74,13 @@ class User extends Authenticatable implements JWTSubject
      *
      * @return array
      */
-    public function getJWTCustomClaims() {
+    public function getJWTCustomClaims()
+    {
         return [];
     }
 
     public function groups()
     {
-        return $this->belongsToMany(Group::class, 'member_group','user_id','group_id');
+        return $this->belongsToMany(Group::class, 'member_groups', 'user_id', 'group_id');
     }
 }

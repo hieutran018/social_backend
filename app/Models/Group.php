@@ -20,6 +20,6 @@ class Group extends Model
     public $timestamps = false;
     public function users()
     {
-        return $this->belongsToMany(User::class, 'member_group','group_id','user_id');
+        return $this->belongsToMany(User::class, 'member_groups', 'group_id', 'user_id');
     }
 }

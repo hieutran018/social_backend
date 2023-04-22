@@ -13,7 +13,7 @@ class CreateListFriendTable extends Migration
      */
     public function up()
     {
-        Schema::create('list_friend', function (Blueprint $table) {
+        Schema::create('list_friends', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_request');
             $table->foreignId('user_accept');
