@@ -77,7 +77,7 @@ class PostController extends Controller
         $crPost->totalMediaFile = $crPost->mediafile->count();
         $crPost->totalComment = $crPost->comment->count();
         foreach ($crPost->mediafile as $mediaFile) {
-            $this->renameMediaFile($mediaFile, $crPost->user->id);
+            $this->_renameMediaFile($mediaFile, $crPost->user->id);
         }
 
         return response()->json($crPost, 200);
@@ -123,7 +123,7 @@ class PostController extends Controller
         $postShare->parent_post->totalMediaFile = $postShare->parent_post->mediafile->count();
         $postShare->parent_post->totalComment = $postShare->parent_post->comment->count();
         foreach ($postShare->parent_post->mediafile as $mediaFile) {
-            $this->renameMediaFile($mediaFile, $postShare->parent_post->user->id);
+            $this->_renameMediaFile($mediaFile, $postShare->parent_post->user->id);
         }
 
         return response()->json($postShare, 200);
@@ -146,7 +146,7 @@ class PostController extends Controller
                 $post->parent_post->totalMediaFile = $post->parent_post->mediafile->count();
                 $post->parent_post->totalComment = $post->parent_post->comment->count();
                 foreach ($post->parent_post->mediafile as $mediaFile) {
-                    $this->renameMediaFile($mediaFile, $post->parent_post->user->id);
+                    $this->_renameMediaFile($mediaFile, $post->parent_post->user->id);
                     if ($post->parent_post->group_id != null) {
                         $post->parent_post->groupName = $post->parent_post->group->group_name;
                         $post->parent_post->groupAvatar = $post->parent_post->group->avatar === null ? URL::to('default/avatar_group_default.jpg') :
@@ -171,7 +171,7 @@ class PostController extends Controller
             $post->totalShare = Post::WHERE('parent_post', $post->id)->count();
             $post->isLike = !empty(PostLike::WHERE('user_id', $userId)->WHERE('post_id', $post->id)->first());
             foreach ($post->mediafile as $mediaFile) {
-                $this->renameMediaFile($mediaFile, $post->user->id);
+                $this->_renameMediaFile($mediaFile, $post->user->id);
             }
         }
         return response()->json($lstPost, 200);
@@ -188,7 +188,7 @@ class PostController extends Controller
         $post->totalMediaFile = $post->mediafile->count();
         $post->totalComment = $post->comment->count();
         foreach ($post->mediafile as $mediaFile) {
-            $this->renameMediaFile($mediaFile, $post->user->id);
+            $this->_renameMediaFile($mediaFile, $post->user->id);
         }
         return response()->json($post, 200);
     }
@@ -211,7 +211,7 @@ class PostController extends Controller
             $post->totalShare = Post::WHERE('parent_post', $post->id)->count();
             $post->isLike = !empty(PostLike::WHERE('user_id', $userId)->WHERE('post_id', $post->id)->first());
             foreach ($post->mediafile as $mediaFile) {
-                $this->renameMediaFile($mediaFile, $post->user->id);
+                $this->_renameMediaFile($mediaFile, $post->user->id);
             }
         }
         return response()->json($lst, 200);
@@ -244,7 +244,7 @@ class PostController extends Controller
             $post->totalShare = Post::WHERE('parent_post', $post->id)->count();
             $post->isLike = !empty(PostLike::WHERE('user_id', $userId)->WHERE('post_id', $post->id)->first());
             foreach ($post->mediafile as $mediaFile) {
-                $this->renameMediaFile($mediaFile, $post->user->id);
+                $this->_renameMediaFile($mediaFile, $post->user->id);
             }
         }
         return response()->json($posts, 200);
@@ -252,7 +252,7 @@ class PostController extends Controller
 }
 trait PostTrait
 {
-    private function renameMediaFile(MediaFilePost $mediaFile, int $userId): void
+    private function _renameMediaFile(MediaFilePost $mediaFile, int $userId): void
     {
         $isHttp = !empty(parse_url($mediaFile->media_file_name, PHP_URL_SCHEME));
         if (!$isHttp) {

@@ -23,7 +23,7 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login','register','verificationUser','forgotPassword','verificationForgotPassword','loginWithGoogle']]);
+        $this->middleware('auth:api', ['except' => ['login', 'register', 'verificationUser', 'forgotPassword', 'verificationForgotPassword', 'loginWithGoogle']]);
     }
 
     /**
@@ -32,14 +32,15 @@ class AuthController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     //TODO: đang hoàn thành
-    public function register(Request $request) {
+    public function register(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'firstName' => 'required|string|between:2,100',
             'lastName' => 'required|string|between:2,100',
             'email' => 'required|string|email|max:100|unique:users',
             'password' => 'required|string|min:6',
             'confirmPassword' => 'required|string|min:6|same:password',
-        ],[
+        ], [
             'firstName.required' => 'Họ tên không được bỏ trống!',
             'lastName.required' => 'Tên không được bỏ trống!',
             'email.required' => 'Email không được bỏ trống!',
@@ -48,91 +49,87 @@ class AuthController extends Controller
             'password.min' => 'Mật khẩu phải nhiều hơn 6 ký tự!',
             'password.same' => 'Xác nhận mật khẩu và mật khẩu không khớp'
         ]);
-        if($validator->fails()){
-            return response()->json($validator->errors()->toJson(),400);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
         }
-            $user = new User();
-            $user->first_name = $request->firstName;
-            $user->last_name = $request->lastName;
-            $user->email = $request->email;
+        $user = new User();
+        $user->first_name = $request->firstName;
+        $user->last_name = $request->lastName;
+        $user->email = $request->email;
 
-            $user->password = bcrypt($request->password);
-            $user->isAdmin = 0;
-            $user->token = Str::random(10);
-            $user->save();
-            
-            Mail::send('email',compact('user'),function($email) use($user){
+        $user->password = bcrypt($request->password);
+        $user->isAdmin = 0;
+        $user->token = Str::random(10);
+        $user->save();
+
+        Mail::send('email', compact('user'), function ($email) use ($user) {
             $email->subject('Xác nhận đăng ký tài khoản');
-            $email->to($user->email,'CKC Social network');
+            $email->to($user->email, 'CKC Social network');
         });
 
-            return response()->json([
+        return response()->json([
             'message' => 'User successfully registered',
             'user' => $user
         ], 201);
-        
     }
 
-    public function forgotPassword(Request $request){
+    public function forgotPassword(Request $request)
+    {
         $email = $request->email;
-        
-        $check = SocialAccount::WHERE('email',$email)->first();
 
-        if(empty($check)){
-            $user = User::WHERE('email',$email)->first();
-            if(empty($user)){
-                return response()->json(['error'=>'Không tìm thấy địa chỉ email này!'],404);
-            }else{
+        $check = SocialAccount::WHERE('email', $email)->first();
+
+        if (empty($check)) {
+            $user = User::WHERE('email', $email)->first();
+            if (empty($user)) {
+                return response()->json(['error' => 'Không tìm thấy địa chỉ email này!'], 404);
+            } else {
                 $reset = new ForgotPassword();
                 $reset->email = $email;
                 $reset->token = Str::upper(Str::random(8));
                 $reset->created_at = Carbon::now('Asia/Ho_Chi_Minh');
                 $reset->save();
-                Mail::send('forgot_password',compact('user','reset'),function($email) use($user,$reset){
-                $email->subject('Xác nhận đặt lại mật khẩu');
-                $email->to($user->email,'CKC Social network');
+                Mail::send('forgot_password', compact('user', 'reset'), function ($email) use ($user, $reset) {
+                    $email->subject('Xác nhận đặt lại mật khẩu');
+                    $email->to($user->email, 'CKC Social network');
                 });
-                return response()->json('Mã xác nhận đã được gửi đến địa chỉ email của bạn!',201);
+                return response()->json('Mã xác nhận đã được gửi đến địa chỉ email của bạn!', 201);
             }
-        }else{
-            return response()->json(['error'=>'Không tìm thấy tài khoản!'],404);
+        } else {
+            return response()->json(['error' => 'Không tìm thấy tài khoản!'], 404);
         }
-        
-
     }
-    public function verificationForgotPassword(Request $request){
-        $check = ForgotPassword::WHERE('token',$request->tokenReset)->first();
-       
-        if(empty($check)){
-            return response()->json('Không tìm thấy tài khoản của Email này!',400);
-        }else{
-            
+    public function verificationForgotPassword(Request $request)
+    {
+        $check = ForgotPassword::WHERE('token', $request->tokenReset)->first();
+
+        if (empty($check)) {
+            return response()->json('Không tìm thấy tài khoản của Email này!', 400);
+        } else {
+
             $pass = Str::upper(Str::random(6));
-            $updatePass = User::WHERE('email',$check->email)->first();
-            
+            $updatePass = User::WHERE('email', $check->email)->first();
+
             $updatePass->password = bcrypt($pass);
             $updatePass->update();
-            Mail::send('complete_forgot_password',compact('updatePass','pass'),function($email) use($updatePass,$pass){
-            $email->subject('Đặt lại mật khẩu');
-            $email->to($updatePass->email,'CKC Social network');
+            Mail::send('complete_forgot_password', compact('updatePass', 'pass'), function ($email) use ($updatePass, $pass) {
+                $email->subject('Đặt lại mật khẩu');
+                $email->to($updatePass->email, 'CKC Social network');
             });
-           
         }
-
-        
     }
 
-    public function verificationUser(User $user, $token){
-        if($user->token == null){
-            return Redirect::to('/')->with('verified','Bạn đã hoàn tất xác minh trước đó rồi !');
+    public function verificationUser(User $user, $token)
+    {
+        if ($user->token == null) {
+            return Redirect::to('/')->with('verified', 'Bạn đã hoàn tất xác minh trước đó rồi !');
         }
-        
-        if($user->token === $token){
-            $user->update(['status'=>1,'token'=>null,'email_verified_at'=>Carbon::now('Asia/Ho_Chi_Minh')]);
-            return Redirect::to('/')->with('success_verify','Xác minh thành công !');
-        }
-        else{
-            return Redirect::to('/')->with('failed_verify','Xác minh thẩ bại, vui lòng thử lại !');
+
+        if ($user->token === $token) {
+            $user->update(['status' => 1, 'token' => null, 'email_verified_at' => Carbon::now('Asia/Ho_Chi_Minh')]);
+            return Redirect::to('/')->with('success_verify', 'Xác minh thành công !');
+        } else {
+            return Redirect::to('/')->with('failed_verify', 'Xác minh thẩ bại, vui lòng thử lại !');
         }
     }
 
@@ -150,7 +147,7 @@ class AuthController extends Controller
         $credentials = $request->only('email', 'password');
 
         if ($token = $this->guard()->attempt($credentials)) {
-            if($this->guard()->user()->email_verified_at != null)
+            if ($this->guard()->user()->email_verified_at != null)
                 return $this->respondWithToken($token);
             return response()->json(['error' => 'Unauthorized'], 401);
         }
@@ -158,21 +155,22 @@ class AuthController extends Controller
         return response()->json(['error' => 'Unauthorized'], 401);
     }
 
-    public function loginWithGoogle(Request $request){
+    public function loginWithGoogle(Request $request)
+    {
 
         $data = $request->all();
-        $check = SocialAccount::WHERE('email',$data['email'])->first();
-        if(empty($check)){
-            
-            $user = User::WHERE('email',$data['email'])->first();
-            if(empty($user)){
+        $check = SocialAccount::WHERE('email', $data['email'])->first();
+        if (empty($check)) {
+
+            $user = User::WHERE('email', $data['email'])->first();
+            if (empty($user)) {
                 $new = new User();
                 $new->first_name = $data['firstName'];
                 $new->last_name = $data['lastName'];
                 $new->email = $data['email'];
                 $new->email_verified_at = Carbon::now('Asia/Ho_Chi_Minh');
                 $new->created_at = Carbon::now('Asia/Ho_Chi_Minh');
-                $new->isAdmin =0;
+                $new->isAdmin = 0;
                 $new->save();
 
                 $cr = new SocialAccount();
@@ -184,23 +182,21 @@ class AuthController extends Controller
                 $cr->save();
                 if ($token = Auth::login($new)) {
                     return $this->respondWithToken($token);
-                }else{
-                     return response()->json(['error' => 'Unauthorized'], 401);
+                } else {
+                    return response()->json(['error' => 'Unauthorized'], 401);
                 }
-            }else{
-                return response()->json('Email này đã được đăng ký bởi một tài khoản khác!',402);
+            } else {
+                return response()->json('Email này đã được đăng ký bởi một tài khoản khác!', 402);
             }
-            
-        }else{
-            $user = User::WHERE('email',$check->email)->first();
+        } else {
+            $user = User::WHERE('email', $check->email)->first();
             if ($token = Auth::login($user)) {
-                    return $this->respondWithToken($token);
-                }else{
-                     return response()->json(['error' => 'Unauthorized'], 401);
-                }
+                return $this->respondWithToken($token);
+            } else {
+                return response()->json(['error' => 'Unauthorized'], 401);
+            }
         }
         return response()->json(['error' => 'Unauthorized'], 401);
-
     }
 
     /**
@@ -244,16 +240,16 @@ class AuthController extends Controller
      */
     protected function respondWithToken($token)
     {
-        $this->guard()->user()->avatar = $this->guard()->user()->avatar == null ? 
-                            ($this->guard()->user()->sex === 0 ? URL::to('default/avatar_default_female.png') :URL::to('default/avatar_default_male.png')):
-                            URL::to('media_file_post/'.$this->guard()->user()->id.'/'.$this->guard()->user()->avatar);
+        $this->guard()->user()->avatar = $this->guard()->user()->avatar == null ?
+            ($this->guard()->user()->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
+            URL::to('media_file_post/' . $this->guard()->user()->id . '/' . $this->guard()->user()->avatar);
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => $this->guard()->factory()->getTTL() * 60,
             'user' => $this->guard()->user()
-            
-        ],200);
+
+        ], 200);
     }
 
     /**
