@@ -48,6 +48,7 @@ class PostController extends Controller
                 $media->save();
             }
         }
+
         if (!empty($request->images)) {
             foreach ($request->images as $image) {
                 //get fileImage Extension ex: https://exaample.com/upload/1734595129695881175.png
@@ -66,11 +67,16 @@ class PostController extends Controller
             }
         }
 
-
-
         $crPost->username = $crPost->user->first_name . ' ' . $crPost->user->last_name;
 
         $crPost->created_at = Carbon::parse($crPost->created_at)->format('Y/m/d H:m:s');
+        if ($crPost->group_id != null) {
+            $crPost->groupName = $crPost->group->group_name;
+            $crPost->groupAvatar = $crPost->group->avatar == null ?
+                URL::to('default/avatar_group_default.jpg') :
+                URL::to('media_file_post/' . $crPost->group->avatar);
+        }
+
         $crPost->avatarUser = $crPost->user->avatar == null ?
             ($crPost->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
             URL::to('media_file_post/' . $crPost->user->id . '/' . $crPost->user->avatar);
