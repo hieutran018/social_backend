@@ -260,9 +260,5 @@ trait PostTrait
         if (!$isHttp) {
             $mediaFile->media_file_name = URL::to('media_file_post/' . $userId  . '/' . $mediaFile->media_file_name);
         }
-                $mediaFile->media_file_name = URL::to('media_file_post/' . $post->user->id . '/' . $mediaFile->media_file_name);
-            }
-        }
-        return response()->json($posts, 200);
     }
 }
