@@ -14,14 +14,15 @@ use Illuminate\Support\Str;
 
 class GroupController extends Controller
 {
-    public function createGroup(Request $request){
+    public function createGroup(Request $request)
+    {
         $userId = JWTAuth::toUser($request->token)->id;
         $newGroup = new Group();
 
         $newGroup->group_name = $request->groupName;
         $newGroup->privacy = $request->privacy;
         $newGroup->created_at = Carbon::now('Asia/Ho_Chi_Minh');
-        
+
         $newGroup->save();
 
         $adminGroup = new MemberGroup();
@@ -43,42 +44,41 @@ class GroupController extends Controller
         $post->save();
 
         $newGroup->avatar = URL::to('default/avatar_group_default.jpg');
-        return response()->json($newGroup,200);
-
+        return response()->json($newGroup, 200);
     }
 
-    public function fetchGroupJoined(Request $request){
+    public function fetchGroupJoined(Request $request)
+    {
         $userId = JWTAuth::toUser($request->token)->id;
-        $lstGroup = User::WHERE('id',$userId)->get();
-        foreach($lstGroup as $user){
-            foreach($user->groups as $gr){
-                $gr->avatar = $gr->avatar === null ? URL::to('default/avatar_group_default.jpg') : 
-                URL::to('media_file_post/'.$gr->avatar);
+        $lstGroup = User::WHERE('id', $userId)->get();
+        foreach ($lstGroup as $user) {
+            foreach ($user->groups as $gr) {
+                $gr->avatar = $gr->avatar === null ? URL::to('default/avatar_group_default.jpg') :
+                    URL::to('media_file_post/' . $gr->avatar);
             }
-           
         }
-        
-        return response()->json($lstGroup,200);
+
+        return response()->json($lstGroup, 200);
     }
 
-    public function fetchGroupById(Request $request,$groupId){
+    public function fetchGroupById(Request $request, $groupId)
+    {
         $userId = JWTAuth::toUser($request->token)->id;
-        $group = Group::WHERE('id',$groupId)->first();
+        $group = Group::WHERE('id', $groupId)->first();
 
-        if(empty($group)){
-            return response()->json('Không tìm thấy group yêu cầu!',404);
-        }
-        else{
-            $idAdmin = MemberGroup::WHERE('user_id',$userId)->WHERE('group_id',$group->id)->WHERE('isAdminGroup',1)->first();
+        if (empty($group)) {
+            return response()->json('Không tìm thấy group yêu cầu!', 404);
+        } else {
+            $idAdmin = MemberGroup::WHERE('user_id', $userId)->WHERE('group_id', $group->id)->WHERE('isAdminGroup', 1)->first();
             $group->isAdminGroup = !empty($idAdmin);
-            $group->avatar = $group->avatar === null ? URL::to('default/avatar_group_default.jpg') : 
-                URL::to('media_file_post/'.$group->avatar);
-                return response()->json($group,200);
+            $group->avatar = $group->avatar === null ? URL::to('default/avatar_group_default.jpg') :
+                URL::to('media_file_post/' . $group->avatar);
+            return response()->json($group, 200);
         }
-
     }
 
-    public function sendInviteFriendToGroup(Request $request){
+    public function sendInviteFriendToGroup(Request $request)
+    {
         $invite = new MemberGroup();
         $invite->user_id = $request->userId;
         $invite->group_id = $request->groupId;
@@ -86,129 +86,131 @@ class GroupController extends Controller
         $invite->status = 2;
         $invite->isAdminGroup = 0;
         $invite->save();
-        return response()->json('Gửi lời mời thành công!',200);
-        
+        return response()->json('Gửi lời mời thành công!', 200);
     }
 
-    public function cancelSendInvite(Request $request){
-        $cancel = MemberGroup::WHERE('user_id',$request->userId)->WHERE('group_id',$request->groupId)->first();
-        if(empty($cancel)){
-            return response()->json('Yêu cầu không hợp lệ!',404);
-        }else{
+    public function cancelSendInvite(Request $request)
+    {
+        $cancel = MemberGroup::WHERE('user_id', $request->userId)->WHERE('group_id', $request->groupId)->first();
+        if (empty($cancel)) {
+            return response()->json('Yêu cầu không hợp lệ!', 404);
+        } else {
             $cancel->delete();
-            return response()->json('Hoàn tác thành công!',200);
+            return response()->json('Hoàn tác thành công!', 200);
         }
     }
 
-    public function acceptInviteGroup(Request $request){
+    public function acceptInviteGroup(Request $request)
+    {
         $userId = JWTAuth::toUser($request->token)->id;
-        $accept = MemberGroup::WHERE('user_id',$userId)->WHERE('group_id',$request->groupId)->WHERE('status',2)->first();
-        if(empty($accept)){
-            return response()->json('Có lỗi xảy ra',400);
-        }else{
+        $accept = MemberGroup::WHERE('user_id', $userId)->WHERE('group_id', $request->groupId)->WHERE('status', 2)->first();
+        if (empty($accept)) {
+            return response()->json('Có lỗi xảy ra', 400);
+        } else {
             $accept->status = 1;
             $accept->update();
-            return response()->json('Bạn đã chấp nhận lời mời nhóm!',200);
+            return response()->json('Bạn đã chấp nhận lời mời nhóm!', 200);
         }
     }
 
-    public function fetchInviteToGroup(Request $request){  
+    public function fetchInviteToGroup(Request $request)
+    {
         $userId = JWTAuth::toUser($request->token)->id;
 
-        $listGroup = MemberGroup::WHERE('user_id',$userId)->WHERE('status',2)->get();
-        foreach($listGroup as $gr){
+        $listGroup = MemberGroup::WHERE('user_id', $userId)->WHERE('status', 2)->get();
+        foreach ($listGroup as $gr) {
             $gr->groupId = $gr->group->id;
             $gr->groupName = $gr->group->group_name;
-            $gr->avatarGroup = $gr->group->avatar === null ? URL::to('default/avatar_group_default.jpg') : 
-                URL::to('media_file_post/'.$gr->group->avatar);
+            $gr->avatarGroup = $gr->group->avatar === null ? URL::to('default/avatar_group_default.jpg') :
+                URL::to('media_file_post/' . $gr->group->avatar);
         }
-        return response()->json($listGroup,200);
-
+        return response()->json($listGroup, 200);
     }
 
-    public function editGroupByAdmin(Request $request){
+    public function editGroupByAdmin(Request $request)
+    {
         $userId = JWTAuth::toUser($request->token)->id;
 
-        $check = MemberGroup::Where('user_id',$userId)->Where('group_id',$request->groupId)->first();
+        $check = MemberGroup::Where('user_id', $userId)->Where('group_id', $request->groupId)->first();
 
-        if(!empty($check) && $check->isAdminGroup === 1){
-            $edit = Group::WHERE('id',$request->groupId)->first();
+        if (!empty($check) && $check->isAdminGroup === 1) {
+            $edit = Group::WHERE('id', $request->groupId)->first();
             $edit->group_name = $request->groupName === null ? $edit->group_name : $request->groupName;
             $edit->privacy = $request->privacy === null ? $edit->privacy : $request->privacy;
 
-            if($request->hasFile('file')){
+            if ($request->hasFile('file')) {
                 $file = $request->file;
                 $fileExtentsion = $file->getClientOriginalExtension();
                 $random = Str::random(10);
-                $fileName = time().$random.'.'.$fileExtentsion;
+                $fileName = time() . $random . '.' . $fileExtentsion;
                 $file->move('media_file_post', $fileName);
-                $edit->avatar= $fileName;
+                $edit->avatar = $fileName;
             }
 
             $edit->update();
-            $edit->avatar = $edit->avatar === null ? URL::to('default/avatar_group_default.jpg') : 
-                            URL::to('media_file_post/'.$edit->avatar);
-            return response()->json($edit,200);
-        }else{
-            return response()->json('Yêu cầu không hợp lệ!',400);
+            $edit->avatar = $edit->avatar === null ? URL::to('default/avatar_group_default.jpg') :
+                URL::to('media_file_post/' . $edit->avatar);
+            return response()->json($edit, 200);
+        } else {
+            return response()->json('Yêu cầu không hợp lệ!', 400);
         }
     }
 
-    public function fetchMemberGroup($groupId){
-        $isGroup = Group::WHERE('id',$groupId)->first();
-        if(empty($isGroup)){
-            return response()->json('Không tìm thấy nhóm yêu cầu!',404);
-        }else{
-            $members = MemberGroup::WHERE('group_id',$isGroup->id)->WHERE('status',1)->get();
-            foreach($members as $member){
-                $member->username = $member->user->first_name.' '.$member->user->last_name;
-                $member->avatar = $member->user->avatar == null ? 
-                            ($member->user->sex === 0 ? URL::to('default/avatar_default_female.png') :URL::to('default/avatar_default_male.png'))
-                            :
-                            URL::to('media_file_post/'.$member->user->id.'/'.$member->user->avatar);
+    public function fetchMemberGroup($groupId)
+    {
+        $isGroup = Group::WHERE('id', $groupId)->first();
+        if (empty($isGroup)) {
+            return response()->json('Không tìm thấy nhóm yêu cầu!', 404);
+        } else {
+            $members = MemberGroup::WHERE('group_id', $isGroup->id)->WHERE('status', 1)->get();
+            foreach ($members as $member) {
+                $member->displayName = $member->user->displayName;
+                $member->avatar = $member->user->avatar == null ?
+                    ($member->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png'))
+                    :
+                    URL::to('media_file_post/' . $member->user->id . '/' . $member->user->avatar);
             }
-            return response()->json($members,200);
+            return response()->json($members, 200);
         }
     }
 
-    public function addMemberToAdmin(Request $request){
+    public function addMemberToAdmin(Request $request)
+    {
         $currentAdmin = JWTAuth::toUser($request->token)->id;
 
-        $isGroup = Group::WHERE('id',$request->groupId)->first();
-        if(empty($isGroup)){
-            return response()->json('Yêu cầu không hợp lệ',400);
-        }
-        else{
-            $isAdmin = MemberGroup::WHERE('user_id',$currentAdmin)->WHERE('group_id',$isGroup->id)->first();
-            if(empty($isAdmin)){
-                return response()->json('Yêu cầu không hợp lệ',400);
-            }else{
-                $update = MemberGroup::WHERE('user_id',$request->userId)->WHERE('group_id',$isGroup->id)->first();
+        $isGroup = Group::WHERE('id', $request->groupId)->first();
+        if (empty($isGroup)) {
+            return response()->json('Yêu cầu không hợp lệ', 400);
+        } else {
+            $isAdmin = MemberGroup::WHERE('user_id', $currentAdmin)->WHERE('group_id', $isGroup->id)->first();
+            if (empty($isAdmin)) {
+                return response()->json('Yêu cầu không hợp lệ', 400);
+            } else {
+                $update = MemberGroup::WHERE('user_id', $request->userId)->WHERE('group_id', $isGroup->id)->first();
                 $update->isAdminGroup = 1;
                 $update->update();
-                return response()->json('success',200);
+                return response()->json('success', 200);
             }
         }
     }
 
-    public function removeAdminToGroup(Request $request){
+    public function removeAdminToGroup(Request $request)
+    {
         $currentAdmin = JWTAuth::toUser($request->token)->id;
 
-        $isGroup = Group::WHERE('id',$request->groupId)->first();
-        if(empty($isGroup)){
-            return response()->json('Yêu cầu không hợp lệ',400);
-        }
-        else{
-            $isAdmin = MemberGroup::WHERE('user_id',$currentAdmin)->WHERE('group_id',$isGroup->id)->first();
-            if(empty($isAdmin)){
-                return response()->json('Yêu cầu không hợp lệ',400);
-            }else{
-                $update = MemberGroup::WHERE('user_id',$request->userId)->WHERE('group_id',$isGroup->id)->first();
+        $isGroup = Group::WHERE('id', $request->groupId)->first();
+        if (empty($isGroup)) {
+            return response()->json('Yêu cầu không hợp lệ', 400);
+        } else {
+            $isAdmin = MemberGroup::WHERE('user_id', $currentAdmin)->WHERE('group_id', $isGroup->id)->first();
+            if (empty($isAdmin)) {
+                return response()->json('Yêu cầu không hợp lệ', 400);
+            } else {
+                $update = MemberGroup::WHERE('user_id', $request->userId)->WHERE('group_id', $isGroup->id)->first();
                 $update->isAdminGroup = 0;
                 $update->update();
-                return response()->json('success',200);
+                return response()->json('success', 200);
             }
         }
     }
-
 }

@@ -19,7 +19,6 @@ class PostController extends Controller
 
     public function createPost(Request $request)
     {
-        //
         $crPost = new Post();
         $crPost->user_id = JWTAuth::toUser($request->token)->id;
         $crPost->post_content = $request->postContent;
@@ -48,7 +47,6 @@ class PostController extends Controller
                 $media->save();
             }
         }
-
         if (!empty($request->images)) {
             foreach ($request->images as $image) {
                 //get fileImage Extension ex: https://exaample.com/upload/1734595129695881175.png
@@ -66,8 +64,7 @@ class PostController extends Controller
                 $media->save();
             }
         }
-
-        $crPost->username = $crPost->user->first_name . ' ' . $crPost->user->last_name;
+        $crPost->displayName = $crPost->user->displayName;
 
         $crPost->created_at = Carbon::parse($crPost->created_at)->format('Y/m/d H:m:s');
         if ($crPost->group_id != null) {
@@ -111,8 +108,7 @@ class PostController extends Controller
 
         $postShare->save();
 
-        $postShare->username = $postShare->user->first_name . ' ' . $postShare->user->last_name;
-
+        $postShare->displayName = $postShare->user->displayName;
         $postShare->created_at = Carbon::parse($postShare->created_at)->format('Y/m/d H:m:s');
         $postShare->avatarUser = $postShare->user->avatar == null ?
             ($postShare->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
@@ -121,7 +117,7 @@ class PostController extends Controller
         $postShare->totalComment = $postShare->comment->count();
 
         $postShare->parent_post = Post::find($postShare->parent_post);
-        $postShare->parent_post->username = $postShare->parent_post->user->first_name . ' ' . $postShare->parent_post->user->last_name;
+        $postShare->parent_post->displayName = $postShare->parent_post->user->displayName;
         $postShare->parent_post->created_at = Carbon::parse($postShare->parent_post->created_at)->format('Y/m/d H:m:s');
         $postShare->parent_post->avatarUser = $postShare->parent_post->user->avatar == null ?
             ($postShare->parent_post->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
@@ -138,13 +134,12 @@ class PostController extends Controller
     public function fetchPost(Request $request)
     {
         $userId = JWTAuth::toUser($request->token)->id;
-
-        $lstPost = Post::orderBy('created_at', 'DESC')->limit(20)->get();
+        $lstPost = Post::orderBy('created_at', 'DESC')->limit(10)->get();
 
         foreach ($lstPost as $post) {
             if ($post->parent_post) {
                 $post->parent_post = Post::find($post->parent_post);
-                $post->parent_post->username = $post->parent_post->user->first_name . ' ' . $post->parent_post->user->last_name;
+                $post->parent_post->displayName = $post->parent_post->user->displayName;
                 $post->parent_post->created_at = Carbon::parse($post->parent_post->created_at)->format('Y/m/d H:m:s');
                 $post->parent_post->avatarUser = $post->parent_post->user->avatar == null ?
                     ($post->parent_post->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
@@ -165,8 +160,8 @@ class PostController extends Controller
                 $post->groupAvatar = $post->group->avatar === null ? URL::to('default/avatar_group_default.jpg') :
                     URL::to('media_file_post/' . $post->group->avatar);
             }
-            $post->username = $post->user->first_name . ' ' . $post->user->last_name;
 
+            $post->displayName = $post->user->displayName;
             $post->created_at = Carbon::parse($post->created_at)->format('Y/m/d H:m:s');
             $post->avatarUser = $post->user->avatar == null ?
                 ($post->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
@@ -186,7 +181,7 @@ class PostController extends Controller
     public function fetchPostById(Request $request)
     {
         $post = Post::find($request->postId);
-        $post->username = $post->user->first_name . ' ' . $post->user->last_name;
+        $post->displayName = $post->user->displayName;
         $post->created_at = Carbon::parse($post->created_at)->format('Y/m/d h:m:s');
         $post->avatarUser = $post->user->avatar == null ?
             ($post->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
@@ -204,7 +199,7 @@ class PostController extends Controller
         $userId = JWTAuth::toUser($request->token)->id;
         $lst = Post::WHERE('group_id', $groupId)->orderBy('created_at', 'DESC')->get();
         foreach ($lst as $post) {
-            $post->username = $post->user->first_name . ' ' . $post->user->last_name;
+            $post->displayName = $post->user->displayName;
             $post->avataruser = $post->user->avatar == null ?
                 ($post->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
                 URL::to('media_file_post/' . $post->user->id . '/' . $post->user->avatar);
@@ -237,7 +232,7 @@ class PostController extends Controller
                 $query->WhereIn('group_id', $data);
             })->orderBy('created_at', 'DESC')->get();
         foreach ($posts as $post) {
-            $post->username = $post->user->first_name . ' ' . $post->user->last_name;
+            $post->displayName = $post->user->displayName;
             $post->avataruser = $post->user->avatar == null ?
                 ($post->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
                 URL::to('media_file_post/' . $post->user->id . '/' . $post->user->avatar);
@@ -256,6 +251,7 @@ class PostController extends Controller
         return response()->json($posts, 200);
     }
 }
+
 trait PostTrait
 {
     private function _renameMediaFile(MediaFilePost $mediaFile, int $userId): void
@@ -264,5 +260,9 @@ trait PostTrait
         if (!$isHttp) {
             $mediaFile->media_file_name = URL::to('media_file_post/' . $userId  . '/' . $mediaFile->media_file_name);
         }
+                $mediaFile->media_file_name = URL::to('media_file_post/' . $post->user->id . '/' . $mediaFile->media_file_name);
+            }
+        }
+        return response()->json($posts, 200);
     }
 }

@@ -15,22 +15,21 @@ class UserFactory extends Factory
     public function definition()
     {
         return [
-            'first_name' => $this->faker->name(),
-            'last_name' => $this->faker->name(),
+            'displayName' => $this->faker->name(),
             'email' => $this->faker->unique()->safeEmail(),
-            'avatar'=> null,
-            'cover_image'=>null,
+            'avatar' => null,
+            'cover_image' => null,
             'date_of_birth' => now(),
-            'sex'=> rand(1,2) % 2 === 0 ? 1 : 0 ,
-            'went_to'=>rand(1,2)  % 2 === 0 ? 'Vĩnh Long' : 'Thành phố Hồ Chí Minh',
-            'live_in'=> 'Thành phố Hồ Chí Minh',
-            'phone'=> null,
-            'relationship'=>rand(1,2)  % 2 === 0 ? 1 : 0,
-            'address'=>'Thanh Pho Ho Chi Minh',
-            'token'=> null,
+            'sex' => rand(1, 2) % 2 === 0 ? 1 : 0,
+            'went_to' => rand(1, 2)  % 2 === 0 ? 'Vĩnh Long' : 'Thành phố Hồ Chí Minh',
+            'live_in' => 'Thành phố Hồ Chí Minh',
+            'phone' => null,
+            'relationship' => rand(1, 2)  % 2 === 0 ? 1 : 0,
+            'address' => 'Thanh Pho Ho Chi Minh',
+            'token' => null,
             'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
             'email_verified_at' => now(),
-            'isAdmin'=> 0
+            'isAdmin' => 0
         ];
     }
 

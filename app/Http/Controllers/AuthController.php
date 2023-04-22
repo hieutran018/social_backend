@@ -35,14 +35,12 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'firstName' => 'required|string|between:2,100',
-            'lastName' => 'required|string|between:2,100',
+            'displayName' => 'required|string|between:2,100',
             'email' => 'required|string|email|max:100|unique:users',
             'password' => 'required|string|min:6',
             'confirmPassword' => 'required|string|min:6|same:password',
         ], [
-            'firstName.required' => 'Họ tên không được bỏ trống!',
-            'lastName.required' => 'Tên không được bỏ trống!',
+            'displayName.required' => 'Họ tên không được bỏ trống!',
             'email.required' => 'Email không được bỏ trống!',
             'email.unique' => 'Email đã được sử dụng!',
             'password.required' => 'Mật khẩu không được bỏ trống!',
@@ -50,13 +48,11 @@ class AuthController extends Controller
             'password.same' => 'Xác nhận mật khẩu và mật khẩu không khớp'
         ]);
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            return response()->json($validator->errors()->toJson(), 400);
         }
         $user = new User();
-        $user->first_name = $request->firstName;
-        $user->last_name = $request->lastName;
+        $user->displayName = $request->displayName;
         $user->email = $request->email;
-
         $user->password = bcrypt($request->password);
         $user->isAdmin = 0;
         $user->token = Str::random(10);
@@ -165,8 +161,7 @@ class AuthController extends Controller
             $user = User::WHERE('email', $data['email'])->first();
             if (empty($user)) {
                 $new = new User();
-                $new->first_name = $data['firstName'];
-                $new->last_name = $data['lastName'];
+                $new->displayName = $data['displayName'];
                 $new->email = $data['email'];
                 $new->email_verified_at = Carbon::now('Asia/Ho_Chi_Minh');
                 $new->created_at = Carbon::now('Asia/Ho_Chi_Minh');

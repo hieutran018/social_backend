@@ -18,7 +18,7 @@ class CreateGroupTable extends Migration
             $table->string('group_name');
             $table->boolean('privacy');
             $table->string('avatar')->nullable();
-            $table->string('cover_image')->nullable();
+            $table->text('description')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

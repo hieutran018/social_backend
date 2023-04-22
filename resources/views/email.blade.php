@@ -187,7 +187,7 @@
             <tr>
               <td align="left" bgcolor="#ffffff"
                 style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;">
-                Xin chào {{$user->first_name}} {{$user->last_name}}<br>
+                Xin chào {{$user->displayName}}<br>
                 <p style="margin: 0;">Vui lòng nhấn vào nút bên dưới để xác nhận địa chỉ email của bạn. Nếu bạn không
                   tạo một
                   tài khoản với địa chỉ email này. <a href="https://blogdesire.com">Hãy liên hệ với chúng tôi</a>. Xin

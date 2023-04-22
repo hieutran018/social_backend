@@ -21,14 +21,16 @@ class FriendShip extends Model
         'users'
     ];
 
-    public function user(){
-        return $this->hasMany(User::class,'id','user_request');
+    public function user()
+    {
+        return $this->hasMany(User::class, 'id', 'user_request');
     }
 
-    public function users(){
-        return $this->hasMany(User::class,'id','user_accept');
+    public function users()
+    {
+        return $this->hasMany(User::class, 'id', 'user_accept');
     }
 
-    protected $table = 'list_friend';
+    protected $table = 'list_friends';
     public $timestamps = false;
 }

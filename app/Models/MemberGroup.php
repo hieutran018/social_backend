@@ -14,7 +14,7 @@ class MemberGroup extends Model
         'group_id',
         'isAdminGroup'
     ];
-    protected $table = 'member_group';
+    protected $table = 'member_groups';
     public $timestamps = false;
     protected $hidden = [
         'group',
@@ -22,10 +22,10 @@ class MemberGroup extends Model
     ];
     public function group()
     {
-        return $this->hasOne(Group::class,'id','group_id');
+        return $this->hasOne(Group::class, 'id', 'group_id');
     }
     public function user()
     {
-        return $this->hasOne(User::class,'id','user_id');
+        return $this->hasOne(User::class, 'id', 'user_id');
     }
 }
