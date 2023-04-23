@@ -134,7 +134,7 @@ class PostController extends Controller
     public function fetchPost(Request $request)
     {
         $userId = JWTAuth::toUser($request->token)->id;
-        $lstPost = Post::orderBy('created_at', 'DESC')->limit(10)->get();
+        $lstPost = Post::orderBy('created_at', 'DESC')->paginate(10);
 
         foreach ($lstPost as $post) {
             if ($post->parent_post) {
