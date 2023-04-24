@@ -60,7 +60,7 @@ class FriendShipController extends Controller
                 }
             }
         } else {
-            $lstFriend = FriendShip::WHERE('status', 1)->WHERE('user_accept', $userId)->orWhere('user_request', $userId)->orderBy('created_at', 'DESC')->get();
+            $lstFriend = FriendShip::WHERE('status', 1)->WHERE('user_accept', $userId)->orWhere('user_request', $userId)->orderBy('created_at', 'DESC')->paginate(10);
 
             foreach ($lstFriend as $fr) {
                 if ($fr->user_accept == $userId) {

@@ -137,7 +137,7 @@ class PostController extends Controller
     {
         $userId = JWTAuth::toUser($request->token)->id;
         $data[] = $userId;
-        $lstFriend = FriendShip::WHERE('status', 1)->WHERE('user_accept', $userId)->orWhere('user_request', $userId)->orderBy('created_at', 'DESC')->limit(6)->get();
+        $lstFriend = FriendShip::WHERE('status', 1)->WHERE('user_accept', $userId)->orWhere('user_request', $userId)->orderBy('created_at', 'DESC')->get();
         foreach ($lstFriend as $fr) {
             if ($fr->user_accept == $userId) {
                 foreach ($fr->user as $user) {
@@ -150,8 +150,7 @@ class PostController extends Controller
             }
         }
 
-
-        $lstPost = Post::WhereIn('user_id', $data)->orderBy('created_at', 'DESC')->paginate(10);
+        $lstPost = Post::WhereIn('user_id', $data)->Where('privacy', '!=', 0)->orderBy('created_at', 'DESC')->paginate(10);
 
         foreach ($lstPost as $post) {
             if ($post->parent_post) {
