@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Post;
 use App\Models\CommentPost;
+use App\Models\FriendShip;
 use App\Models\MediaFilePost;
 use App\Models\PostLike;
 use App\Models\MemberGroup;
@@ -12,6 +13,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\URL;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Str;
+use DB;
 
 class PostController extends Controller
 {
@@ -134,7 +136,22 @@ class PostController extends Controller
     public function fetchPost(Request $request)
     {
         $userId = JWTAuth::toUser($request->token)->id;
-        $lstPost = Post::orderBy('created_at', 'DESC')->paginate(10);
+        $data[] = $userId;
+        $lstFriend = FriendShip::WHERE('status', 1)->WHERE('user_accept', $userId)->orWhere('user_request', $userId)->orderBy('created_at', 'DESC')->limit(6)->get();
+        foreach ($lstFriend as $fr) {
+            if ($fr->user_accept == $userId) {
+                foreach ($fr->user as $user) {
+                    $data[] = $user->id;
+                }
+            } else {
+                foreach ($fr->users as $users) {
+                    $data[]  = $users->id;
+                }
+            }
+        }
+
+
+        $lstPost = Post::WhereIn('user_id', $data)->orderBy('created_at', 'DESC')->paginate(10);
 
         foreach ($lstPost as $post) {
             if ($post->parent_post) {
@@ -197,7 +214,7 @@ class PostController extends Controller
     public function fetchPostByGroupId(Request $request, $groupId)
     {
         $userId = JWTAuth::toUser($request->token)->id;
-        $lst = Post::WHERE('group_id', $groupId)->orderBy('created_at', 'DESC')->get();
+        $lst = Post::WHERE('group_id', $groupId)->orderBy('created_at', 'DESC')->paginate(10);
         foreach ($lst as $post) {
             $post->displayName = $post->user->displayName;
             $post->avataruser = $post->user->avatar == null ?
@@ -230,7 +247,7 @@ class PostController extends Controller
             ->where('status', 1)
             ->Where(function ($query) use ($data) {
                 $query->WhereIn('group_id', $data);
-            })->orderBy('created_at', 'DESC')->get();
+            })->orderBy('created_at', 'DESC')->paginate(10);
         foreach ($posts as $post) {
             $post->displayName = $post->user->displayName;
             $post->avataruser = $post->user->avatar == null ?
