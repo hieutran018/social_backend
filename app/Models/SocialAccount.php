@@ -15,8 +15,8 @@ class SocialAccount extends Model
         'email',
         'user_id'
     ];
-    
+
     protected $timestamp = false;
 
-    protected $table = 'social_account';
+    protected $table = 'social_accounts';
 }

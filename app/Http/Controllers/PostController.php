@@ -22,8 +22,6 @@ class PostController extends Controller
 
     public function createPost(Request $request)
     {
-
-
         $crPost = new Post();
         $crPost->user_id = JWTAuth::toUser($request->token)->id;
         $crPost->post_content = $request->postContent;
@@ -48,12 +46,16 @@ class PostController extends Controller
                 $fileExtentsion = $file->getClientOriginalExtension();
                 $random = Str::random(10);
                 $fileName = time() . $random . '.' . $fileExtentsion;
-                $file->move('media_file_post/' . JWTAuth::toUser($request->token)->id, $fileName);
+                if ($request->groupId) {
+                    $file->move('media_file_post/', $fileName);
+                } else {
+                    $file->move('media_file_post/' . JWTAuth::toUser($request->token)->id, $fileName);
+                }
                 $media = new MediaFilePost();
                 $media->media_file_name = $fileName;
                 $media->media_type = $fileExtentsion;
                 $media->post_id = $crPost->id;
-                // $media->group_id = $request->groupId;
+                $media->group_id = $request->groupId;
                 $media->user_id = JWTAuth::toUser($request->token)->id;
                 $media->created_at = Carbon::now('Asia/Ho_Chi_Minh');
                 $media->status = 1;
@@ -92,8 +94,14 @@ class PostController extends Controller
             URL::to('media_file_post/' . $crPost->user->id . '/' . $crPost->user->avatar);
         $crPost->totalMediaFile = $crPost->mediafile->count();
         $crPost->totalComment = $crPost->comment->count();
-        foreach ($crPost->mediafile as $mediaFile) {
-            $this->_renameMediaFile($mediaFile, $crPost->user->id);
+        if ($request->groupId) {
+            foreach ($crPost->mediafile as $mediaFile) {
+                $this->_renameMediaFileForGroup($mediaFile);
+            }
+        } else {
+            foreach ($crPost->mediafile as $mediaFile) {
+                $this->_renameMediaFile($mediaFile, $crPost->user->id);
+            }
         }
         if ($crPost->tag) {
             foreach ($crPost->tag as $tag) {
@@ -154,6 +162,7 @@ class PostController extends Controller
         $userId = JWTAuth::toUser($request->token)->id;
         $data[] = $userId;
         $lstFriend = FriendShip::WHERE('status', 1)->WHERE('user_accept', $userId)->orWhere('user_request', $userId)->orderBy('created_at', 'DESC')->get();
+        $lstGroup = MemberGroup::WHERE('status', 1)->WHERE('user_id', $userId)->get();
         foreach ($lstFriend as $fr) {
             if ($fr->user_accept == $userId) {
                 foreach ($fr->user as $user) {
@@ -165,8 +174,11 @@ class PostController extends Controller
                 }
             }
         }
+        foreach ($lstGroup as $group) {
+            $gr[] = $group->group_id;
+        }
 
-        $lstPost = Post::WhereIn('user_id', $data)->Where('privacy', '!=', 0)->orderBy('created_at', 'DESC')->paginate(10);
+        $lstPost = Post::WhereIn('user_id', $data)->Where('privacy', '!=', 0)->orWhere('group_id', $gr)->orderBy('created_at', 'DESC')->paginate(10);
 
         foreach ($lstPost as $post) {
             if ($post->parent_post) {
@@ -188,11 +200,7 @@ class PostController extends Controller
                     }
                 }
             }
-            if ($post->group_id != null) {
-                $post->groupName = $post->group->group_name;
-                $post->groupAvatar = $post->group->avatar === null ? URL::to('default/avatar_group_default.jpg') :
-                    URL::to('media_file_post/' . $post->group->avatar);
-            }
+
             if ($post->tag) {
                 foreach ($post->tag as $tag) {
                     $post->tags = $tag->user->displayName;
@@ -209,8 +217,18 @@ class PostController extends Controller
             $post->totalLike = $post->like->count();
             $post->totalShare = Post::WHERE('parent_post', $post->id)->count();
             $post->isLike = !empty(PostLike::WHERE('user_id', $userId)->WHERE('post_id', $post->id)->first());
-            foreach ($post->mediafile as $mediaFile) {
-                $this->_renameMediaFile($mediaFile, $post->user->id);
+
+            if ($post->group_id != null) {
+                $post->groupName = $post->group->group_name;
+                $post->groupAvatar = $post->group->avatar === null ? URL::to('default/avatar_group_default.jpg') :
+                    URL::to('media_file_post/' . $post->group->avatar);
+                foreach ($post->mediafile as $mediaFile) {
+                    $this->_renameMediaFileForGroup($mediaFile);
+                }
+            } else {
+                foreach ($post->mediafile as $mediaFile) {
+                    $this->_renameMediaFile($mediaFile, $post->user->id);
+                }
             }
         }
         return response()->json($lstPost, 200);
@@ -250,7 +268,7 @@ class PostController extends Controller
             $post->totalShare = Post::WHERE('parent_post', $post->id)->count();
             $post->isLike = !empty(PostLike::WHERE('user_id', $userId)->WHERE('post_id', $post->id)->first());
             foreach ($post->mediafile as $mediaFile) {
-                $this->_renameMediaFile($mediaFile, $post->user->id);
+                $this->_renameMediaFileForGroup($mediaFile);
             }
         }
         return response()->json($lst, 200);
@@ -283,7 +301,7 @@ class PostController extends Controller
             $post->totalShare = Post::WHERE('parent_post', $post->id)->count();
             $post->isLike = !empty(PostLike::WHERE('user_id', $userId)->WHERE('post_id', $post->id)->first());
             foreach ($post->mediafile as $mediaFile) {
-                $this->_renameMediaFile($mediaFile, $post->user->id);
+                $this->_renameMediaFileForGroup($mediaFile);
             }
         }
         return response()->json($posts, 200);
@@ -297,6 +315,13 @@ trait PostTrait
         $isHttp = !empty(parse_url($mediaFile->media_file_name, PHP_URL_SCHEME));
         if (!$isHttp) {
             $mediaFile->media_file_name = URL::to('media_file_post/' . $userId  . '/' . $mediaFile->media_file_name);
+        }
+    }
+    private function _renameMediaFileForGroup(MediaFilePost $mediaFile): void
+    {
+        $isHttp = !empty(parse_url($mediaFile->media_file_name, PHP_URL_SCHEME));
+        if (!$isHttp) {
+            $mediaFile->media_file_name = URL::to('media_file_post/' . $mediaFile->media_file_name);
         }
     }
 }
