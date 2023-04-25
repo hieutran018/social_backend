@@ -9,6 +9,7 @@ use App\Models\FriendShip;
 use App\Models\MediaFilePost;
 use App\Models\PostLike;
 use App\Models\MemberGroup;
+use App\Models\Tag;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\URL;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -21,6 +22,8 @@ class PostController extends Controller
 
     public function createPost(Request $request)
     {
+
+
         $crPost = new Post();
         $crPost->user_id = JWTAuth::toUser($request->token)->id;
         $crPost->post_content = $request->postContent;
@@ -30,6 +33,14 @@ class PostController extends Controller
         $crPost->created_at = Carbon::now('Asia/Ho_Chi_Minh');
         $crPost->status = 1;
         $crPost->save();
+        if (!empty($request->tags)) {
+            foreach ($request->tags as $tag) {
+                $newTag = new Tag();
+                $newTag->user_id = $tag;
+                $newTag->post_id = $crPost->id;
+                $newTag->save();
+            }
+        }
 
         //* Upload Files
         if ($request->hasFile('files')) {
@@ -83,6 +94,11 @@ class PostController extends Controller
         $crPost->totalComment = $crPost->comment->count();
         foreach ($crPost->mediafile as $mediaFile) {
             $this->_renameMediaFile($mediaFile, $crPost->user->id);
+        }
+        if ($crPost->tag) {
+            foreach ($crPost->tag as $tag) {
+                $crPost->tags = $tag->user->displayName;
+            }
         }
 
         return response()->json($crPost, 200);
@@ -155,6 +171,7 @@ class PostController extends Controller
         foreach ($lstPost as $post) {
             if ($post->parent_post) {
                 $post->parent_post = Post::find($post->parent_post);
+
                 $post->parent_post->displayName = $post->parent_post->user->displayName;
                 $post->parent_post->created_at = Carbon::parse($post->parent_post->created_at)->format('Y/m/d H:m:s');
                 $post->parent_post->avatarUser = $post->parent_post->user->avatar == null ?
@@ -175,6 +192,11 @@ class PostController extends Controller
                 $post->groupName = $post->group->group_name;
                 $post->groupAvatar = $post->group->avatar === null ? URL::to('default/avatar_group_default.jpg') :
                     URL::to('media_file_post/' . $post->group->avatar);
+            }
+            if ($post->tag) {
+                foreach ($post->tag as $tag) {
+                    $post->tags = $tag->user->displayName;
+                }
             }
 
             $post->displayName = $post->user->displayName;
