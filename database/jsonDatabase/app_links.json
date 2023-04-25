@@ -1,0 +1,14 @@
+{
+    "tableName": "app_links",
+    "description": "Bảng app_links trong cơ sở dữ liệu của Facebook chứa các thông tin về liên kết đến ứng dụng (app) của bên thứ ba. Các cột của bảng này bao gồm:",
+    "column": {
+        "id": " định danh duy nhất cho mỗi liên kết ứng dụng.",
+        "app_id": " định danh ứng dụng của bên thứ ba trong hệ thống Facebook.",
+        "web_url": " địa chỉ URL của trang web mà liên kết dẫn tới.",
+        "ios_url": " địa chỉ URL của ứng dụng trên hệ điều hành iOS.",
+        "android_url": " địa chỉ URL của ứng dụng trên hệ điều hành Android.",
+        "windows_phone_url": " địa chỉ URL của ứng dụng trên hệ điều hành Windows Phone.",
+        "should_fallback": " xác định liệu nếu không tìm thấy ứng dụng, liên kết có nên trở về trang web ban đầu hay không.",
+        "app_name": " tên của ứng dụng được hiển thị trên trang web hoặc ứng dụng Facebook khi liên kết được chia sẻ."
+    }
+}

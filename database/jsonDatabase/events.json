@@ -1,0 +1,21 @@
+{
+    "tableName": "events",
+    "description": "Bảng events trong cơ sở dữ liệu của Facebook chứa thông tin về các sự kiện được tạo và tham gia trên nền tảng Facebook. Các cột trong bảng này bao gồm:",
+    "column": {
+        "id": " định danh duy nhất của sự kiện trên Facebook.",
+        "owner": " định danh của người tạo sự kiện.",
+        "name": " tên của sự kiện.",
+        "description": " mô tả của sự kiện.",
+        "start_time": " thời điểm bắt đầu của sự kiện.",
+        "end_time": " thời điểm kết thúc của sự kiện.",
+        "timezone": " múi giờ của sự kiện.",
+        "is_canceled": " trạng thái hủy bỏ sự kiện.",
+        "location": " địa điểm tổ chức sự kiện.",
+        "venue": " địa điểm tổ chức sự kiện chi tiết hơn (nếu có).",
+        "privacy": " quyền riêng tư của sự kiện.",
+        "updated_time": " thời điểm cập nhật gần nhất của sự kiện.",
+        "ticket_uri": " đường dẫn đến trang mua vé (nếu có).",
+        "cover": " thông tin về hình ảnh bìa của sự kiện.",
+        "type": " loại sự kiện."
+    }
+}

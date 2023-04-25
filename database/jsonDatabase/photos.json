@@ -1,0 +1,28 @@
+{
+    "tableName": "photos",
+    "description": "",
+    "column": {
+        "id": "Mã định danh duy nhất của hình ảnh (photo).",
+        "album_id": "Mã định danh của album chứa hình ảnh.",
+        "created_time": "Thời gian tạo hình ảnh.",
+        "updated_time": "Thời gian cập nhật hình ảnh.",
+        "name": "Tên của hình ảnh.",
+        "picture": "URL ảnh đại diện của hình ảnh.",
+        "source": "URL nguồn của hình ảnh.",
+        "height": "Chiều cao của hình ảnh (đơn vị pixel).",
+        "width": "Chiều rộng của hình ảnh (đơn vị pixel).",
+        "images": "Danh sách các đối tượng ảnh với độ phân giải khác nhau.",
+        "likes": "Số lượng người dùng thích hình ảnh.",
+        "comments": "Số lượng bình luận trên hình ảnh.",
+        "tags": "Danh sách các đối tượng được gắn thẻ trên hình ảnh.",
+        "place": "Địa điểm của hình ảnh (nếu có).",
+        "privacy": "Cài đặt quyền riêng tư của hình ảnh.",
+        "backdated_time": "Thời gian ngược đối với hình ảnh.",
+        "can_delete": "Trạng thái có thể xóa hình ảnh hay không.",
+        "can_tag": "Trạng thái có thể gắn thẻ trên hình ảnh hay không.",
+        "from": "Người đăng hình ảnh.",
+        "webp_images": "Danh sách các đối tượng ảnh dưới định dạng WebP.",
+        "link": "URL liên kết đến hình ảnh trên Facebook.",
+        "icon": "Icon đại diện cho hình ảnh."
+    }
+}

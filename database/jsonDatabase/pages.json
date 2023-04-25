@@ -1,0 +1,22 @@
+{
+    "tableName": "pages",
+    "description": "Bảng pages trong cơ sở dữ liệu của Facebook chứa thông tin về các trang (pages) trên nền tảng. Các cột trong bảng này bao gồm:",
+    "column": {
+        "id": "Mã định danh duy nhất của trang (page).",
+        "name": "Tên của trang.",
+        "category": "Danh mục của trang.",
+        "about": "Thông tin về trang.",
+        "description": "Mô tả về trang.",
+        "fan_count": "Số lượng người hâm mộ (fan) của trang.",
+        "verification_status": "Trạng thái xác minh của trang.",
+        "phone": "Số điện thoại của trang.",
+        "website": "Địa chỉ website của trang.",
+        "email": "Địa chỉ email của trang.",
+        "location": "Địa chỉ của trang.",
+        "picture": "Ảnh đại diện của trang.",
+        "cover": "Ảnh bìa của trang.",
+        "created_time": "Thời gian tạo trang.",
+        "updated_time": "Thời gian cập nhật trang.",
+        "is_published": "Trạng thái công khai của trang."
+    }
+}

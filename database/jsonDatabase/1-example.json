@@ -1,0 +1,31 @@
+{
+    "tableName": "tableName",
+    "description": "",
+    "column": {
+        "columnFieldName": "desc"
+    },
+    "allTable": {
+        "accounts": "chứa thông tin về tài khoản Facebook của người dùng",
+        "ads": "chứa thông tin về quảng cáo trên Facebook",
+        "ad_account": "chứa thông tin về tài khoản quảng cáo của người dùng trên Facebook",
+        "ad_campaign": "chứa thông tin về chiến dịch quảng cáo trên Facebook",
+        "ad_set": "chứa thông tin về bộ quảng cáo trên Facebook",
+        "ad_insight": "chứa thông tin về hiệu quả quảng cáo trên Facebook",
+        "albums": "chứa thông tin về album ảnh của người dùng trên Facebook",
+        "app_links": "chứa thông tin về các liên kết ứng dụng được chia sẻ trên Facebook",
+        "comments": "chứa thông tin về bình luận trên Facebook",
+        "events": "chứa thông tin về sự kiện trên Facebook",
+        "feeds": "chứa thông tin về bản tin và hoạt động của người dùng trên Facebook",
+        "friends": "chứa thông tin về danh sách bạn bè của người dùng trên Facebook",
+        "groups": "chứa thông tin về các nhóm của người dùng trên Facebook",
+        "likes": "chứa thông tin về các lượt thích của người dùng trên Facebook",
+        "messages": "chứa thông tin về tin nhắn của người dùng trên Facebook",
+        "notifications": "chứa thông tin về các thông báo của người dùng trên Facebook",
+        "pages": "chứa thông tin về các trang của người dùng trên Facebook",
+        "photos": "chứa thông tin về ảnh của người dùng trên Facebook",
+        "posts": "chứa thông tin về bài đăng của người dùng trên Facebook",
+        "reactions": "chứa thông tin về các phản ứng của người dùng trên Facebook",
+        "stories": "chứa thông tin về câu chuyện của người dùng trên Facebook",
+        "videos": "chứa thông tin về video của người dùng trên Facebook"
+    }
+}

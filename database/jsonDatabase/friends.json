@@ -1,0 +1,17 @@
+{
+    "tableName": "friends",
+    "description": "",
+    "column": {
+        "id": "định danh duy nhất cho bạn bè.",
+        "user_id": "định danh người dùng cho chủ sở hữu tài khoản Facebook.",
+        "friend_id": "định danh người dùng cho bạn bè của chủ sở hữu tài khoản Facebook.",
+        "created_time": "thời gian tạo bản ghi.",
+        "modified_time": "thời gian chỉnh sửa bản ghi.",
+        "are_friends": "trạng thái bạn bè giữa chủ sở hữu tài khoản và bạn bè.",
+        "is_following": "trạng thái người dùng có đang theo dõi bạn bè không.",
+        "can_follow": "trạng thái người dùng có thể theo dõi bạn bè không.",
+        "is_favorite": "trạng thái người dùng có đánh dấu bạn bè là yêu thích không.",
+        "is_restricted": "trạng thái người dùng có hạn chế truy cập bạn bè không.",
+        "is_subscribed": "trạng thái người dùng có đăng ký thông báo cho bạn bè không."
+    }
+}

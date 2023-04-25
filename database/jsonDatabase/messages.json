@@ -1,0 +1,26 @@
+{
+    "tableName": "messages",
+    "description": "",
+    "column": {
+        "id": "định danh duy nhất cho một tin nhắn.",
+        "thread_key": "định danh duy nhất cho một cuộc trò chuyện giữa hai hoặc nhiều người dùng. Được sử dụng để gom nhóm các tin nhắn vào một cuộc trò chuyện duy nhất.",
+        "thread_path": "đường dẫn đến cuộc trò chuyện tương ứng trên Facebook.",
+        "sender_id": "định danh người gửi tin nhắn.",
+        "sender_name": "tên người gửi tin nhắn.",
+        "sender_email": "địa chỉ email của người gửi tin nhắn.",
+        "sender_phone_number": "số điện thoại của người gửi tin nhắn.",
+        "sender_gender": "giới tính của người gửi tin nhắn.",
+        "sender_profile_picture": "đường dẫn đến ảnh đại diện của người gửi tin nhắn.",
+        "recipient_id": "định danh người nhận tin nhắn.",
+        "recipient_name": "tên người nhận tin nhắn.",
+        "recipient_email": "địa chỉ email của người nhận tin nhắn.",
+        "recipient_phone_number": "số điện thoại của người nhận tin nhắn.",
+        "recipient_gender": "giới tính của người nhận tin nhắn.",
+        "recipient_profile_picture": "đường dẫn đến ảnh đại diện của người nhận tin nhắn.",
+        "timestamp": "thời gian gửi tin nhắn (dưới dạng Unix timestamp).",
+        "is_unread": "trạng thái đọc/chưa đọc của tin nhắn.",
+        "is_forward": "trạng thái chuyển tiếp của tin nhắn.",
+        "is_sponsored": "trạng thái tin nhắn quảng cáo.",
+        "attachments": "các tệp đính kèm (nếu có)."
+    }
+}

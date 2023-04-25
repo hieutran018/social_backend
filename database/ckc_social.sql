@@ -25,36 +25,36 @@ SET time_zone = "+00:00";
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `first_name`, `last_name`, `email`, `password`, `avatar`, `cover_image`, `date_of_birth`, `sex`, `went_to`, `live_in`, `relationship`, `phone`, `address`, `token`, `email_verified_at`, `created_at`, `updated_at`, `deleted_at`, `isAdmin`) VALUES
-(1, 'Samanta Cronin', 'Mario Pfannerstill', 'brycen.nolan@example.net', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 0, 'Thành phố Hồ Chí Minh', 'Thành phố Hồ Chí Minh', 1, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
-(2, 'Mrs. Valentine Moore DVM', 'Raquel Schamberger', 'eichmann.jenifer@example.org', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 1, 'Vĩnh Long', 'Thành phố Hồ Chí Minh', 0, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
-(3, 'Leon Streich', 'Clare Kilback III', 'zboncak.arturo@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 1, 'Thành phố Hồ Chí Minh', 'Thành phố Hồ Chí Minh', 1, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
-(4, 'Trevion Gusikowski', 'Ms. Ebony Schinner', 'arno83@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 0, 'Thành phố Hồ Chí Minh', 'Thành phố Hồ Chí Minh', 1, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
-(5, 'Daryl Ernser', 'Jimmy Reilly IV', 'dayna01@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 1, 'Vĩnh Long', 'Thành phố Hồ Chí Minh', 0, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
-(6, 'Miss Ivory Boyer', 'Werner Koss', 'zora86@example.org', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 0, 'Vĩnh Long', 'Thành phố Hồ Chí Minh', 0, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
-(7, 'Prof. Ford Wunsch III', 'Eloise Christiansen', 'wrodriguez@example.net', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 0, 'Thành phố Hồ Chí Minh', 'Thành phố Hồ Chí Minh', 0, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
-(8, 'Prof. Sebastian Feest', 'Mario Leuschke', 'iharvey@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 0, 'Thành phố Hồ Chí Minh', 'Thành phố Hồ Chí Minh', 1, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
-(9, 'Demarco Kuvalis', 'Layla Jerde', 'henderson04@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 0, 'Thành phố Hồ Chí Minh', 'Thành phố Hồ Chí Minh', 0, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
-(10, 'Paul Stracke', 'Caleigh Conn', 'hill.norval@example.org', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 0, 'Vĩnh Long', 'Thành phố Hồ Chí Minh', 1, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
-(11, 'Jake Bashirian', 'Julius Hettinger', 'legros.carissa@example.net', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 0, 'Thành phố Hồ Chí Minh', 'Thành phố Hồ Chí Minh', 0, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
-(12, 'Isom Bergstrom', 'Guillermo Cummings', 'euna.spencer@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 0, 'Vĩnh Long', 'Thành phố Hồ Chí Minh', 0, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
-(13, 'Michaela Leannon Sr.', 'Mrs. Gracie Becker', 'jakubowski.louie@example.org', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 0, 'Vĩnh Long', 'Thành phố Hồ Chí Minh', 0, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
-(14, 'Skye Kiehn III', 'Dr. Maybell Douglas', 'laisha.keeling@example.org', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 0, 'Thành phố Hồ Chí Minh', 'Thành phố Hồ Chí Minh', 0, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
-(15, 'Tina Will', 'Leif Marvin', 'quigley.amara@example.org', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 0, 'Thành phố Hồ Chí Minh', 'Thành phố Hồ Chí Minh', 1, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
-(16, 'Christina Sauer', 'Dr. Roma Sanford', 'lora.jakubowski@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 1, 'Vĩnh Long', 'Thành phố Hồ Chí Minh', 1, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
-(17, 'Dr. Austin Sawayn Sr.', 'Jillian Reynolds', 'bria90@example.net', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 0, 'Vĩnh Long', 'Thành phố Hồ Chí Minh', 0, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
-(18, 'Prof. Milo Dibbert', 'Mr. Wallace Daniel DVM', 'boyle.gillian@example.net', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 0, 'Vĩnh Long', 'Thành phố Hồ Chí Minh', 0, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
-(19, 'Prof. Bella Walsh', 'Annabel Tremblay', 'demarco31@example.org', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 0, 'Vĩnh Long', 'Thành phố Hồ Chí Minh', 1, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
-(20, 'Jordan Rippin', 'Wilton Turner', 'kali59@example.org', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 1, 'Vĩnh Long', 'Thành phố Hồ Chí Minh', 1, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
-(21, 'Mrs. Bridie Williamson', 'Alyce Labadie', 'kutch.lorenzo@example.net', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 0, 'Thành phố Hồ Chí Minh', 'Thành phố Hồ Chí Minh', 0, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
-(22, 'Prof. Sabina Padberg', 'Emerald Tillman', 'allison06@example.net', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 1, 'Thành phố Hồ Chí Minh', 'Thành phố Hồ Chí Minh', 1, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
-(23, 'Dallin Wolf', 'Connor Lemke', 'keely28@example.org', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 0, 'Thành phố Hồ Chí Minh', 'Thành phố Hồ Chí Minh', 0, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
-(24, 'Sylvia Hessel', 'Mr. Mekhi Kihn V', 'macey.mclaughlin@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 0, 'Vĩnh Long', 'Thành phố Hồ Chí Minh', 1, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
-(25, 'Magnolia Hoppe II', 'Daron Hintz', 'effertz.leonor@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 1, 'Vĩnh Long', 'Thành phố Hồ Chí Minh', 0, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
-(26, 'Kayleigh Dibbert', 'Lloyd Hintz', 'zthompson@example.org', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 1, 'Vĩnh Long', 'Thành phố Hồ Chí Minh', 1, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
-(27, 'Ambrose Schulist', 'Elmo Weber', 'antonia.mohr@example.org', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 0, 'Vĩnh Long', 'Thành phố Hồ Chí Minh', 0, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
-(28, 'Mr. Corbin Jast PhD', 'Mrs. Maxie Ledner Sr.', 'bell92@example.org', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 0, 'Vĩnh Long', 'Thành phố Hồ Chí Minh', 0, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
-(29, 'Prof. Lue Towne', 'Cassandra VonRueden', 'considine.maynard@example.org', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 0, 'Thành phố Hồ Chí Minh', 'Thành phố Hồ Chí Minh', 0, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0);
+INSERT INTO `users` (`id`, `displayName`, `email`, `password`, `avatar`, `cover_image`, `date_of_birth`, `sex`, `went_to`, `live_in`, `relationship`, `phone`, `address`, `token`, `email_verified_at`, `created_at`, `updated_at`, `deleted_at`, `isAdmin`) VALUES
+(1, 'Mario Pfannerstill', 'brycen.nolan@example.net', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 0, 'Thành phố Hồ Chí Minh', 'Thành phố Hồ Chí Minh', 1, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
+(2, 'Raquel Schamberger', 'eichmann.jenifer@example.org', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 1, 'Vĩnh Long', 'Thành phố Hồ Chí Minh', 0, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
+(3, 'Clare Kilback III', 'zboncak.arturo@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 1, 'Thành phố Hồ Chí Minh', 'Thành phố Hồ Chí Minh', 1, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
+(4, 'Ms. Ebony Schinner', 'arno83@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 0, 'Thành phố Hồ Chí Minh', 'Thành phố Hồ Chí Minh', 1, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
+(5, 'Jimmy Reilly IV', 'dayna01@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 1, 'Vĩnh Long', 'Thành phố Hồ Chí Minh', 0, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
+(6, 'Werner Koss', 'zora86@example.org', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 0, 'Vĩnh Long', 'Thành phố Hồ Chí Minh', 0, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
+(7, 'Eloise Christiansen', 'wrodriguez@example.net', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 0, 'Thành phố Hồ Chí Minh', 'Thành phố Hồ Chí Minh', 0, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
+(8, 'Mario Leuschke', 'iharvey@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 0, 'Thành phố Hồ Chí Minh', 'Thành phố Hồ Chí Minh', 1, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
+(9, 'Layla Jerde', 'henderson04@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 0, 'Thành phố Hồ Chí Minh', 'Thành phố Hồ Chí Minh', 0, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
+(10, 'Caleigh Conn', 'hill.norval@example.org', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 0, 'Vĩnh Long', 'Thành phố Hồ Chí Minh', 1, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
+(11, 'Julius Hettinger', 'legros.carissa@example.net', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 0, 'Thành phố Hồ Chí Minh', 'Thành phố Hồ Chí Minh', 0, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
+(12, 'Guillermo Cummings', 'euna.spencer@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 0, 'Vĩnh Long', 'Thành phố Hồ Chí Minh', 0, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
+(13, 'Mrs. Gracie Becker', 'jakubowski.louie@example.org', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 0, 'Vĩnh Long', 'Thành phố Hồ Chí Minh', 0, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
+(14, 'Dr. Maybell Douglas', 'laisha.keeling@example.org', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 0, 'Thành phố Hồ Chí Minh', 'Thành phố Hồ Chí Minh', 0, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
+(15, 'Leif Marvin', 'quigley.amara@example.org', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 0, 'Thành phố Hồ Chí Minh', 'Thành phố Hồ Chí Minh', 1, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
+(16, 'Dr. Roma Sanford', 'lora.jakubowski@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 1, 'Vĩnh Long', 'Thành phố Hồ Chí Minh', 1, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
+(17, 'Jillian Reynolds', 'bria90@example.net', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 0, 'Vĩnh Long', 'Thành phố Hồ Chí Minh', 0, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
+(18, 'Mr. Wallace Daniel DVM', 'boyle.gillian@example.net', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 0, 'Vĩnh Long', 'Thành phố Hồ Chí Minh', 0, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
+(19, 'Annabel Tremblay', 'demarco31@example.org', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 0, 'Vĩnh Long', 'Thành phố Hồ Chí Minh', 1, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
+(20, 'Wilton Turner', 'kali59@example.org', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 1, 'Vĩnh Long', 'Thành phố Hồ Chí Minh', 1, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
+(21, 'Alyce Labadie', 'kutch.lorenzo@example.net', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 0, 'Thành phố Hồ Chí Minh', 'Thành phố Hồ Chí Minh', 0, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
+(22, 'Emerald Tillman', 'allison06@example.net', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 1, 'Thành phố Hồ Chí Minh', 'Thành phố Hồ Chí Minh', 1, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
+(23, 'Connor Lemke', 'keely28@example.org', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 0, 'Thành phố Hồ Chí Minh', 'Thành phố Hồ Chí Minh', 0, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
+(24, 'Mr. Mekhi Kihn V', 'macey.mclaughlin@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 0, 'Vĩnh Long', 'Thành phố Hồ Chí Minh', 1, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
+(25, 'Daron Hintz', 'effertz.leonor@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 1, 'Vĩnh Long', 'Thành phố Hồ Chí Minh', 0, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
+(26, 'Lloyd Hintz', 'zthompson@example.org', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 1, 'Vĩnh Long', 'Thành phố Hồ Chí Minh', 1, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
+(27, 'Elmo Weber', 'antonia.mohr@example.org', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 0, 'Vĩnh Long', 'Thành phố Hồ Chí Minh', 0, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
+(28, 'Mrs. Maxie Ledner Sr.', 'bell92@example.org', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 0, 'Vĩnh Long', 'Thành phố Hồ Chí Minh', 0, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0),
+(29, 'Cassandra VonRueden', 'considine.maynard@example.org', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, '2023-04-21', 0, 'Thành phố Hồ Chí Minh', 'Thành phố Hồ Chí Minh', 0, NULL, 'Thanh Pho Ho Chi Minh', NULL, '2023-04-21 11:50:10', '2023-04-21 11:50:10', '2023-04-21 11:50:10', NULL, 0);
 COMMIT;
 
 --
@@ -77,7 +77,7 @@ INSERT INTO `comment_posts` (`id`, `comment_content`, `post_id`, `user_id`, `par
 -- Dumping data for table `groups`
 --
 
-INSERT INTO `groups` (`id`, `group_name`, `privacy`, `avatar`, `cover_image`, `created_at`, `updated_at`, `deleted_at`) VALUES
+INSERT INTO `groups` (`id`, `group_name`, `privacy`, `avatar`, `description`, `created_at`, `updated_at`, `deleted_at`) VALUES
 (1, 'Group bóng đá', 0, '1681995378d8EhHJnTl1.jpg', NULL, '2023-04-18 23:58:10', NULL, NULL),
 (2, 'Đồ án tốt nghiệp 2023', 0, '1681995412Om2IlXczBf.jpg', NULL, '2023-04-19 00:10:38', NULL, NULL),
 (3, 'Người chơi điện tử', 1, '1682013317suD8pzpSMn.jpg', NULL, '2023-04-20 10:27:26', NULL, NULL),
@@ -108,10 +108,10 @@ INSERT INTO `like_posts` (`id`, `user_id`, `post_id`, `created_at`, `updated_at`
 (18, 11, 32, '2023-04-20 21:05:28', NULL, NULL);
 
 --
--- Dumping data for table `list_friend`
+-- Dumping data for table `list_friends`
 --
 
-INSERT INTO `list_friend` (`id`, `user_request`, `user_accept`, `created_at`, `updated_at`, `deleted_at`, `status`) VALUES
+INSERT INTO `list_friends` (`id`, `user_request`, `user_accept`, `created_at`, `updated_at`, `deleted_at`, `status`) VALUES
 (1, 1, 2, '2023-04-18 23:58:53', NULL, NULL, 1),
 (2, 1, 3, '2023-04-18 23:58:54', NULL, NULL, 1),
 (3, 1, 4, '2023-04-18 23:58:55', NULL, NULL, 1),
@@ -297,10 +297,10 @@ INSERT INTO `media_file_posts` (`id`, `media_file_name`, `media_type`, `post_id`
 (102, 'https://upload-os-bbs.hoyolab.com/upload/2023/04/19/241509357/66ddbb3d204182f5154e0214d866014d_4473388859017719285.jpg', 'jpg', 62, 1, NULL, NULL, NULL, 1, '2023-04-21 18:51:21', NULL);
 
 --
--- Dumping data for table `member_group`
+-- Dumping data for table `member_groups`
 --
 
-INSERT INTO `member_group` (`id`, `user_id`, `group_id`, `isAdminGroup`, `status`, `created_at`, `updated_at`, `deleted_at`) VALUES
+INSERT INTO `member_groups` (`id`, `user_id`, `group_id`, `isAdminGroup`, `status`, `created_at`, `updated_at`, `deleted_at`) VALUES
 (1, 1, 1, 1, 1, '2023-04-18 23:58:10', NULL, NULL),
 (2, 2, 1, 0, 1, '2023-04-18 23:59:36', NULL, NULL),
 (3, 3, 1, 0, 1, '2023-04-18 23:59:37', NULL, NULL),
@@ -320,10 +320,10 @@ INSERT INTO `member_group` (`id`, `user_id`, `group_id`, `isAdminGroup`, `status
 (17, 11, 4, 1, 1, '2023-04-21 02:04:59', NULL, NULL);
 
 --
--- Dumping data for table `social_account`
+-- Dumping data for table `social_accounts`
 --
 
-INSERT INTO `social_account` (`id`, `provider`, `provider_id`, `email`, `user_id`, `created_at`, `updated_at`) VALUES
+INSERT INTO `social_accounts` (`id`, `provider`, `provider_id`, `email`, `user_id`, `created_at`, `updated_at`) VALUES
 (1, 'google.com', 's8HtGXPL7LUJvvkklWD72WzZ4nh2', 'tranduongchihieu@gmail.com', 1, '2023-04-18 23:58:00', '2023-04-18 16:58:00');
 
 

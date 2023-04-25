@@ -1,0 +1,15 @@
+{
+    "tableName": "likes",
+    "description": "Bảng likes của Facebook lưu trữ thông tin về các like được tạo ra trên nền tảng. Dưới đây là danh sách các cột trong bảng likes:",
+    "column": {
+        "id": "mã số duy nhất của like",
+        "created_time": "thời gian tạo ra like",
+        "from": "thông tin về người dùng tạo ra like (bao gồm id và tên)",
+        "like_count": "số lượng like được tạo ra",
+        "type": "loại đối tượng mà like được tạo ra (ví dụ: 'page' cho trang, 'comment' cho bình luận)",
+        "post_id": "mã số duy nhất của bài đăng được like (nếu loại là 'post')",
+        "comment_id": "mã số duy nhất của bình luận được like (nếu loại là 'comment')",
+        "object_id": "mã số duy nhất của đối tượng được like (nếu loại là 'page' hoặc 'external_page')",
+        "reaction_type": "loại phản ứng của like (ví dụ: 'LIKE', 'LOVE', 'HAHA', 'WOW', 'SAD', 'ANGRY', 'THANKFUL', 'PRIDE')"
+    }
+}

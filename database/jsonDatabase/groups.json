@@ -1,0 +1,20 @@
+{
+    "tableName": "groups",
+    "description": "",
+    "column": {
+        "id": "định danh duy nhất của group trên Facebook.",
+        "owner": "định danh người sở hữu group trên Facebook.",
+        "name": "tên của group.",
+        "privacy": "mức độ riêng tư của group (OPEN, CLOSED, SECRET).",
+        "description": "mô tả group.",
+        "icon": "đường dẫn đến biểu tượng group.",
+        "cover": "đường dẫn đến ảnh bìa của group.",
+        "email": "địa chỉ email của group.",
+        "created_time": "thời gian tạo group.",
+        "updated_time": "thời gian cập nhật group.",
+        "venue": "địa chỉ của nhóm nếu là một nhóm về sự kiện.",
+        "parent_id": "định danh group cha (nếu có).",
+        "archived": "trạng thái lưu trữ của group.",
+        "post_permission": "quyền đăng bài viết của thành viên trong group."
+    }
+}

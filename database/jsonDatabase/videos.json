@@ -1,0 +1,28 @@
+{
+    "tableName": "tableName",
+    "description": "Bảng 'videos' trong cơ sở dữ liệu của Facebook chứa thông tin về các video mà người dùng đã đăng tải hoặc đã được đăng tải trên trang cá nhân, trang doanh nghiệp hoặc trong các nhóm. Dưới đây là danh sách các cột trong bảng 'videos':",
+    "column": {
+        "id": "Định danh duy nhất của video trên Facebook.",
+        "created_time": "Thời điểm tạo video.",
+        "updated_time": "Thời điểm cập nhật gần nhất của video.",
+        "description": "Mô tả của video.",
+        "length": "Độ dài của video (đơn vị giây).",
+        "owner_id": "ID của người đăng video.",
+        "thumbnail": "Đường dẫn đến ảnh đại diện của video.",
+        "source": "Đường dẫn đến nguồn (file video) của video.",
+        "title": "Tiêu đề của video.",
+        "privacy": "Cài đặt quyền riêng tư của video.",
+        "likes": "Số lượt thích của video.",
+        "comments": "Số lượt bình luận của video.",
+        "shares": "Số lượt chia sẻ của video.",
+        "views": "Số lượt xem của video.",
+        "tags": "Các từ khóa (tags) liên quan đến video.",
+        "status": "Trạng thái hiện tại của video (public, private, unpublished, ...).",
+        "backdated_time": "Thời gian đăng video (nếu khác với thời điểm tạo video).",
+        "backdated_published": "Video có được đăng ngay khi tạo hay không.",
+        "scheduled_publish_time": "Thời gian đăng video theo lịch trình.",
+        "content_category": "Danh mục nội dung của video.",
+        "content_tags": "Các từ khóa liên quan đến nội dung của video.",
+        "data": "Dữ liệu liên quan đến video (nếu có)."
+    }
+}

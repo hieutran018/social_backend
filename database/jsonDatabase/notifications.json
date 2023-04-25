@@ -1,0 +1,18 @@
+{
+    "tableName": "notifications",
+    "description": "Bảng notifications chứa thông tin về các thông báo trên Facebook của người dùng. Dưới đây là danh sách các cột của bảng này:",
+    "column": {
+        "id": "Định danh duy nhất của thông báo.",
+        "to": "Định danh người dùng nhận thông báo.",
+        "from": "Định danh người dùng gửi thông báo.",
+        "created_time": "Thời gian tạo thông báo.",
+        "updated_time": "Thời gian cập nhật thông báo.",
+        "title": "Tiêu đề của thông báo.",
+        "link": "Đường dẫn liên kết đến nội dung của thông báo.",
+        "application": "Thông tin về ứng dụng liên quan đến thông báo.",
+        "unread": "Trạng thái đánh dấu chưa đọc của thông báo.",
+        "object_type": "Loại đối tượng được liên kết đến thông báo (trang, bài viết, hình ảnh, video, v.v.).",
+        "object_id": "Định danh đối tượng được liên kết đến thông báo.",
+        "icon_url": "Đường dẫn đến biểu tượng của thông báo."
+    }
+}
