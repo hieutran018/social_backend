@@ -1,0 +1,16 @@
+{
+    "tableName": "comments",
+    "description": "Bảng comments trong Facebook chứa các thông tin liên quan đến các bình luận trên các bài đăng hoặc trang của người dùng. Dưới đây là các cột trong bảng comments:",
+    "column": {
+        "id": "định danh của bình luận",
+        "from": "thông tin người dùng tạo bình luận (bao gồm id, tên và hình ảnh đại diện)",
+        "message": "nội dung bình luận",
+        "attachment": "thông tin về tệp đính kèm (nếu có)",
+        "parent_id": "định danh của bình luận cha (nếu có)",
+        "created_time": "thời gian tạo bình luận",
+        "comments": "số lượng bình luận con của bình luận này",
+        "like_count": "số lượng người dùng thích bình luận",
+        "comment_count": "số lượng bình luận của bình luận này",
+        "private_reply_conversation": "thông tin về cuộc trò chuyện riêng tư (nếu có)"
+    }
+}

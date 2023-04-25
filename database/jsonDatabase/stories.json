@@ -1,0 +1,19 @@
+{
+    "tableName": "stories",
+    "description": "Bảng stories trong cơ sở dữ liệu của Facebook chứa thông tin về các câu chuyện mà người dùng đăng lên.",
+
+    "column": {
+        "id": "Định danh duy nhất của câu chuyện trên Facebook.",
+        "created_time": "Thời điểm tạo câu chuyện.",
+        "updated_time": "Thời điểm cập nhật gần nhất của câu chuyện.",
+        "expiration_timestamp": "Thời gian hết hạn của câu chuyện (nếu có).",
+        "type": "Loại câu chuyện (photo/video).",
+        "length": "Độ dài của câu chuyện (nếu là video).",
+        "owner_id": "ID của người tạo câu chuyện.",
+        "story_id": "ID của câu chuyện.",
+        "message": "Nội dung câu chuyện.",
+        "can_reply": "Có thể trả lời vào câu chuyện hay không.",
+        "viewer_count": "Số lượt xem của câu chuyện.",
+        "data": "Dữ liệu liên quan đến câu chuyện (nếu có)."
+    }
+}

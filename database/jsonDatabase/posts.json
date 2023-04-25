@@ -1,0 +1,22 @@
+{
+    "tableName": "posts",
+    "description": "Bảng posts chứa thông tin về các bài đăng trên Facebook. Các cột có trong bảng này bao gồm:",
+    "column": {
+        "id": "mã số duy nhất của bài đăng trên Facebook.",
+        "created_time": "thời gian tạo bài đăng.",
+        "message": "nội dung của bài đăng.",
+        "story": "nội dung câu chuyện liên quan đến bài đăng (nếu có).",
+        "from": "người đăng bài đăng, bao gồm id và name.",
+        "picture": "đường dẫn đến hình ảnh được chia sẻ trong bài đăng (nếu có).",
+        "link": "đường dẫn được chia sẻ trong bài đăng (nếu có).",
+        "name": "tiêu đề được chia sẻ trong bài đăng (nếu có).",
+        "description": "mô tả được chia sẻ trong bài đăng (nếu có).",
+        "type": "loại bài đăng, bao gồm status, photo, video, offer, event, link, note, question.",
+        "status_type": "loại trạng thái của bài đăng, bao gồm mobile_status_update, created_note, added_photos, added_video, shared_story, created_group, created_event, wall_post, app_created_story, published_story, tagged_in_photo, approved_friend.",
+        "shares": "số lần chia sẻ bài đăng.",
+        "likes": "số lượng người dùng thích bài đăng.",
+        "comments": "số lượng bình luận được đăng trên bài đăng.",
+        "reactions": "số lượng biểu cảm được đăng trên bài đăng.",
+        "attachments": "đính kèm bài đăng (nếu có)."
+    }
+}

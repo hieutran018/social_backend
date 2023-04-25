@@ -1,0 +1,22 @@
+{
+    "tableName": "albums",
+    "description": "Bảng \"albums\" của Facebook chứa thông tin về các album được tạo bởi người dùng. Các cột của bảng này bao gồm:",
+    "column": {
+        "id": " mã số duy nhất của album trên Facebook",
+        "owner": " mã số Facebook ID của người dùng tạo album",
+        "name": " tên của album",
+        "description": " mô tả ngắn gọn về album",
+        "location": " địa điểm chụp ảnh của album",
+        "count": " số lượng ảnh trong album",
+        "created_time": " thời gian tạo album",
+        "updated_time": " thời gian cập nhật album",
+        "can_upload": " trạng thái cho phép tải lên ảnh vào album hay không",
+        "privacy": " quyền riêng tư của album, bao gồm các giá trị everyone, all_friends, friends_of_friends, self hoặc custom.",
+        "cover_photo": " mã số ID của ảnh đại diện cho album",
+        "modified_major": " trạng thái chỉnh sửa lớn nhất của album. Bao gồm các giá trị added_photos, edited_photos, edited_captions, deleted_photos hoặc deleted_album.",
+        "type": " loại album, có thể là profile, mobile, wall, normal, album, saved, event, recent, marketplace, games, facebook_story, shared_space, profile_media, watch, pages_cover_photo, pages_user_photos, pages_suggested_photos, facebook_live_cover, facebook_shop, instagram_media, group, profile_cover_video, guide, topic, group_video, group_media, group_social_good, group_post, group_poll, group_album, group_photos_of, chat.",
+        "sub_type": " loại album phụ, có thể là cover, app, timelines_app_collection, timelines_app_collection_member, event_app_collection_member, marketplace_app_collection_member, shop_now_app_collection_member, group_member_added_by_app, group_admin_added_by_app, games_app_collection_member, fundraiser, fundraiser_for_charity, instant_articles, with_tags, profilie_pic, timelines_app, timelines_migrated_photos, timelines_profile_pic, fb_story, place, live, tagged, tagged_places, group_posted_by_member, guided, acquired, menu, offers, service, photos_of_this_page, email, phones, address, instant_articles_dev, brands.",
+        "visibility": " trạng thái hiển thị album, có thể là normal, hidden, private, temporary, deleted, locked.",
+        "can_see_insight": " trạng thái cho phép người dùng xem các số liệu thống kê về album hay không."
+    }
+}

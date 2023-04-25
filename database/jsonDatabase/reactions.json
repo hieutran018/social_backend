@@ -1,0 +1,10 @@
+{
+    "tableName": "reactions",
+    "description": "",
+    "column": {
+        "id": "định danh duy nhất cho từng bản ghi trong bảng.",
+        "name": "tên của phản ứng (ví dụ: 'Thích', 'Yêu thích', 'Buồn').",
+        "type": "loại phản ứng (ví dụ: 'like', 'love', 'sad').",
+        "pic": "URL của biểu tượng đại diện cho phản ứng."
+    }
+}
