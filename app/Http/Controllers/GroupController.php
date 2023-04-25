@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Group;
 use App\Models\MemberGroup;
 use App\Models\Post;
+use App\Models\MediaFilePost;
 use URL;
 use Carbon\Carbon;
 use JWTAuth;
@@ -143,8 +144,27 @@ class GroupController extends Controller
                 $fileExtentsion = $file->getClientOriginalExtension();
                 $random = Str::random(10);
                 $fileName = time() . $random . '.' . $fileExtentsion;
-                $file->move('media_file_post', $fileName);
+                $file->move('media_file_post/', $fileName);
                 $edit->avatar = $fileName;
+
+                $crPost = new Post();
+                $crPost->user_id = JWTAuth::toUser($request->token)->id;
+                $crPost->post_content = 'Đã cập nhật ảnh của nhóm.';
+                $crPost->privacy = $request->privacy;
+                $crPost->parent_post = null;
+                $crPost->group_id = $edit->id;
+                $crPost->created_at = Carbon::now('Asia/Ho_Chi_Minh');
+                $crPost->status = 1;
+                $crPost->save();
+                $media = new MediaFilePost();
+                $media->media_file_name = $fileName;
+                $media->media_type = $fileExtentsion;
+                $media->post_id = $crPost->id;
+                $media->group_id = $edit->id;
+                $media->user_id = JWTAuth::toUser($request->token)->id;
+                $media->created_at = Carbon::now('Asia/Ho_Chi_Minh');
+                $media->status = 1;
+                $media->save();
             }
 
             $edit->update();
@@ -189,7 +209,13 @@ class GroupController extends Controller
                 $update = MemberGroup::WHERE('user_id', $request->userId)->WHERE('group_id', $isGroup->id)->first();
                 $update->isAdminGroup = 1;
                 $update->update();
-                return response()->json('success', 200);
+
+                $update->displayName = $update->user->displayName;
+                $update->avatar = $update->user->avatar == null ?
+                    ($update->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png'))
+                    :
+                    URL::to('media_file_post/' . $update->user->id . '/' . $update->user->avatar);
+                return response()->json($update, 200);
             }
         }
     }
@@ -209,7 +235,33 @@ class GroupController extends Controller
                 $update = MemberGroup::WHERE('user_id', $request->userId)->WHERE('group_id', $isGroup->id)->first();
                 $update->isAdminGroup = 0;
                 $update->update();
-                return response()->json('success', 200);
+
+                $update->displayName = $update->user->displayName;
+                $update->avatar = $update->user->avatar == null ?
+                    ($update->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png'))
+                    :
+                    URL::to('media_file_post/' . $update->user->id . '/' . $update->user->avatar);
+
+                return response()->json($update, 200);
+            }
+        }
+    }
+
+    public function removeMemberFromGroup(Request $request)
+    {
+        $currentAdmin = JWTAuth::toUser($request->token)->id;
+
+        $isGroup = Group::WHERE('id', $request->groupId)->first();
+        if (empty($isGroup)) {
+            return response()->json('Yêu cầu không hợp lệ', 400);
+        } else {
+            $isAdmin = MemberGroup::WHERE('user_id', $currentAdmin)->WHERE('group_id', $isGroup->id)->first();
+            if (empty($isAdmin)) {
+                return response()->json('Yêu cầu không hợp lệ', 400);
+            } else {
+                $member = MemberGroup::WHERE('user_id', $request->userId)->WHERE('group_id', $isGroup->id)->first();
+                $member->delete();
+                return response()->json('Xóa thành viên thành công!', 200);
             }
         }
     }

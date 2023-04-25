@@ -24,29 +24,33 @@ class Post extends Model
 
     public function user()
     {
-        return $this->hasOne(User::class,'id','user_id');
+        return $this->hasOne(User::class, 'id', 'user_id');
     }
     public function group()
     {
-        return $this->hasOne(Group::class,'id','group_id');
+        return $this->hasOne(Group::class, 'id', 'group_id');
     }
     public function mediafile()
     {
-        return $this->hasMany(MediaFilePost::class,'post_id','id');
+        return $this->hasMany(MediaFilePost::class, 'post_id', 'id');
     }
     protected $hidden = [
         'user',
         'comment',
         'group'
-       
+
     ];
 
     public function comment()
     {
-        return $this->hasMany(CommentPost::class,'post_id','id');
+        return $this->hasMany(CommentPost::class, 'post_id', 'id');
+    }
+    public function tag()
+    {
+        return $this->hasMany(Tag::class, 'post_id', 'id');
     }
     public function like()
     {
-        return $this->hasMany(PostLike::class,'post_id','id');
+        return $this->hasMany(PostLike::class, 'post_id', 'id');
     }
 }
