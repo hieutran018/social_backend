@@ -10,6 +10,7 @@ use App\Models\MediaFilePost;
 use App\Models\PostLike;
 use App\Models\MemberGroup;
 use App\Models\Tag;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\URL;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -94,9 +95,8 @@ class PostController extends Controller
                 URL::to('media_file_post/' . $crPost->group->avatar);
         }
 
-        $crPost->avatarUser = $crPost->user->avatar == null ?
-            ($crPost->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
-            URL::to('media_file_post/' . $crPost->user->id . '/' . $crPost->user->avatar);
+        $this->_renameAvatarUserFromPost($crPost);
+
         $crPost->totalMediaFile = $crPost->mediafile->count();
         $crPost->totalComment = $crPost->comment->count();
         if ($request->groupId) {
@@ -147,15 +147,17 @@ class PostController extends Controller
         $postShare->displayName = $postShare->user->displayName;
 
         $postShare->created_at = Carbon::parse($postShare->created_at)->format('Y/m/d H:m:s');
-        $postShare->avatarUser = $postShare->user->avatar == null ?
-            ($postShare->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
-            URL::to('media_file_post/' . $postShare->user->id . '/' . $postShare->user->avatar);
+
+        $this->_renameAvatarUserFromPost($postShare);
+
         $postShare->totalMediaFile = $postShare->mediafile->count();
         $postShare->totalComment = $postShare->comment->count();
 
         $postShare->parent_post = Post::find($postShare->parent_post);
 
         $postShare->parent_post->created_at = Carbon::parse($postShare->parent_post->created_at)->format('Y/m/d H:m:s');
+
+        $this->_renameAvatarUserFromPost($postShare->parent_post);
 
         $postShare->parent_post->totalMediaFile = $postShare->parent_post->mediafile->count();
         $postShare->parent_post->totalComment = $postShare->parent_post->comment->count();
@@ -222,6 +224,9 @@ class PostController extends Controller
             if ($post->parent_post) {
                 $post->parent_post = Post::find($post->parent_post);
                 $post->parent_post->created_at = Carbon::parse($post->parent_post->created_at)->format('Y/m/d H:m:s');
+
+                $this->_renameAvatarUserFromPost($post->parent_post);
+
                 $post->parent_post->totalMediaFile = $post->parent_post->mediafile->count();
                 $post->parent_post->totalComment = $post->parent_post->comment->count();
                 if ($post->parent_post->tag) {
@@ -266,9 +271,9 @@ class PostController extends Controller
                     URL::to('icon/' . $post->icon->patch);
             }
             $post->created_at = Carbon::parse($post->created_at)->format('Y/m/d H:m:s');
-            $post->avatarUser = $post->user->avatar == null ?
-                ($post->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
-                URL::to('media_file_post/' . $post->user->id . '/' . $post->user->avatar);
+
+            $this->_renameAvatarUserFromPost($post);
+
             $post->totalMediaFile = $post->mediafile->count();
             $post->totalComment = $post->comment->count();
             $post->totalLike = $post->like->count();
@@ -296,9 +301,9 @@ class PostController extends Controller
         $post = Post::find($request->postId);
         $post->displayName = $post->user->displayName;
         $post->created_at = Carbon::parse($post->created_at)->format('Y/m/d h:m:s');
-        $post->avatarUser = $post->user->avatar == null ?
-            ($post->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
-            URL::to('media_file_post/' . $post->user->id . '/' . $post->user->avatar);
+
+        $this->_renameAvatarUserFromPost($post);
+
         $post->totalMediaFile = $post->mediafile->count();
         $post->totalComment = $post->comment->count();
         foreach ($post->mediafile as $mediaFile) {
@@ -313,9 +318,9 @@ class PostController extends Controller
         $lst = Post::WHERE('group_id', $groupId)->orderBy('created_at', 'DESC')->paginate(10);
         foreach ($lst as $post) {
             $post->displayName = $post->user->displayName;
-            $post->avataruser = $post->user->avatar == null ?
-                ($post->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
-                URL::to('media_file_post/' . $post->user->id . '/' . $post->user->avatar);
+
+            $this->_renameAvatarUserFromPost($post);
+
             $post->groupName = $post->group->group_name;
             $post->groupAvatar = $post->group->avatar === null ? URL::to('default/avatar_group_default.jpg') :
                 URL::to('media_file_post/' . $post->group->avatar);
@@ -346,9 +351,9 @@ class PostController extends Controller
             })->orderBy('created_at', 'DESC')->paginate(10);
         foreach ($posts as $post) {
             $post->displayName = $post->user->displayName;
-            $post->avataruser = $post->user->avatar == null ?
-                ($post->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
-                URL::to('media_file_post/' . $post->user->id . '/' . $post->user->avatar);
+
+            $this->_renameAvatarUserFromPost($post);
+
             $post->groupName = $post->group->group_name;
             $post->groupAvatar = $post->group->avatar === null ? URL::to('default/avatar_group_default.jpg') :
                 URL::to('media_file_post/' . $post->group->avatar);
@@ -367,6 +372,9 @@ class PostController extends Controller
 
 trait PostTrait
 {
+    //? code bị lặp lại trên 2 lần ? => hãy nghĩ cách tách thành hàm để gọi lại
+    //! rút ngắn mà dễ hiểu thì rút ngắn, không thì cứ viết dài ra không sao cả => cho dễ đọc, mainTain sau này
+
     private function _renameMediaFile(MediaFilePost $mediaFile, int $userId): void
     {
         $isHttp = !empty(parse_url($mediaFile->media_file_name, PHP_URL_SCHEME));
@@ -380,5 +388,25 @@ trait PostTrait
         if (!$isHttp) {
             $mediaFile->media_file_name = URL::to('media_file_post/' . $mediaFile->media_file_name);
         }
+    }
+
+    private function _renameAvatarUserFromPost(Post $post): void //nên return string
+    {
+
+        $newImage = "";
+        $user = $post->user;
+        if ($user->avatar == null) {
+            $newImage = ($user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png'));
+        } else {
+            //check if user has avatar is link http
+            $isHttp = !empty(parse_url($user->avatar, PHP_URL_SCHEME));
+            if ($isHttp) {
+                $newImage = $user->avatar;
+            } else {
+                $newImage = URL::to('media_file_post/' . $user->id . '/' . $user->avatar);
+            }
+        }
+
+        $post->avatarUser = $newImage; //return $newImage
     }
 }
