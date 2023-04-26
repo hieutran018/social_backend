@@ -124,6 +124,8 @@ Route::group(['middleware' => 'jwt.auth', 'prefix' => 'v1'], function () {
     Route::post('remove-admin-to-group', [GroupController::class, 'removeAdminToGroup']);
     //* XÓA THÀNH VIÊN KHỎI NHÓM
     Route::post('remove-member-from-group', [GroupController::class, 'removeMemberFromGroup']);
+    //* LẤY DANH SÁCH ẢNH CỦA NHÓM
+    Route::get('fetch-group-photo-list/groupId={groupId}&limit={limit?}', [MediaFileController::class, 'fetchGroupPhotoList']);
     //* DANH SÁCH BÀI VIẾT TẤT CẢ CÁC NHÓM
     Route::get('fetch-post-group', [PostController::class, 'fetchPostGroup']);
     //* TÌM KIẾM NGƯỜI DÙNG VÀ NHÓM
