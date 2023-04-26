@@ -35,7 +35,7 @@ class SearchController extends Controller
                 URL::to('media_file_post/' . $group->avatar);
             $group->totalMember = MemberGroup::WHERE('group_id', $group->id)->WHERE('status', 1)->count();
         }
-        $dataPost = Post::WHERE('post_content', 'LIKE', "%$input%")->WHERE('status', 1)->limit(4)->get();
+        $dataPost = Post::WHERE('post_content', 'LIKE', "%$input%")->WHERE('status', 1)->orderBy('created_at', 'DESC')->limit(4)->get();
         foreach ($dataPost as $post) {
             if ($post->parent_post) {
                 $post->parent_post = Post::find($post->parent_post);
@@ -59,6 +59,11 @@ class SearchController extends Controller
                 $post->groupName = $post->group->group_name;
                 $post->groupAvatar = $post->group->avatar === null ? URL::to('default/avatar_group_default.jpg') :
                     URL::to('media_file_post/' . $post->group->avatar);
+            }
+            if ($post->tag) {
+                foreach ($post->tag as $tag) {
+                    $post->tags = $tag->user->displayName;
+                }
             }
             $post->displayName = $post->user->displayName;
 

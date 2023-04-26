@@ -26,6 +26,7 @@ class MediaFileController extends Controller
             $lst = DB::table('media_file_posts')
                 ->select('*')
                 ->where('user_id', '=', $userId)
+                ->where('group_id', null)
                 ->Where(function ($query) {
                     $query->where('media_type', '=', 'png')
                         ->orWhere('media_type', '=', 'jpg')

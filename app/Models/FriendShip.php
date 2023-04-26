@@ -18,7 +18,8 @@ class FriendShip extends Model
         'status'
     ];
     protected $hidden = [
-        'users'
+        'users',
+        'user'
     ];
 
     public function user()
