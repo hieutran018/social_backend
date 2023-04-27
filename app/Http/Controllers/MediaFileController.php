@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\MediaFilePost;
+use App\Models\Group;
 use DB;
 use URL;
 use Carbon\Carbon;
@@ -59,5 +60,27 @@ class MediaFileController extends Controller
         }
 
         return response()->json($lst, 200);
+    }
+
+    public function fetchGroupPhotoList($groupId, $limit = null)
+    {
+        $isGroup = Group::find($groupId);
+        if (empty($isGroup)) {
+            return response()->json('Yêu cầu không hợp lệ!', 404);
+        } else {
+            if ($limit == null) {
+                $mediaFiles = MediaFilePost::WHERE('group_id', $isGroup->id)->get();
+                foreach ($mediaFiles as $file) {
+                    $file->media_file_name = URL::to('media_file_post/' . $file->media_file_name);
+                }
+            } else {
+                $mediaFiles = MediaFilePost::WHERE('group_id', $isGroup->id)->limit($limit)->get();
+                foreach ($mediaFiles as $file) {
+                    $file->media_file_name = URL::to('media_file_post/' . $file->media_file_name);
+                }
+            }
+
+            return response()->json($mediaFiles, 200);
+        }
     }
 }

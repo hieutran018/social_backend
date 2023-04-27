@@ -131,8 +131,13 @@ class PostController extends Controller
             $postShare->created_at = Carbon::now('Asia/Ho_Chi_Minh');
             $postShare->status = 1;
         }
-
         $postShare->save();
+
+        if ($postShare->tag) {
+            foreach ($postShare->tag as $tag) {
+                $postShare->tag = $tag;
+            }
+        }
 
         $postShare->displayName = $postShare->user->displayName;
         $postShare->created_at = Carbon::parse($postShare->created_at)->format('Y/m/d H:m:s');
@@ -143,13 +148,32 @@ class PostController extends Controller
         $postShare->totalComment = $postShare->comment->count();
 
         $postShare->parent_post = Post::find($postShare->parent_post);
-        $postShare->parent_post->displayName = $postShare->parent_post->user->displayName;
+
         $postShare->parent_post->created_at = Carbon::parse($postShare->parent_post->created_at)->format('Y/m/d H:m:s');
 
         $this->_renameAvatarUserFromPost($postShare->parent_post);
 
         $postShare->parent_post->totalMediaFile = $postShare->parent_post->mediafile->count();
         $postShare->parent_post->totalComment = $postShare->parent_post->comment->count();
+        if ($postShare->parent_post->group_id) {
+            $postShare->parent_post->groupName = $postShare->parent_post->group->group_name;
+            $postShare->parent_post->displayName = $postShare->user->displayName;
+            $postShare->parent_post->groupAvatar = $postShare->parent_post->group->avatar === null ? URL::to('default/avatar_group_default.jpg') :
+                URL::to('media_file_post/' . $postShare->parent_post->group->avatar);
+            foreach ($postShare->parent_post->mediafile as $mediaFile) {
+                $this->_renameMediaFileForGroup($mediaFile);
+            }
+        } else {
+            $postShare->parent_post->displayName = $postShare->parent_post->user->displayName;
+            $postShare->parent_post->avatarUser = $postShare->parent_post->user->avatar == null ?
+                ($postShare->parent_post->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
+                URL::to('media_file_post/' . $postShare->parent_post->user->id . '/' . $postShare->parent_post->user->avatar);
+        }
+        if ($postShare->parent_post->tag) {
+            foreach ($postShare->parent_post->tag as $tag) {
+                $postShare->parent_post->tag = $tag;
+            }
+        }
         foreach ($postShare->parent_post->mediafile as $mediaFile) {
             $this->_renameMediaFile($mediaFile, $postShare->parent_post->user->id);
         }
@@ -183,20 +207,32 @@ class PostController extends Controller
         foreach ($lstPost as $post) {
             if ($post->parent_post) {
                 $post->parent_post = Post::find($post->parent_post);
-
-                $post->parent_post->displayName = $post->parent_post->user->displayName;
                 $post->parent_post->created_at = Carbon::parse($post->parent_post->created_at)->format('Y/m/d H:m:s');
 
                 $this->_renameAvatarUserFromPost($post->parent_post);
 
                 $post->parent_post->totalMediaFile = $post->parent_post->mediafile->count();
                 $post->parent_post->totalComment = $post->parent_post->comment->count();
-                foreach ($post->parent_post->mediafile as $mediaFile) {
-                    $this->_renameMediaFile($mediaFile, $post->parent_post->user->id);
-                    if ($post->parent_post->group_id != null) {
-                        $post->parent_post->groupName = $post->parent_post->group->group_name;
-                        $post->parent_post->groupAvatar = $post->parent_post->group->avatar === null ? URL::to('default/avatar_group_default.jpg') :
-                            URL::to('media_file_post/' . $post->parent_post->group->avatar);
+                if ($post->parent_post->tag) {
+                    foreach ($post->parent_post->tag as $tag) {
+                        $post->parent_post->tag = $tag;
+                    }
+                }
+                if ($post->parent_post->group_id) {
+                    $post->parent_post->groupName = $post->parent_post->group->group_name;
+                    $post->parent_post->displayName = $post->user->displayName;
+                    $post->parent_post->groupAvatar = $post->parent_post->group->avatar === null ? URL::to('default/avatar_group_default.jpg') :
+                        URL::to('media_file_post/' . $post->parent_post->group->avatar);
+                    foreach ($post->parent_post->mediafile as $mediaFile) {
+                        $this->_renameMediaFileForGroup($mediaFile);
+                    }
+                } else {
+                    $post->parent_post->displayName = $post->parent_post->user->displayName;
+                    $post->parent_post->avatarUser = $post->parent_post->user->avatar == null ?
+                        ($post->parent_post->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
+                        URL::to('media_file_post/' . $post->parent_post->user->id . '/' . $post->parent_post->user->avatar);
+                    foreach ($post->parent_post->mediafile as $mediaFile) {
+                        $this->_renameMediaFile($mediaFile, $post->parent_post->user->id);
                     }
                 }
             }
