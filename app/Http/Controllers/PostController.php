@@ -200,7 +200,12 @@ class PostController extends Controller
             $gr[] = $group->group_id;
         }
 
-        $lstPost = Post::WhereIn('user_id', $data)->Where('privacy', '!=', 0)->orWhere('group_id', $gr)->orderBy('created_at', 'DESC')->paginate(10);
+        if (!empty($gr)) {
+            $lstPost = Post::WhereIn('user_id', $data)->Where('privacy', '!=', 0)->orWhere('group_id', $gr)->orderBy('created_at', 'DESC')->paginate(10);
+        } else {
+            $lstPost = Post::WhereIn('user_id', $data)->Where('privacy', '!=', 0)->orderBy('created_at', 'DESC')->paginate(10);
+        }
+
 
         foreach ($lstPost as $post) {
             if ($post->parent_post) {
