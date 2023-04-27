@@ -9,6 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use App\Models\Group;
+use Illuminate\Support\Facades\URL;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -82,5 +83,20 @@ class User extends Authenticatable implements JWTSubject
     public function groups()
     {
         return $this->belongsToMany(Group::class, 'member_groups', 'user_id', 'group_id');
+    }
+
+    public function renameAvatarUserFromUser(): void //nên return string
+    {
+        if ($this->avatar == null) {
+            $this->avatar = ($this->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png'));
+        } else {
+            //check if user has avatar is link http
+            $isHttp = !empty(parse_url($this->avatar, PHP_URL_SCHEME));
+            if ($isHttp) {
+                $this->avatar = $this->avatar;
+            } else {
+                $this->avatar = URL::to('media_file_post/' . $this->id . '/' . $this->avatar);
+            }
+        }
     }
 }

@@ -20,9 +20,7 @@ class FriendShipController extends Controller
 
         foreach ($frs as $user) {
             $user->displayName = $user->displayName;
-            $user->avatar = $user->avatar == null ?
-                URL::to('default/avatar_default_male.png') :
-                URL::to('media_file_post/' . $user->id . '/' . $user->avatar);
+            $user->renameAvatarUserFromUser();
         }
         return response()->json($frs, 200);
     }
@@ -45,17 +43,15 @@ class FriendShipController extends Controller
                     foreach ($fr->user as $user) {
                         $fr->friendId = $user->id;
                         $fr->displayName = $user->displayName;
-                        $fr->avatar = $user->avatar == null ?
-                            URL::to('default/avatar_default_male.png') :
-                            URL::to('media_file_post/' . $user->id . '/' . $user->avatar);
+                        $user->renameAvatarUserFromUser();
+                        $fr->avatar = $user->avatar;
                     }
                 } else {
-                    foreach ($fr->users as $users) {
-                        $fr->friendId = $users->id;
-                        $fr->displayName = $users->fdisplayName;
-                        $fr->avatar = $users->avatar == null ?
-                            URL::to('default/avatar_default_male.png') :
-                            URL::to('media_file_post/' . $users->id . '/' . $users->avatar);
+                    foreach ($fr->users as $user) {
+                        $fr->friendId = $user->id;
+                        $fr->displayName = $user->fdisplayName;
+                        $user->renameAvatarUserFromUser();
+                        $fr->avatar = $user->avatar;
                     }
                 }
             }
@@ -67,17 +63,15 @@ class FriendShipController extends Controller
                     foreach ($fr->user as $user) {
                         $fr->friendId = $user->id;
                         $fr->displayName = $user->displayName;
-                        $fr->avatar = $user->avatar == null ?
-                            URL::to('default/avatar_default_male.png') :
-                            URL::to('media_file_post/' . $user->id . '/' . $user->avatar);
+                        $user->renameAvatarUserFromUser();
+                        $fr->avatar = $user->avatar;
                     }
                 } else {
-                    foreach ($fr->users as $users) {
-                        $fr->friendId = $users->id;
-                        $fr->displayName = $users->displayName;
-                        $fr->avatar = $users->avatar == null ?
-                            URL::to('default/avatar_default_male.png') :
-                            URL::to('media_file_post/' . $users->id . '/' . $users->avatar);
+                    foreach ($fr->users as $user) {
+                        $fr->friendId = $user->id;
+                        $fr->displayName = $user->displayName;
+                        $user->renameAvatarUserFromUser();
+                        $fr->avatar = $user->avatar;
                     }
                 }
             }
@@ -108,9 +102,8 @@ class FriendShipController extends Controller
         foreach ($requestList as $fr) {
             foreach ($fr->user as $user) {
                 $fr->displayName = $user->displayName;
-                $fr->avatar = $user->avatar == null ?
-                    ($user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
-                    URL::to('media_file_post/' . $user->id . '/' . $user->avatar);
+                $user->renameAvatarUserFromUser();
+                $fr->avatar = $user->avatar;
                 $fr->cover_image = $user->cover_image == null ? URL::to('default/cover_image_default.jpeg') : URL::to('user/person/' . $user->id . '/' . $user->cover_image);
             }
         }
@@ -180,17 +173,15 @@ class FriendShipController extends Controller
                 foreach ($fr->user as $user) {
                     $fr->friendId = $user->id;
                     $fr->displayName = $user->displayName;
-                    $fr->avatar = $user->avatar == null ?
-                        URL::to('default/avatar_default_male.png') :
-                        URL::to('media_file_post/' . $user->id . '/' . $user->avatar);
+                    $user->renameAvatarUserFromUser();
+                    $fr->avatar = $user->avatar;
                 }
             } else {
                 foreach ($fr->users as $users) {
                     $fr->friendId = $users->id;
                     $fr->displayName = $users->displayName;
-                    $fr->avatar = $users->avatar == null ?
-                        URL::to('default/avatar_default_male.png') :
-                        URL::to('media_file_post/' . $users->id . '/' . $users->avatar);
+                    $user->renameAvatarUserFromUser();
+                    $fr->avatar = $users->avatar;
                 }
             }
         }
