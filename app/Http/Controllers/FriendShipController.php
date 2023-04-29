@@ -21,7 +21,8 @@ class FriendShipController extends Controller
         foreach ($frs as $user) {
             $user->displayName = $user->displayName;
             $user->avatar = $user->avatar == null ?
-                URL::to('default/avatar_default_male.png') :
+                ($user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png'))
+                :
                 URL::to('media_file_post/' . $user->id . '/' . $user->avatar);
         }
         return response()->json($frs, 200);

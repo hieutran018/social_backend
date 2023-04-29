@@ -13,12 +13,10 @@ use Illuminate\Support\Str;
 use Carbon\Carbon;
 use URL;
 use DB;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-
-    private $user;
-
     public function __construct(User $user)
     {
         $this->user = $user;
@@ -36,6 +34,79 @@ class UserController extends Controller
             URL::to('media_file_post/' . $profile->id . '/' . $profile->cover_image);
 
         return response()->json($profile, 200);
+    }
+
+    public function updateDisplayName(Request $request)
+    {
+        $userId = JWTAuth::toUser($request->token)->id;
+
+        $userCurrent = User::find($userId);
+        if (empty($userCurrent)) {
+            return response()->json('Không tìm thấy người dùng hợp lệ!', 404);
+        } else {
+            $userCurrent->displayName = $request->displayName;
+            $userCurrent->update();
+            $userCurrent->avatar = $userCurrent->avatar == null ?
+                ($userCurrent->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png'))
+                :
+                URL::to('media_file_post/' . $userCurrent->id . '/' . $userCurrent->avatar);
+            $userCurrent->coverImage = $userCurrent->cover_image == null ?
+                URL::to('default/cover_image_default.jpeg') :
+                URL::to('media_file_post/' . $userCurrent->id . '/' . $userCurrent->cover_image);
+            return response()->json($userCurrent, 200);
+        }
+    }
+    public function updatePhone(Request $request)
+    {
+        $userId = JWTAuth::toUser($request->token)->id;
+
+        $userCurrent = User::find($userId);
+        if (empty($userCurrent)) {
+            return response()->json('Không tìm thấy người dùng hợp lệ!', 404);
+        } else {
+            $userCurrent->phone = $request->phone;
+            $userCurrent->update();
+            $userCurrent->avatar = $userCurrent->avatar == null ?
+                ($userCurrent->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png'))
+                :
+                URL::to('media_file_post/' . $userCurrent->id . '/' . $userCurrent->avatar);
+            $userCurrent->coverImage = $userCurrent->cover_image == null ?
+                URL::to('default/cover_image_default.jpeg') :
+                URL::to('media_file_post/' . $userCurrent->id . '/' . $userCurrent->cover_image);
+            return response()->json($userCurrent, 200);
+        }
+    }
+
+    public function updatePasswordUser(Request $request)
+    {
+        $userId = JWTAuth::toUser($request->token)->id;
+        $user = User::find($userId);
+
+        if (empty($user)) {
+            return response()->json('Không tìm thấy người dùng hợp lệ!', 404);
+        } else {
+            $validator = Validator::make($request->all(), [
+                'currentPassword' => 'required',
+                'password' => 'required|string|min:6',
+                'confirmPassword' => 'required|string|min:6|same:password',
+            ], [
+                'currentPassword.required' => 'Mật khẩu không được bỏ trống!',
+                'password.required' => 'Mật khẩu không được bỏ trống!',
+                'password.min' => 'Mật khẩu phải nhiều hơn 6 ký tự!',
+                'password.same' => 'Xác nhận mật khẩu và mật khẩu không khớp'
+            ]);
+            if ($validator->fails()) {
+                return response()->json($validator->errors()->toJson(), 400);
+            } else {
+                if (Hash::check($request->currentPassword, $user->password)) {
+                    $user->password = bcrypt($request->password);
+                    $user->update();
+                    return response()->json('Thay đổi mật khẩu thành công!', 200);
+                } else {
+                    return response()->json('Mật khẩu cũ không đúng!', 400);
+                }
+            }
+        }
     }
 
     public function editUserInformation(Request $request)
@@ -210,9 +281,6 @@ class UserController extends Controller
                 $upload->created_at = Carbon::now('Asia/Ho_Chi_Minh');
                 $upload->save();
             }
-
-
-
             $update->avatar = $update->avatar == null ?
                 ($update->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png'))
                 :
