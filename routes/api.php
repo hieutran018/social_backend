@@ -128,6 +128,12 @@ Route::group(['middleware' => 'jwt.auth', 'prefix' => 'v1'], function () {
     Route::get('fetch-group-photo-list/groupId={groupId}&limit={limit?}', [MediaFileController::class, 'fetchGroupPhotoList']);
     //* DANH SÁCH BÀI VIẾT TẤT CẢ CÁC NHÓM
     Route::get('fetch-post-group', [PostController::class, 'fetchPostGroup']);
+    //* CẬP NHẬT TÊN NGƯỜI DÙNG
+    Route::post('update-displayname-user', [UserController::class, 'updateDisplayName']);
+    //* CẬP NHẬT SỐ ĐIỆN THOẠI NGƯỜI DÙNG
+    Route::post('update-phone-user', [UserController::class, 'updatePhone']);
+    //* CẬP NHẬT MẬT KHẨU NGƯỜI DÙNG
+    Route::post('update-password-user', [UserController::class, 'updatePasswordUser']);
     //* TÌM KIẾM NGƯỜI DÙNG VÀ NHÓM
     Route::get('search-users-and-groups/{input?}', [SearchController::class, 'searchData']);
 });
