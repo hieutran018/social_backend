@@ -12,8 +12,6 @@ use JWTAuth;
 
 class CommentController extends Controller
 {
-
-
     public function fetchCommentByPost(Request $request)
     {
         $lstComment = CommentPost::WHERE('post_id', $request->postId)->WHERE('parent_comment', null)->orderBy('created_at')->get();

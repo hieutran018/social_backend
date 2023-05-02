@@ -9,6 +9,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\FriendShipController;
 use App\Http\Controllers\MediaFileController;
 use App\Http\Controllers\AlbumController;
+use App\Http\Controllers\FeelAndActivityController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\SearchController;
 
@@ -136,6 +137,9 @@ Route::group(['middleware' => 'jwt.auth', 'prefix' => 'v1'], function () {
     Route::post('update-password-user', [UserController::class, 'updatePasswordUser']);
     //* TÌM KIẾM NGƯỜI DÙNG VÀ NHÓM
     Route::get('search-users-and-groups/{input?}', [SearchController::class, 'searchData']);
+    //* LẤY DANH SÁCH CẢM XÚC VÀ HOẠT ĐỘNG KHI TẠO BÀI VIẾT
+    Route::get('fetch-fell-and-activity-posts', [FeelAndActivityController::class, 'fetchFeelAndActivity']);
+    Route::get('search-feel-and-activity-posts/search={input}', [FeelAndActivityController::class, 'searchFeelAnActivity']);
 });
 
 
