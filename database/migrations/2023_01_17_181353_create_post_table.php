@@ -20,6 +20,7 @@ class CreatePostTable extends Migration
             $table->integer('privacy');
             $table->foreignId('parent_post')->nullable();
             $table->foreignId('group_id')->nullable();
+            $table->foreignId('feel_activity_id')->nullable();
             $table->timestamps();
             $table->softDeletes();
             $table->integer('status');

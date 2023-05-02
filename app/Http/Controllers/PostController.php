@@ -28,6 +28,7 @@ class PostController extends Controller
         $crPost->privacy = $request->privacy;
         $crPost->parent_post = null;
         $crPost->group_id = $request->groupId;
+        $crPost->feel_activity_id = $request->feelActivityId;
         $crPost->created_at = Carbon::now('Asia/Ho_Chi_Minh');
         $crPost->status = 1;
         $crPost->save();
@@ -80,7 +81,11 @@ class PostController extends Controller
             }
         }
         $crPost->displayName = $crPost->user->displayName;
-
+        if ($crPost->icon) {
+            $crPost->iconName = $crPost->icon->icon_name;
+            $crPost->iconPatch =
+                URL::to('icon/' . $crPost->icon->patch);
+        }
         $crPost->created_at = Carbon::parse($crPost->created_at)->format('Y/m/d H:m:s');
         if ($crPost->group_id != null) {
             $crPost->groupName = $crPost->group->group_name;
@@ -140,6 +145,7 @@ class PostController extends Controller
         }
 
         $postShare->displayName = $postShare->user->displayName;
+
         $postShare->created_at = Carbon::parse($postShare->created_at)->format('Y/m/d H:m:s');
         $postShare->avatarUser = $postShare->user->avatar == null ?
             ($postShare->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
@@ -163,6 +169,11 @@ class PostController extends Controller
             }
         } else {
             $postShare->parent_post->displayName = $postShare->parent_post->user->displayName;
+            if ($postShare->parent_post->icon) {
+                $postShare->parent_post->iconName = $postShare->parent_post->icon->icon_name;
+                $postShare->parent_post->iconPatch =
+                    URL::to('icon/' . $postShare->parent_post->icon->patch);
+            }
             $postShare->parent_post->avatarUser = $postShare->parent_post->user->avatar == null ?
                 ($postShare->parent_post->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
                 URL::to('media_file_post/' . $postShare->parent_post->user->id . '/' . $postShare->parent_post->user->avatar);
@@ -228,6 +239,11 @@ class PostController extends Controller
                     }
                 } else {
                     $post->parent_post->displayName = $post->parent_post->user->displayName;
+                    if ($post->parent_post->icon) {
+                        $post->parent_post->iconName = $post->parent_post->icon->icon_name;
+                        $post->parent_post->iconPatch =
+                            URL::to('icon/' . $post->parent_post->icon->patch);
+                    }
                     $post->parent_post->avatarUser = $post->parent_post->user->avatar == null ?
                         ($post->parent_post->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
                         URL::to('media_file_post/' . $post->parent_post->user->id . '/' . $post->parent_post->user->avatar);
@@ -244,6 +260,11 @@ class PostController extends Controller
             }
 
             $post->displayName = $post->user->displayName;
+            if ($post->icon) {
+                $post->iconName = $post->icon->icon_name;
+                $post->iconPatch =
+                    URL::to('icon/' . $post->icon->patch);
+            }
             $post->created_at = Carbon::parse($post->created_at)->format('Y/m/d H:m:s');
             $post->avatarUser = $post->user->avatar == null ?
                 ($post->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :

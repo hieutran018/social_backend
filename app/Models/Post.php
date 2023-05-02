@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\CommentPost;
 use App\Models\PostLike;
 use App\Models\MediaFilePost;
+use App\Models\FeelAndActivity;
 
 class Post extends Model
 {
@@ -18,6 +19,7 @@ class Post extends Model
         'privacy',
         'parent_post',
         'group_id',
+        'feel_activity_id',
         'status'
     ];
     public $timestamps = false;
@@ -25,6 +27,10 @@ class Post extends Model
     public function user()
     {
         return $this->hasOne(User::class, 'id', 'user_id');
+    }
+    public function icon()
+    {
+        return $this->hasOne(FeelAndActivity::class, 'id', 'feel_activity_id');
     }
     public function group()
     {
