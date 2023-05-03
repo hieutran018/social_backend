@@ -184,11 +184,9 @@ class GroupController extends Controller
         } else {
             $members = MemberGroup::WHERE('group_id', $isGroup->id)->WHERE('status', 1)->get();
             foreach ($members as $member) {
+                $member->user->renameAvatarUserFromUser();
                 $member->displayName = $member->user->displayName;
-                $member->avatar = $member->user->avatar == null ?
-                    ($member->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png'))
-                    :
-                    URL::to('media_file_post/' . $member->user->id . '/' . $member->user->avatar);
+                $member->avatar = $member->user->avatar;
             }
             return response()->json($members, 200);
         }
@@ -212,10 +210,8 @@ class GroupController extends Controller
                 $update->update();
 
                 $update->displayName = $update->user->displayName;
-                $update->avatar = $update->user->avatar == null ?
-                    ($update->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png'))
-                    :
-                    URL::to('media_file_post/' . $update->user->id . '/' . $update->user->avatar);
+                $update->user->renameAvatarUserFromUser();
+                $update->avatar = $update->user->avatar;
                 return response()->json($update, 200);
             }
         }
@@ -238,15 +234,14 @@ class GroupController extends Controller
                 $update->update();
 
                 $update->displayName = $update->user->displayName;
-                $update->avatar = $update->user->avatar == null ?
-                    ($update->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png'))
-                    :
-                    URL::to('media_file_post/' . $update->user->id . '/' . $update->user->avatar);
+                $update->user->renameAvatarUserFromUser();
+                $update->avatar = $update->user->avatar;
 
                 return response()->json($update, 200);
             }
         }
     }
+
 
     public function removeMemberFromGroup(Request $request)
     {
