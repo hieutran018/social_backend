@@ -207,7 +207,8 @@ class GroupController extends Controller
                 return response()->json('Yêu cầu không hợp lệ', 400);
             } else {
                 $update = MemberGroup::WHERE('user_id', $request->userId)->WHERE('group_id', $isGroup->id)->first();
-                $update->isAdminGroup = 1;
+                // $update->isAdminGroup = 1;
+                $update->isAccept = 1;
                 $update->update();
 
                 $update->displayName = $update->user->displayName;
