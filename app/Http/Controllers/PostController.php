@@ -23,8 +23,9 @@ class PostController extends Controller
 
     public function createPost(Request $request)
     {
+        $user = JWTAuth::toUser($request->token);
         $crPost = new Post();
-        $crPost->user_id = JWTAuth::toUser($request->token)->id;
+        $crPost->user_id = $user->id;
         $crPost->post_content = $request->postContent;
         $crPost->privacy = $request->privacy;
         $crPost->parent_post = null;
@@ -51,14 +52,14 @@ class PostController extends Controller
                 if ($request->groupId) {
                     $file->move('media_file_post/', $fileName);
                 } else {
-                    $file->move('media_file_post/' . JWTAuth::toUser($request->token)->id, $fileName);
+                    $file->move('media_file_post/' . $user->id, $fileName);
                 }
                 $media = new MediaFilePost();
                 $media->media_file_name = $fileName;
                 $media->media_type = $fileExtentsion;
                 $media->post_id = $crPost->id;
                 $media->group_id = $request->groupId;
-                $media->user_id = JWTAuth::toUser($request->token)->id;
+                $media->user_id = $user->id;
                 $media->created_at = Carbon::now('Asia/Ho_Chi_Minh');
                 $media->status = 1;
                 $media->save();
@@ -75,7 +76,7 @@ class PostController extends Controller
                 $media->media_type = $fileExtentsion;
                 $media->post_id = $crPost->id;
                 // $media->group_id = $request->groupId;
-                $media->user_id = JWTAuth::toUser($request->token)->id;
+                $media->user_id = $user->id;
                 $media->created_at = Carbon::now('Asia/Ho_Chi_Minh');
                 $media->status = 1;
                 $media->save();
@@ -113,6 +114,22 @@ class PostController extends Controller
                 $crPost->tags = $tag->user->displayName;
             }
         }
+
+        //thông báo đến bạn bè bài viết vừa được tạo (gửi đến android)
+        // chổ này thiếu lưu DB notification
+        $notify = new NotificationController();
+        $notify->sendNotifiToFriends(
+            $user,
+            [
+                'topicName' => "new-post-create-by-friends-$user->id",
+                'title' => "$user->displayName vừa đăng bài viết",
+                'body' => 'Bạn của bạn vừa đăng bài viết mới, xem ngay!',
+                'image' => $crPost->mediafile[0]->media_file_name ?? null, // 'https://picsum.photos/536/354' random image
+                'payload' => "post-id-$crPost->id",
+                'data' => [],
+            ],
+        );
+
 
         return response()->json($crPost, 200);
     }

@@ -145,9 +145,9 @@ Route::group(['middleware' => 'jwt.auth', 'prefix' => 'v1'], function () {
     Route::get('search-feel-and-activity-posts/search={input}', [FeelAndActivityController::class, 'searchFeelAnActivity']);
 
     //? NotificationController
-    Route::prefix('notification')->group(function () {
-        Route::get('send-notifi-to-friends', [NotificationController::class, 'sendNotifiToFriends']);
-    });
+    // Route::prefix('notification')->group(function () {
+    //     Route::get('send-notifi-to-friends', [NotificationController::class, 'sendNotifiToFriends']);
+    // });
 });
 
 
