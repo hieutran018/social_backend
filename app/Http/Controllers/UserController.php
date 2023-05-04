@@ -291,4 +291,21 @@ class UserController extends Controller
             return response()->json($update, 200);
         }
     }
+
+    public function saveDeviceToken(Request $request)
+    {
+        //validate deviceToken
+        $validator = Validator::make($request->all(), [
+            'deviceToken' => 'required',
+        ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+
+        $user = JWTAuth::toUser($request->token);
+        $user->update([
+            'device_token' => $request->deviceToken,
+        ]);
+        return response()->json($user);
+    }
 }

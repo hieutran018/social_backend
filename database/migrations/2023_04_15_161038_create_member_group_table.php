@@ -18,6 +18,7 @@ class CreateMemberGroupTable extends Migration
             $table->foreignId('user_id');
             $table->foreignId('group_id');
             $table->boolean('isAdminGroup');
+            $table->boolean('isAccept')->nullable();
             $table->integer('status');
             $table->timestamps();
             $table->softDeletes();

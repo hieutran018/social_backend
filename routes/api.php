@@ -11,6 +11,7 @@ use App\Http\Controllers\MediaFileController;
 use App\Http\Controllers\AlbumController;
 use App\Http\Controllers\FeelAndActivityController;
 use App\Http\Controllers\GroupController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\SearchController;
 
 /*
@@ -79,6 +80,8 @@ Route::group(['middleware' => 'jwt.auth', 'prefix' => 'v1'], function () {
     Route::post('upload-avatar', [UserController::class, 'uploadAvatar']);
     //* CẬP NHẬT ẢNH BÌA
     Route::post('upload-cover-image', [UserController::class, 'uploadCoverImage']);
+    //* Lưu Device Token để push notification
+    Route::post('save-device-token', [UserController::class, 'saveDeviceToken']);
 
     //* THÍCH BÀI VIẾT
     Route::post('post/like-post', [PostLikeController::class, 'like']);
@@ -140,6 +143,11 @@ Route::group(['middleware' => 'jwt.auth', 'prefix' => 'v1'], function () {
     //* LẤY DANH SÁCH CẢM XÚC VÀ HOẠT ĐỘNG KHI TẠO BÀI VIẾT
     Route::get('fetch-fell-and-activity-posts', [FeelAndActivityController::class, 'fetchFeelAndActivity']);
     Route::get('search-feel-and-activity-posts/search={input}', [FeelAndActivityController::class, 'searchFeelAnActivity']);
+
+    //? NotificationController
+    Route::prefix('notification')->group(function () {
+        Route::get('send-notifi-to-friends', [NotificationController::class, 'sendNotifiToFriends']);
+    });
 });
 
 
