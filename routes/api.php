@@ -144,6 +144,8 @@ Route::group(['middleware' => 'jwt.auth', 'prefix' => 'v1'], function () {
     Route::get('fetch-fell-and-activity-posts', [FeelAndActivityController::class, 'fetchFeelAndActivity']);
     Route::get('search-feel-and-activity-posts/search={input}', [FeelAndActivityController::class, 'searchFeelAnActivity']);
 
+    //* LẤY DANH SÁCH THÔNG BÁO CỦA NGƯỜI DÙNG
+    Route::get('fetch-notifications', [NotificationController::class, 'fetchNotifications']);
     //? NotificationController
     Route::prefix('notification')->group(function () {
         Route::get('send-notifi-to-friends', [NotificationController::class, 'sendNotifiToFriends']);

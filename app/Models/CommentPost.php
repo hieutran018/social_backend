@@ -20,11 +20,15 @@ class CommentPost extends Model
 
     public function user()
     {
-        return $this->hasOne(User::class,'id','user_id');
+        return $this->hasOne(User::class, 'id', 'user_id');
     }
     public function replies()
     {
-        return $this->hasMany(CommentPost::class,'parent_comment','id');
+        return $this->hasMany(CommentPost::class, 'parent_comment', 'id');
+    }
+    public function file()
+    {
+        return $this->belongsTo(MediaFileComment::class, 'id', 'comment_id');
     }
     protected $hidden = [
         'user',

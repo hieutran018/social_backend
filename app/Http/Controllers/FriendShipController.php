@@ -180,7 +180,7 @@ class FriendShipController extends Controller
                 foreach ($fr->users as $users) {
                     $fr->friendId = $users->id;
                     $fr->displayName = $users->displayName;
-                    $user->renameAvatarUserFromUser();
+                    $users->renameAvatarUserFromUser();
                     $fr->avatar = $users->avatar;
                 }
             }
