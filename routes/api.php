@@ -13,6 +13,7 @@ use App\Http\Controllers\FeelAndActivityController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\StoriesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -146,6 +147,10 @@ Route::group(['middleware' => 'jwt.auth', 'prefix' => 'v1'], function () {
 
     //* LẤY DANH SÁCH THÔNG BÁO CỦA NGƯỜI DÙNG
     Route::get('fetch-notifications', [NotificationController::class, 'fetchNotifications']);
+
+    //* ĐĂNG BẢNG TIN
+    Route::post('/stories/create-story', [StoriesController::class, 'creatStroies']);
+    Route::get('/stories', [StoriesController::class, 'fetchStories']);
     //? NotificationController
     Route::prefix('notification')->group(function () {
         Route::get('send-notifi-to-friends', [NotificationController::class, 'sendNotifiToFriends']);
