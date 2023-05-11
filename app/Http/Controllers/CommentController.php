@@ -16,26 +16,24 @@ class CommentController extends Controller
     {
         $lstComment = CommentPost::WHERE('post_id', $request->postId)->WHERE('parent_comment', null)->orderBy('created_at')->get();
         foreach ($lstComment as $comment) {
+
             $comment->userId = $comment->user_id;
-            $comment->avatarUser = $comment->user->avatar == null ?
-                ($comment->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
-                URL::to('media_file_post/' . $comment->user->id . '/' . $comment->user->avatar);
+            $comment->avatarUser = $comment->user->avatar;
             $comment->displayName = $comment->user->displayName;
-            $comment->created_at = Carbon::parse($comment->created_at)->format('Y/m/d H:m:s');
+            //chổ này sao không để mạc định trả về, tào lao parse lại chi nó sai
+            // $comment->created_at = Carbon::parse($comment->created_at)->format('Y/m/d H:m:s');
             foreach ($comment->replies as $reply) {
                 $reply->userId = $reply->user_id;
-                $reply->avatarUser = $reply->user->avatar == null ?
-                    ($reply->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
-                    URL::to('media_file_post/' . $reply->user->id . '/' . $reply->user->avatar);
+                $reply->avatarUser = $reply->user->avatar;
                 $reply->displayName = $reply->user->displayName;
-                $reply->created_at = Carbon::parse($reply->created_at)->format('Y/m/d H:m:s');
+                // $reply->created_at = Carbon::parse($reply->created_at)->format('Y/m/d H:m:s');
             }
         }
         return response()->json($lstComment, 200);
     }
 
 
-    //TODO: Validate input 
+    //TODO: Validate input
     public function createCommentPost(Request $request)
     {
         $input = $request->all();
