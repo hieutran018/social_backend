@@ -260,15 +260,14 @@ class PostController extends Controller
                         $this->_renameMediaFileForGroup($mediaFile);
                     }
                 } else {
+                    $this->_renameAvatarUserFromPost($post->parent_post);
                     $post->parent_post->displayName = $post->parent_post->user->displayName;
                     if ($post->parent_post->icon) {
                         $post->parent_post->iconName = $post->parent_post->icon->icon_name;
                         $post->parent_post->iconPatch =
                             URL::to('icon/' . $post->parent_post->icon->patch);
                     }
-                    $post->parent_post->avatarUser = $post->parent_post->user->avatar == null ?
-                        ($post->parent_post->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
-                        URL::to('media_file_post/' . $post->parent_post->user->id . '/' . $post->parent_post->user->avatar);
+
                     foreach ($post->parent_post->mediafile as $mediaFile) {
                         $this->_renameMediaFile($mediaFile, $post->parent_post->user->id);
                     }
@@ -409,21 +408,9 @@ trait PostTrait
 
     private function _renameAvatarUserFromPost(Post $post): void //nên return string
     {
-
-        $newImage = "";
         $user = $post->user;
-        if ($user->avatar == null) {
-            $newImage = ($user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png'));
-        } else {
-            //check if user has avatar is link http
-            $isHttp = !empty(parse_url($user->avatar, PHP_URL_SCHEME));
-            if ($isHttp) {
-                $newImage = $user->avatar;
-            } else {
-                $newImage = URL::to('media_file_post/' . $user->id . '/' . $user->avatar);
-            }
-        }
+        $user->renameAvatarUserFromUser();
 
-        $post->avatarUser = $newImage; //return $newImage
+        $post->avatarUser = $user->avatar;
     }
 }
