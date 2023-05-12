@@ -152,7 +152,7 @@ class PostController extends Controller
 
         $postShare->totalMediaFile = $postShare->mediafile->count();
         $postShare->totalComment = $postShare->comment->count();
-
+        $postShare->totalLike = $postShare->like->count();
         $postShare->parent_post = Post::find($postShare->parent_post);
 
         $postShare->parent_post->created_at = Carbon::parse($postShare->parent_post->created_at)->format('Y/m/d H:m:s');
