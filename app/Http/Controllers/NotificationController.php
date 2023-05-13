@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\FriendShip;
+use App\Models\Notification;
 use App\Models\User;
 use Exception;
 use GuzzleHttp\Client;
@@ -13,6 +14,16 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 class NotificationController extends Controller
 {
     use NotificationService;
+
+    public function fetchNotifications(Request $request)
+    {
+        $userId = JWTAuth::toUser($request->token)->id;
+        $data = Notification::WHERE('to', $userId)->get();
+        foreach ($data as $item) {
+            $item->userNameFrom = $item->user->displayName;
+        }
+        return response()->json($data, 200);
+    }
 
     public function sendNotifiToFriends(User $user, $data = [])
     {

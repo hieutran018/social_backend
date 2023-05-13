@@ -10,12 +10,19 @@ class PostLike extends Model
 {
     use HasFactory;
     use SoftDeletes;
-    
-    protected $fillable =[
-        'user_id',
-        'post_id'
-    ];
-    protected $table ='like_posts';
 
-   public $timestamps = false;
+    protected $fillable = [
+        'user_id',
+        'post_id',
+        'type',
+    ];
+    protected $hidden = [
+        'post_id',
+        'created_at',
+        'updated_at',
+        'deleted_at',
+    ];
+    protected $table = 'like_posts';
+
+    public $timestamps = false;
 }

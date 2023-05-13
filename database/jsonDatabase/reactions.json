@@ -3,8 +3,8 @@
     "description": "",
     "column": {
         "id": "định danh duy nhất cho từng bản ghi trong bảng.",
-        "name": "tên của phản ứng (ví dụ: 'Thích', 'Yêu thích', 'Buồn').",
-        "type": "loại phản ứng (ví dụ: 'like', 'love', 'sad').",
+        "name": "tên của phản ứng (ví dụ: 'Thích', 'Yêu thích', 'Buồn', 'haha','Đồng cảm','Wow','Tức giận').",
+        "type": "loại phản ứng (ví dụ: like(1),love(2),sad(3),haha(4),yay(5),wow(6),angry(7)).",
         "pic": "URL của biểu tượng đại diện cho phản ứng."
     }
 }

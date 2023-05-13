@@ -8,6 +8,7 @@ use App\Models\Group;
 use App\Models\MemberGroup;
 use App\Models\Post;
 use App\Models\MediaFilePost;
+use App\Models\Notification;
 use URL;
 use Carbon\Carbon;
 use JWTAuth;
@@ -205,9 +206,19 @@ class GroupController extends Controller
                 return response()->json('Yêu cầu không hợp lệ', 400);
             } else {
                 $update = MemberGroup::WHERE('user_id', $request->userId)->WHERE('group_id', $isGroup->id)->first();
-                // $update->isAdminGroup = 1;
                 $update->isAccept = 1;
                 $update->update();
+
+                $createNoti = new Notification();
+                $createNoti->from = $currentAdmin;
+                $createNoti->to = $update->user_id;
+                $createNoti->title = 'Đã mời bạn làm quản trị viên cho nhóm.';
+                $createNoti->object_type = 'invite_gr';
+                $createNoti->object_id = $update->group_id;
+                $createNoti->unread = true;
+                $createNoti->icon_url = 'icon.png';
+                $createNoti->created_at = Carbon::now('Asia/Ho_Chi_Minh');
+                $createNoti->save();
 
                 $update->displayName = $update->user->displayName;
                 $update->user->renameAvatarUserFromUser();

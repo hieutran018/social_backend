@@ -17,9 +17,9 @@ class CreateLikePostTable extends Migration
             $table->id();
             $table->foreignId('user_id');
             $table->foreignId('post_id');
+            $table->integer('type');
             $table->timestamps();
             $table->softDeletes();
-            
         });
     }
 

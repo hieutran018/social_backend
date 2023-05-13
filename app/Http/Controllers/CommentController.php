@@ -6,9 +6,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\CommentPost;
 use App\Http\Controllers\AuthController;
+use App\Models\MediaFileComment;
 use Carbon\Carbon;
 use URL;
 use JWTAuth;
+use Illuminate\Support\Str;
 
 class CommentController extends Controller
 {
@@ -22,6 +24,10 @@ class CommentController extends Controller
             $comment->displayName = $comment->user->displayName;
             //chổ này sao không để mạc định trả về, tào lao parse lại chi nó sai
             // $comment->created_at = Carbon::parse($comment->created_at)->format('Y/m/d H:m:s');
+            if ($comment->file) {
+                $comment->fileName = URL::to('comment/' . $comment->file->media_file_name);
+                $comment->mediaType = $comment->file->media_type;
+            }
             foreach ($comment->replies as $reply) {
                 $reply->userId = $reply->user_id;
                 $reply->avatarUser = $reply->user->avatar;
@@ -43,9 +49,23 @@ class CommentController extends Controller
         $comment->user_id = JWTAuth::toUser($request->token)->id;
         $comment->created_at = Carbon::Now('Asia/Ho_Chi_Minh');
         $comment->save();
-        $countComment = CommentPost::WHERE('post_id', $input['postId'])->count();
 
-        return response()->json($countComment, 200);
+        if ($request->hasFile('file')) {
+            $file = $request->file;
+            $fileExtentsion = $file->getClientOriginalExtension();
+            $random = Str::random(10);
+            $fileName = time() . $random . '.' . $fileExtentsion;
+            $file->move('comment/', $fileName);
+            $media = new MediaFileComment();
+            $media->media_file_name = $fileName;
+            $media->media_type = $fileExtentsion;
+            $media->comment_id = $comment->id;
+            $media->save();
+        }
+        $comment->fileName = URL::to('/comment/' . $comment->file->media_file_name);
+        // $countComment = CommentPost::WHERE('post_id', $input['postId'])->count();
+
+        return response()->json($comment, 200);
     }
 
     public function commentReply(Request $request)
