@@ -112,34 +112,9 @@ INSERT INTO `comment_posts` (`id`, `comment_content`, `post_id`, `user_id`, `par
 --
 
 INSERT INTO `groups` (`id`, `group_name`, `privacy`, `avatar`, `description`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(1, 'Group bóng đá', 0, '1681995378d8EhHJnTl1.jpg', NULL, '2023-04-18 23:58:10', NULL, NULL),
-(2, 'Đồ án tốt nghiệp 2023', 0, '1681995412Om2IlXczBf.jpg', NULL, '2023-04-19 00:10:38', NULL, NULL),
-(3, 'Người chơi điện tử', 1, '1682013317suD8pzpSMn.jpg', NULL, '2023-04-20 10:27:26', NULL, NULL),
-(4, 'ffg', 0, NULL, NULL, '2023-04-21 02:04:59', NULL, NULL);
-
---
--- Dumping data for table `like_posts`
---
-
-INSERT INTO `like_posts` (`id`, `user_id`, `post_id`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(1, 1, 5, '2023-04-19 00:01:53', NULL, NULL),
-(2, 1, 4, '2023-04-19 00:01:54', NULL, NULL),
-(3, 8, 1, '2023-04-19 05:17:15', NULL, NULL),
-(4, 1, 9, '2023-04-19 11:15:44', NULL, NULL),
-(5, 1, 1, '2023-04-20 01:52:14', NULL, '2023-04-19 18:52:15'),
-(6, 1, 1, '2023-04-20 01:52:15', NULL, '2023-04-19 18:52:16'),
-(7, 1, 1, '2023-04-20 01:52:16', NULL, '2023-04-19 18:52:17'),
-(8, 1, 1, '2023-04-20 01:52:18', NULL, '2023-04-19 18:52:32'),
-(9, 1, 1, '2023-04-20 01:52:46', NULL, '2023-04-19 18:53:29'),
-(10, 1, 10, '2023-04-20 05:49:10', NULL, NULL),
-(11, 1, 32, '2023-04-20 10:56:25', NULL, NULL),
-(12, 1, 31, '2023-04-20 10:56:26', NULL, NULL),
-(13, 1, 30, '2023-04-20 10:56:28', NULL, NULL),
-(14, 1, 29, '2023-04-20 10:56:28', NULL, NULL),
-(15, 1, 27, '2023-04-20 10:56:30', NULL, NULL),
-(16, 1, 15, '2023-04-20 10:56:46', NULL, NULL),
-(17, 11, 33, '2023-04-20 21:05:22', NULL, NULL),
-(18, 11, 32, '2023-04-20 21:05:28', NULL, NULL);
+(1, 'Group bóng đá', 0, 'https://cdn.memiah.co.uk/blog/wp-content/uploads/counselling-directory.org.uk/2019/04/shutterstock_1464234134-1024x684.jpg', NULL, '2023-04-18 23:58:10', NULL, NULL),
+(2, 'Đồ án tốt nghiệp 2023', 0, 'https://parsadi.com/wp-content/uploads/2022/03/Group.jpg', NULL, '2023-04-19 00:10:38', NULL, NULL),
+(3, 'Người chơi điện tử', 1, 'https://kmpplus.com/wp-content/uploads/2018/08/Cafebord-2-COLOURBOX23980354-1024x1024-1.jpg', NULL, '2023-04-20 10:27:26', NULL, NULL);
 
 --
 -- Dumping data for table `list_friends`

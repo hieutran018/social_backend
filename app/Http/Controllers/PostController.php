@@ -102,11 +102,11 @@ class PostController extends Controller
         $crPost->totalComment = $crPost->comment->count();
         if ($request->groupId) {
             foreach ($crPost->mediafile as $mediaFile) {
-                $this->_renameMediaFileForGroup($mediaFile);
+                $this->_renameMediaFile($mediaFile, 'media_file_name');
             }
         } else {
             foreach ($crPost->mediafile as $mediaFile) {
-                $this->_renameMediaFile($mediaFile, $crPost->user->id);
+                $this->_renameMediaFile($mediaFile, 'media_file_name', $crPost->user->id);
             }
         }
         if ($crPost->tag) {
@@ -184,7 +184,7 @@ class PostController extends Controller
             $postShare->parent_post->groupAvatar = $postShare->parent_post->group->avatar === null ? URL::to('default/avatar_group_default.jpg') :
                 URL::to('media_file_post/' . $postShare->parent_post->group->avatar);
             foreach ($postShare->parent_post->mediafile as $mediaFile) {
-                $this->_renameMediaFileForGroup($mediaFile);
+                $this->_renameMediaFile($mediaFile, 'media_file_name');
             }
         } else {
             $postShare->parent_post->displayName = $postShare->parent_post->user->displayName;
@@ -203,7 +203,7 @@ class PostController extends Controller
             }
         }
         foreach ($postShare->parent_post->mediafile as $mediaFile) {
-            $this->_renameMediaFile($mediaFile, $postShare->parent_post->user->id);
+            $this->_renameMediaFile($mediaFile, 'media_file_name', $postShare->parent_post->user->id);
         }
 
         return response()->json($postShare, 200);
@@ -257,7 +257,7 @@ class PostController extends Controller
                     $post->parent_post->groupAvatar = $post->parent_post->group->avatar === null ? URL::to('default/avatar_group_default.jpg') :
                         URL::to('media_file_post/' . $post->parent_post->group->avatar);
                     foreach ($post->parent_post->mediafile as $mediaFile) {
-                        $this->_renameMediaFileForGroup($mediaFile);
+                        $this->_renameMediaFile($mediaFile, 'media_file_name');
                     }
                 } else {
                     $this->_renameAvatarUserFromPost($post->parent_post);
@@ -269,7 +269,7 @@ class PostController extends Controller
                     }
 
                     foreach ($post->parent_post->mediafile as $mediaFile) {
-                        $this->_renameMediaFile($mediaFile, $post->parent_post->user->id);
+                        $this->_renameMediaFile($mediaFile, 'media_file_name', $post->parent_post->user->id);
                     }
                 }
             }
@@ -301,11 +301,11 @@ class PostController extends Controller
                 $post->groupAvatar = $post->group->avatar === null ? URL::to('default/avatar_group_default.jpg') :
                     URL::to('media_file_post/' . $post->group->avatar);
                 foreach ($post->mediafile as $mediaFile) {
-                    $this->_renameMediaFileForGroup($mediaFile);
+                    $this->_renameMediaFile($mediaFile, 'media_file_name');
                 }
             } else {
                 foreach ($post->mediafile as $mediaFile) {
-                    $this->_renameMediaFile($mediaFile, $post->user->id);
+                    $this->_renameMediaFile($mediaFile, 'media_file_name', $post->user->id);
                 }
             }
         }
@@ -323,7 +323,7 @@ class PostController extends Controller
         $post->totalMediaFile = $post->mediafile->count();
         $post->totalComment = $post->comment->count();
         foreach ($post->mediafile as $mediaFile) {
-            $this->_renameMediaFile($mediaFile, $post->user->id);
+            $this->_renameMediaFile($mediaFile, 'media_file_name', $post->user->id);
         }
         return response()->json($post, 200);
     }
@@ -346,7 +346,7 @@ class PostController extends Controller
             $post->totalShare = Post::WHERE('parent_post', $post->id)->count();
             $post->isLike = !empty(PostLike::WHERE('user_id', $userId)->WHERE('post_id', $post->id)->first());
             foreach ($post->mediafile as $mediaFile) {
-                $this->_renameMediaFileForGroup($mediaFile);
+                $this->_renameMediaFile($mediaFile, 'media_file_name');
             }
         }
         return response()->json($lst, 200);
@@ -371,15 +371,19 @@ class PostController extends Controller
             $this->_renameAvatarUserFromPost($post);
 
             $post->groupName = $post->group->group_name;
-            $post->groupAvatar = $post->group->avatar === null ? URL::to('default/avatar_group_default.jpg') :
-                URL::to('media_file_post/' . $post->group->avatar);
+
+            //! mấy chổ như này xài Eager loading vẫn tốt hơn
+            // do sợ bên fontend lỗi nên t k sửa lại json trả về
+            // fix URL response
+            $post->group->renameAvatar();
+            $post->groupAvatar = $post->group->avatar;
             $post->totalMediaFile = $post->mediafile->count();
             $post->totalComment = $post->comment->count();
             $post->totalLike = $post->like->count();
             $post->totalShare = Post::WHERE('parent_post', $post->id)->count();
             $post->isLike = !empty(PostLike::WHERE('user_id', $userId)->WHERE('post_id', $post->id)->first());
             foreach ($post->mediafile as $mediaFile) {
-                $this->_renameMediaFileForGroup($mediaFile);
+                $this->_renameMediaFile($mediaFile, 'media_file_name');
             }
         }
         return response()->json($posts, 200);
@@ -391,18 +395,14 @@ trait PostTrait
     //? code bị lặp lại trên 2 lần ? => hãy nghĩ cách tách thành hàm để gọi lại
     //! rút ngắn mà dễ hiểu thì rút ngắn, không thì cứ viết dài ra không sao cả => cho dễ đọc, mainTain sau này
 
-    private function _renameMediaFile(MediaFilePost $mediaFile, int $userId): void
+    private function _renameMediaFile(object &$objectRename, string $namePath, int $userId = null): void
     {
-        $isHttp = !empty(parse_url($mediaFile->media_file_name, PHP_URL_SCHEME));
+        $isHttp = !empty(parse_url($objectRename[$namePath], PHP_URL_SCHEME));
         if (!$isHttp) {
-            $mediaFile->media_file_name = URL::to('media_file_post/' . $userId  . '/' . $mediaFile->media_file_name);
-        }
-    }
-    private function _renameMediaFileForGroup(MediaFilePost $mediaFile): void
-    {
-        $isHttp = !empty(parse_url($mediaFile->media_file_name, PHP_URL_SCHEME));
-        if (!$isHttp) {
-            $mediaFile->media_file_name = URL::to('media_file_post/' . $mediaFile->media_file_name);
+            if ($userId == null)
+                $objectRename[$namePath] = URL::to('media_file_post/' . $objectRename[$namePath]);
+            else
+                $objectRename[$namePath] = URL::to('media_file_post/' . $userId  . '/' . $objectRename[$namePath]);
         }
     }
 
