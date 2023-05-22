@@ -14,6 +14,8 @@ use App\Http\Controllers\GroupController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\StoriesController;
+use App\Http\Controllers\Admin\AdminAuthController;
+use App\Http\Controllers\Admin\AdminDashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,10 +37,12 @@ Route::POST('fetch-post-by-id', [PostController::class, 'fetchPostById']);
 Route::post('fetch-comment-by-post', [CommentController::class, 'fetchCommentByPost']);
 Route::GET('profile-user/userId={userId}', [UserController::class, 'profileUser']);
 
-
-
-
-
+Route::group(
+    ['middleware' => 'jwt.auth', 'prefix' => 'v1/admin'],
+    function () {
+        Route::GET('/admin-dashboard-statistics', [AdminDashboardController::class, 'adminDashboardStatistics']);
+    }
+);
 
 
 Route::group(['middleware' => 'jwt.auth', 'prefix' => 'v1'], function () {
@@ -173,3 +177,17 @@ Route::group([
     Route::post('me', 'AuthController@me');
     Route::post('login-with-google', 'AuthController@loginWithGoogle');
 });
+
+Route::group(
+    [
+        'middleware' => 'api',
+        'namespace' => 'App\Http\Controllers',
+        'prefix' => 'auth/admin'
+    ],
+    function ($router) {
+        Route::post('login', [AdminAuthController::class, 'login']);
+        Route::post('logout', [AdminAuthController::class, 'logout']);
+        Route::post('refresh', [AdminAuthController::class, 'refresh']);
+        Route::post('me', [AdminAuthController::class, 'me']);
+    }
+);
