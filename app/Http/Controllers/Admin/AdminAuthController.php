@@ -31,10 +31,10 @@ class AdminAuthController extends Controller
         if ($token = $this->guard()->attempt($credentials)) {
             if ($this->guard()->user()->isAdmin === 1)
                 return $this->respondWithToken($token);
-            return response()->json(['error' => 'Unauthorized'], 401);
+            return response()->json(['error' => 'Bạn không có quyền truy cập vào trang này!'], 403);
         }
 
-        return response()->json(['error' => 'Unauthorized'], 401);
+        return response()->json(['error' => 'Tài khoản hoặc mật khẩu không chính xác!'], 401);
     }
 
 

@@ -16,6 +16,9 @@ use App\Http\Controllers\SearchController;
 use App\Http\Controllers\StoriesController;
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AdminFeelAndActivityController;
+use App\Http\Controllers\Admin\AdminPostController;
+use App\Http\Controllers\Admin\AdminUserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,6 +44,9 @@ Route::group(
     ['middleware' => 'jwt.auth', 'prefix' => 'v1/admin'],
     function () {
         Route::GET('/admin-dashboard-statistics', [AdminDashboardController::class, 'adminDashboardStatistics']);
+        Route::GET('/fetch-list-post', [AdminPostController::class, 'fetchListPost']);
+        Route::GET('/fetch-list-user', [AdminUserController::class, 'fetchListUser']);
+        Route::GET('/fetch-list-fell-and-activity', [AdminFeelAndActivityController::class, 'fetchListFeelAndActivity']);
     }
 );
 
