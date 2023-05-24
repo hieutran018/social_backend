@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use URL;
 
 class AdminAuthController extends Controller
 {
@@ -45,6 +46,10 @@ class AdminAuthController extends Controller
      */
     public function me()
     {
+        $this->guard()->user()->avatar =
+            $this->guard()->user()->avatar == null ?
+            ($this->guard()->user()->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
+            URL::to('media_fiile_posts/' . $this->guard()->user()->id . '/' . $this->guard()->user()->avatar);
         return response()->json($this->guard()->user());
     }
 

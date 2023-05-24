@@ -16,6 +16,7 @@ class AdminPostController extends Controller
             $post->userName = $post->user->displayName;
             $post->reaction = $post->like->count();
             $post->totalComment = $post->comment->count();
+            $post->share = Post::Where('parent_post', $post->id)->count();
         }
         return response()->json($posts, 200);
     }

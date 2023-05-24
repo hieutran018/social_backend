@@ -13,6 +13,7 @@ class AdminDashboardController extends Controller
     {
         $users = DB::table('users')
             ->select(DB::raw('count(*) as totalUsers'))
+            ->Where('isAdmin', 0)
             ->whereRaw('MONTH(created_at) = MONTH(CURRENT_DATE())')
             ->get();
         $posts = DB::table('posts')
@@ -23,6 +24,9 @@ class AdminDashboardController extends Controller
             ->select(DB::raw('MONTH(created_at) as month'), DB::raw('count(*) as total'))
             ->groupBy(DB::raw('MONTH(created_at)'))
             ->get();
+        foreach ($chart as $item) {
+            $item->month = 'Tháng ' . $item->month;
+        }
         return response()->json(['users' => $users, 'posts' => $posts, 'chart' => $chart], 200);
     }
 }

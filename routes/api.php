@@ -17,6 +17,7 @@ use App\Http\Controllers\StoriesController;
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminFeelAndActivityController;
+use App\Http\Controllers\Admin\AdminGroupController;
 use App\Http\Controllers\Admin\AdminPostController;
 use App\Http\Controllers\Admin\AdminUserController;
 
@@ -46,7 +47,8 @@ Route::group(
         Route::GET('/admin-dashboard-statistics', [AdminDashboardController::class, 'adminDashboardStatistics']);
         Route::GET('/fetch-list-post', [AdminPostController::class, 'fetchListPost']);
         Route::GET('/fetch-list-user', [AdminUserController::class, 'fetchListUser']);
-        Route::GET('/fetch-list-fell-and-activity', [AdminFeelAndActivityController::class, 'fetchListFeelAndActivity']);
+        Route::GET('/fetch-list-group', [AdminGroupController::class, 'fetchListGroup']);
+        Route::GET('/fetch-list-feel-and-activity', [AdminFeelAndActivityController::class, 'fetchListFeelAndActivity']);
     }
 );
 

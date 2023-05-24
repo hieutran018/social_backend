@@ -53,7 +53,7 @@ class StoriesController extends Controller
         }
 
         if ($data) {
-            $stories = Stories::WhereIn('user_id', $data)->orderBy('created_at', 'DESC')->groupBy('user_id')->get();;
+            $stories = Stories::WhereIn('user_id', $data)->orderBy('created_at', 'DESC')->get();
             foreach ($stories as $story) {
                 $story->file_name_story = URL::to('stories/' . $story->user_id . '/' . $story->file_name_story);
                 $story->userName = $story->user->displayName;
