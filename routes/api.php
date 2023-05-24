@@ -17,6 +17,12 @@ use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Http\Controllers\StoriesController;
+use App\Http\Controllers\Admin\AdminAuthController;
+use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AdminFeelAndActivityController;
+use App\Http\Controllers\Admin\AdminGroupController;
+use App\Http\Controllers\Admin\AdminPostController;
+use App\Http\Controllers\Admin\AdminUserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,10 +44,16 @@ Route::POST('fetch-post-by-id', [PostController::class, 'fetchPostById']);
 Route::post('fetch-comment-by-post', [CommentController::class, 'fetchCommentByPost']);
 Route::GET('profile-user/userId={userId}', [UserController::class, 'profileUser']);
 
-
-
-
-
+Route::group(
+    ['middleware' => 'jwt.auth', 'prefix' => 'v1/admin'],
+    function () {
+        Route::GET('/admin-dashboard-statistics', [AdminDashboardController::class, 'adminDashboardStatistics']);
+        Route::GET('/fetch-list-post', [AdminPostController::class, 'fetchListPost']);
+        Route::GET('/fetch-list-user', [AdminUserController::class, 'fetchListUser']);
+        Route::GET('/fetch-list-group', [AdminGroupController::class, 'fetchListGroup']);
+        Route::GET('/fetch-list-feel-and-activity', [AdminFeelAndActivityController::class, 'fetchListFeelAndActivity']);
+    }
+);
 
 
 Route::group(['middleware' => 'jwt.auth', 'prefix' => 'v1'], function () {
@@ -194,3 +206,17 @@ Route::group([
     Route::post('me', 'AuthController@me');
     Route::post('login-with-google', 'AuthController@loginWithGoogle');
 });
+
+Route::group(
+    [
+        'middleware' => 'api',
+        'namespace' => 'App\Http\Controllers',
+        'prefix' => 'auth/admin'
+    ],
+    function ($router) {
+        Route::post('login', [AdminAuthController::class, 'login']);
+        Route::post('logout', [AdminAuthController::class, 'logout']);
+        Route::post('refresh', [AdminAuthController::class, 'refresh']);
+        Route::post('me', [AdminAuthController::class, 'me']);
+    }
+);

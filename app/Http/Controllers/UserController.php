@@ -25,10 +25,7 @@ class UserController extends Controller
     public function profileUser($userId)
     {
         $profile = User::find($userId);
-        $profile->avatar = $profile->avatar == null ?
-            ($profile->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png'))
-            :
-            URL::to('media_file_post/' . $profile->id . '/' . $profile->avatar);
+        $profile->renameAvatarUserFromUser();
         $profile->coverImage = $profile->cover_image == null ?
             URL::to('default/cover_image_default.jpeg') :
             URL::to('media_file_post/' . $profile->id . '/' . $profile->cover_image);

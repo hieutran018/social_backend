@@ -55,8 +55,7 @@ class GroupController extends Controller
         $lstGroup = User::WHERE('id', $userId)->get();
         foreach ($lstGroup as $user) {
             foreach ($user->groups as $gr) {
-                $gr->avatar = $gr->avatar === null ? URL::to('default/avatar_group_default.jpg') :
-                    URL::to('media_file_post/' . $gr->avatar);
+                $gr->renameAvatar();
             }
         }
 
