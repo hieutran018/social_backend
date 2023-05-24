@@ -97,7 +97,7 @@ class PostController extends Controller
         }
 
         $this->_renameAvatarUserFromPost($crPost);
-
+        $crPost->like = $crPost->like;
         $crPost->totalMediaFile = $crPost->mediafile->count();
         $crPost->totalComment = $crPost->comment->count();
         if ($request->groupId) {

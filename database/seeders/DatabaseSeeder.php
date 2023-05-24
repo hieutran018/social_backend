@@ -14,15 +14,15 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // \App\Models\User::factory(29)->create();
+        \App\Models\User::factory(40)->create();
         // \App\Models\Post::factory(20)->create();
         // \App\Models\MediaFilePost::factory(4)->create();
         // \App\Models\CommentPost::factory(15)->create();
 
         //run sql file
 
-        $path = database_path('ckc_social.sql');
-        $sql = file_get_contents($path);
-        DB::unprepared($sql);
+        // $path = database_path('ckc_social.sql');
+        // $sql = file_get_contents($path);
+        // DB::unprepared($sql);
     }
 }

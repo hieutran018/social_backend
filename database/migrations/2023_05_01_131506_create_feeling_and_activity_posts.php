@@ -17,6 +17,7 @@ class CreateFeelingAndActivityPosts extends Migration
             $table->id();
             $table->string('icon_name');
             $table->string('patch');
+            $table->boolean('status')->default(1);
             $table->timestamps();
         });
     }
