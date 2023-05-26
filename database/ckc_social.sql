@@ -335,7 +335,37 @@ INSERT INTO `member_groups` (`id`, `user_id`, `group_id`, `isAdminGroup`, `statu
 INSERT INTO `social_accounts` (`id`, `provider`, `provider_id`, `email`, `user_id`, `created_at`, `updated_at`) VALUES
 (1, 'google.com', 's8HtGXPL7LUJvvkklWD72WzZ4nh2', 'tranduongchihieu@gmail.com', 1, '2023-04-18 23:58:00', '2023-04-18 16:58:00');
 
+INSERT INTO `stories` (`id`, `expiration_timestamp`, `user_id`, `viewer_count`, `type`, `file_name_story`, `created_at`, `updated_at`) VALUES
+(1, '2023-05-24 15:26:05', 2, 0, 'image', '1684916765SvsMtLY0Ds.jpg', '2023-05-24 08:26:05', '2023-05-24 01:26:05'),
+(2, '2023-05-24 15:26:18', 2, 0, 'image', '1684916778fxNHnyLmWj.jpg', '2023-05-24 08:26:18', '2023-05-24 01:26:18'),
+(3, '2023-05-24 15:26:27', 2, 0, 'image', '1684916787KjuNPSoTJE.jpg', '2023-05-24 08:26:27', '2023-05-24 01:26:27'),
+(4, '2023-05-24 15:26:52', 2, 0, 'image', '1684916812fQDAkhAoCu.jpg', '2023-05-24 08:26:52', '2023-05-24 01:26:52');
 
+INSERT INTO `feeling_and_activity_posts` (`id`, `icon_name`, `patch`, `status`, `created_at`, `updated_at`) VALUES
+(1, 'tức giận', 'angry.png', 1, '2023-05-24 07:46:42', NULL),
+(2, 'bất ngờ', '1684928473Vp6c3eRt8n.png', 1, '2023-05-24 11:41:13', NULL),
+(3, 'OK', '1684929411E5QJxJAsoB.png', 1, '2023-05-24 11:56:51', NULL),
+(4, 'blue', '1684929448osETpf3qfH.png', 1, '2023-05-24 11:57:28', NULL),
+(5, 'blue', '1684929448osETpf3qfH.png', 1, '2023-05-24 11:57:28', NULL),
+(6, 'blue', '1684929448osETpf3qfH.png', 1, '2023-05-24 11:57:28', NULL),
+(7, 'tức giận', 'angry.png', 1, '2023-05-24 07:46:42', NULL),
+(8, 'bất ngờ', '1684928473Vp6c3eRt8n.png', 1, '2023-05-24 11:41:13', NULL),
+(9, 'OK', '1684929411E5QJxJAsoB.png', 1, '2023-05-24 11:56:51', NULL),
+(10, 'blue', '1684929448osETpf3qfH.png', 1, '2023-05-24 11:57:28', NULL),
+(11, 'blue', '1684929448osETpf3qfH.png', 1, '2023-05-24 11:57:28', NULL),
+(12, 'blue', '1684929448osETpf3qfH.png', 1, '2023-05-24 11:57:28', NULL),
+(13, 'tức giận', 'angry.png', 1, '2023-05-24 07:46:42', NULL),
+(14, 'bất ngờ', '1684928473Vp6c3eRt8n.png', 1, '2023-05-24 11:41:13', NULL),
+(15, 'OK', '1684929411E5QJxJAsoB.png', 1, '2023-05-24 11:56:51', NULL),
+(16, 'blue', '1684929448osETpf3qfH.png', 1, '2023-05-24 11:57:28', NULL),
+(17, 'blue', '1684929448osETpf3qfH.png', 1, '2023-05-24 11:57:28', NULL),
+(18, 'blue', '1684929448osETpf3qfH.png', 1, '2023-05-24 11:57:28', NULL),
+(19, 'tức giận', 'angry.png', 1, '2023-05-24 07:46:42', NULL),
+(20, 'bất ngờ', '1684928473Vp6c3eRt8n.png', 1, '2023-05-24 11:41:13', NULL),
+(21, 'OK', '1684929411E5QJxJAsoB.png', 1, '2023-05-24 11:56:51', NULL),
+(22, 'blue', '1684929448osETpf3qfH.png', 1, '2023-05-24 11:57:28', NULL),
+(23, 'blue', '1684929448osETpf3qfH.png', 1, '2023-05-24 11:57:28', NULL),
+(24, 'blue', '1684929448osETpf3qfH.png', 1, '2023-05-24 11:57:28', NULL);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
