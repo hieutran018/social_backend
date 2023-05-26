@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\PostLikeController;
+use App\Http\Controllers\PostHistoryController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\FriendShipController;
@@ -23,6 +24,7 @@ use App\Http\Controllers\Admin\AdminFeelAndActivityController;
 use App\Http\Controllers\Admin\AdminGroupController;
 use App\Http\Controllers\Admin\AdminPostController;
 use App\Http\Controllers\Admin\AdminUserController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -52,6 +54,7 @@ Route::group(
         Route::GET('/fetch-list-user', [AdminUserController::class, 'fetchListUser']);
         Route::GET('/fetch-list-group', [AdminGroupController::class, 'fetchListGroup']);
         Route::GET('/fetch-list-feel-and-activity', [AdminFeelAndActivityController::class, 'fetchListFeelAndActivity']);
+        Route::POST('/create-feel-and-activity', [AdminFeelAndActivityController::class, 'createFeelAndActivity']);
     }
 );
 
@@ -72,6 +75,8 @@ Route::group(['middleware' => 'jwt.auth', 'prefix' => 'v1'], function () {
     Route::post('create-post', [PostController::class, 'createPost']);
     //* CHIA SẺ BÀI VIẾT VỀ TRANG CÁ NHÂN
     Route::post('share-post-to-profile', [PostController::class, 'sharePost']);
+    //* LỊCH SỬ CHỈNH SỬA BÀI VIẾT
+    Route::GET('fetch-history-edit-post/postId={idPost}', [PostHistoryController::class, 'fetchPostHistoryByIdPost']);
     //* CẬP NHẬT THÔNG TIN NGƯỜI DÙNG HIỆN TẠI
     Route::post('edit-information-user', [UserController::class, 'editUserInformation']);
     //* GỬI LỜI MỜI KẾT BẠN

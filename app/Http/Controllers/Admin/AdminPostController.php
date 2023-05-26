@@ -14,6 +14,7 @@ class AdminPostController extends Controller
         foreach ($posts as $post) {
             $post->privacy = $post->privacy === 0 ? 'Chỉ mình tôi' : ($post->privacy === 1 ? 'Công khai' : 'Bạn bè');
             $post->userName = $post->user->displayName;
+            $post->type = $post->parent_post === null ? 'Bài viết' : 'Bài chia sẻ';
             $post->reaction = $post->like->count();
             $post->totalComment = $post->comment->count();
             $post->share = Post::Where('parent_post', $post->id)->count();
