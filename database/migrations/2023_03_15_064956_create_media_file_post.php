@@ -20,6 +20,7 @@ class CreateMediaFilePost extends Migration
             $table->foreignId('post_id');
             $table->foreignId('user_id');
             $table->foreignId('group_id')->nullable();
+            $table->foreignId('post_history_id')->nullable();
             $table->boolean('isAvatar')->nullable();
             $table->boolean('isCover')->nullable();
             $table->foreignId('album_id')->nullable();

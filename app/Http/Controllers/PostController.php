@@ -4,13 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Post;
-use App\Models\CommentPost;
+// use App\Models\CommentPost;
 use App\Models\FriendShip;
 use App\Models\MediaFilePost;
 use App\Models\PostLike;
 use App\Models\MemberGroup;
 use App\Models\Tag;
-use App\Models\User;
+use App\Models\PostHistory;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\URL;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -192,6 +192,109 @@ class PostController extends Controller
         return response()->json($postShare, 200);
     }
 
+    public function fetchPostByUserId($userId)
+    {
+        $data[] = $userId;
+        $lstFriend = FriendShip::WHERE('status', 1)->WHERE('user_accept', $userId)->orWhere('user_request', $userId)->orderBy('created_at', 'DESC')->get();
+        $lstGroup = MemberGroup::WHERE('status', 1)->WHERE('user_id', $userId)->get();
+        foreach ($lstFriend as $fr) {
+            if ($fr->user_accept == $userId) {
+                foreach ($fr->user as $user) {
+                    $data[] = $user->id;
+                }
+            } else {
+                foreach ($fr->users as $users) {
+                    $data[]  = $users->id;
+                }
+            }
+        }
+        foreach ($lstGroup as $group) {
+            $gr[] = $group->group_id;
+        }
+
+        if (!empty($gr)) {
+            $lstPost = Post::WhereIn('user_id', $data)->Where('privacy', '!=', 0)->orWhere('group_id', $gr)->orderBy('created_at', 'DESC')->paginate(10);
+        } else {
+            $lstPost = Post::WhereIn('user_id', $data)->Where('privacy', '!=', 0)->orderBy('created_at', 'DESC')->paginate(10);
+        }
+
+
+        foreach ($lstPost as $post) {
+            if ($post->parent_post) {
+                $post->parent_post = Post::find($post->parent_post);
+                $post->parent_post->created_at = Carbon::parse($post->parent_post->created_at)->format('Y/m/d H:m:s');
+
+                $this->_renameAvatarUserFromPost($post->parent_post);
+
+                $post->parent_post->totalMediaFile = $post->parent_post->mediafile->count();
+                $post->parent_post->totalComment = $post->parent_post->comment->count();
+                if ($post->parent_post->tag) {
+                    foreach ($post->parent_post->tag as $tag) {
+                        $post->parent_post->tag = $tag;
+                    }
+                }
+                if ($post->parent_post->group_id) {
+                    $post->parent_post->groupName = $post->parent_post->group->group_name;
+                    $post->parent_post->displayName = $post->user->displayName;
+                    $post->parent_post->groupAvatar = $post->parent_post->group->avatar === null ? URL::to('default/avatar_group_default.jpg') :
+                        URL::to('media_file_post/' . $post->parent_post->group->avatar);
+                    foreach ($post->parent_post->mediafile as $mediaFile) {
+                        $this->_renameMediaFileForGroup($mediaFile);
+                    }
+                } else {
+                    $post->parent_post->displayName = $post->parent_post->user->displayName;
+                    if ($post->parent_post->icon) {
+                        $post->parent_post->iconName = $post->parent_post->icon->icon_name;
+                        $post->parent_post->iconPatch =
+                            URL::to('icon/' . $post->parent_post->icon->patch);
+                    }
+                    $post->parent_post->avatarUser = $post->parent_post->user->avatar == null ?
+                        ($post->parent_post->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
+                        URL::to('media_file_post/' . $post->parent_post->user->id . '/' . $post->parent_post->user->avatar);
+                    foreach ($post->parent_post->mediafile as $mediaFile) {
+                        $this->_renameMediaFile($mediaFile, $post->parent_post->user->id);
+                    }
+                }
+            }
+
+            if ($post->tag) {
+                foreach ($post->tag as $tag) {
+                    $post->tags = $tag->user->displayName;
+                }
+            }
+
+            $post->displayName = $post->user->displayName;
+            if ($post->icon) {
+                $post->iconName = $post->icon->icon_name;
+                $post->iconPatch =
+                    URL::to('icon/' . $post->icon->patch);
+            }
+            $post->created_at = Carbon::parse($post->created_at)->format('Y/m/d H:m:s');
+
+            $this->_renameAvatarUserFromPost($post);
+
+            $post->totalMediaFile = $post->mediafile->count();
+            $post->totalComment = $post->comment->count();
+            $post->totalLike = $post->like->count();
+            $post->totalShare = Post::WHERE('parent_post', $post->id)->count();
+            $post->isLike = !empty(PostLike::WHERE('user_id', $userId)->WHERE('post_id', $post->id)->first());
+
+            if ($post->group_id != null) {
+                $post->groupName = $post->group->group_name;
+                $post->groupAvatar = $post->group->avatar === null ? URL::to('default/avatar_group_default.jpg') :
+                    URL::to('media_file_post/' . $post->group->avatar);
+                foreach ($post->mediafile as $mediaFile) {
+                    $this->_renameMediaFileForGroup($mediaFile);
+                }
+            } else {
+                foreach ($post->mediafile as $mediaFile) {
+                    $this->_renameMediaFile($mediaFile, $post->user->id);
+                }
+            }
+        }
+        return response()->json($lstPost, 200);
+    }
+
     public function fetchPost(Request $request)
     {
         $userId = JWTAuth::toUser($request->token)->id;
@@ -367,6 +470,55 @@ class PostController extends Controller
             }
         }
         return response()->json($posts, 200);
+    }
+
+    public function updatePost(Request $request)
+    {
+        $userId = JWTAuth::toUser($request->token)->id;
+        $post = Post::Where('id', $request->postId)->Where('user_id', $userId)->first();
+        if (empty($post)) {
+            return response()->json('Yêu cầu không hợp lệ', 403);
+        } else {
+            $history = new PostHistory();
+            $history->post_id = $post->id;
+            $history->user_id = $post->user_id;
+            $history->post_content = $post->post_content;
+            $history->privacy = $post->privacy;
+            $history->parent_post = $post->parent_post;
+            $history->group_id = $post->group_id;
+            $history->feel_activity_id = $post->feel_activity_id;
+            $history->created_at = Carbon::now('Asia/Ho_Chi_Minh');
+            $history->status = 1;
+            $history->save();
+
+            if ($request->hasFile('files')) {
+                foreach ($request->file('files') as $key => $file) {
+                    $fileExtentsion = $file->getClientOriginalExtension();
+                    $random = Str::random(10);
+                    $fileName = time() . $random . '.' . $fileExtentsion;
+                    if ($request->groupId) {
+                        $file->move('media_file_post/', $fileName);
+                    } else {
+                        $file->move('media_file_post/' . JWTAuth::toUser($request->token)->id, $fileName);
+                    }
+                    $media = new MediaFilePost();
+                    $media->media_file_name = $fileName;
+                    $media->media_type = $fileExtentsion;
+                    $media->post_id = $post->id;
+                    $media->group_id = $request->groupId;
+                    $media->post_history_id = $history->id;
+                    $media->user_id = $userId;
+                    $media->created_at = Carbon::now('Asia/Ho_Chi_Minh');
+                    $media->status = 1;
+                    $media->save();
+                }
+            }
+
+            $post->post_content = $request->postContent;
+            $post->feel_activity_id = $request->faaId;
+            $post->update();
+            return response()->json($post, 200);
+        }
     }
 }
 
