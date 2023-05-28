@@ -419,7 +419,9 @@ class PostController extends Controller
         }
         if ($post->tag) {
             foreach ($post->tag as $tag) {
-                $post->tags = $tag->user->displayName;
+                $tag->displayName = $tag->user->displayName;
+                $tag->avatar = $tag->user->avatar === null ? ($tag->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
+                    URL::to('media_file_post/' . $tag->user->id . '/' . $tag->user->avatar);
             }
         }
         return response()->json($post, 200);
@@ -526,8 +528,9 @@ class PostController extends Controller
 
             $post->post_content = $request->contentPost;
             $post->feel_activity_id = $request->faaId;
+            //* xóa tag cũ -> lưu lại tag mới
+            $tagged = Tag::Where('post_id', $post->id)->delete();
             if ($request->tags) {
-                $tagged = Tag::Where('post_id', $post->id)->delete();
                 foreach ($request->tags as $tag) {
                     $newTag = new Tag();
                     $newTag->user_id = $tag;
@@ -543,6 +546,9 @@ class PostController extends Controller
             $post->totalComment = $post->comment->count();
             $post->totalLike = $post->like->count();
             $post->totalShare = Post::WHERE('parent_post', $post->id)->count();
+            foreach ($post->mediafile as $mediaFile) {
+                $this->_renameMediaFile($mediaFile, $post->user->id);
+            }
             if ($post->tag) {
                 foreach ($post->tag as $tag) {
                     $post->tag = $tag->user->displayName;
