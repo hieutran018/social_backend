@@ -39,7 +39,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 
-Route::POST('fetch-post-by-id', [PostController::class, 'fetchPostById']);
+
 Route::GET('fetch-post-by-userId/userId={userId}', [PostController::class, 'fetchPostByUserId']);
 Route::post('fetch-comment-by-post', [CommentController::class, 'fetchCommentByPost']);
 Route::GET('profile-user/userId={userId}', [UserController::class, 'profileUser']);
@@ -66,6 +66,7 @@ Route::group(['middleware' => 'jwt.auth', 'prefix' => 'v1'], function () {
     Route::post('reply-comment', [CommentController::class, 'commentReply']);
     //* DANH SÁCH BÀI VIẾT
     Route::get('fetch-post', [PostController::class, 'fetchPost']);
+    Route::GET('fetch-post-by-id/postId={postId}', [PostController::class, 'fetchPostById']);
     //* TẠO BÀI VIẾT
     Route::post('create-post', [PostController::class, 'createPost']);
     //* CHIA SẺ BÀI VIẾT VỀ TRANG CÁ NHÂN

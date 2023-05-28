@@ -59,4 +59,8 @@ class Post extends Model
     {
         return $this->hasMany(PostLike::class, 'post_id', 'id');
     }
+    public function postHistory()
+    {
+        return $this->hasMany(PostHistory::class, 'post_id', 'id');
+    }
 }

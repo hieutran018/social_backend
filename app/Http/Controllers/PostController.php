@@ -382,7 +382,7 @@ class PostController extends Controller
             $post->totalLike = $post->like->count();
             $post->totalShare = Post::WHERE('parent_post', $post->id)->count();
             $post->isLike = !empty(PostLike::WHERE('user_id', $userId)->WHERE('post_id', $post->id)->first());
-
+            $post->histories = $post->postHistory->count();
             if ($post->group_id != null) {
                 $post->groupName = $post->group->group_name;
                 $post->groupAvatar = $post->group->avatar === null ? URL::to('default/avatar_group_default.jpg') :
@@ -399,9 +399,9 @@ class PostController extends Controller
         return response()->json($lstPost, 200);
     }
 
-    public function fetchPostById(Request $request)
+    public function fetchPostById($postId)
     {
-        $post = Post::find($request->postId);
+        $post = Post::find($postId);
         $post->displayName = $post->user->displayName;
         $post->created_at = Carbon::parse($post->created_at)->format('Y/m/d h:m:s');
 
@@ -411,6 +411,16 @@ class PostController extends Controller
         $post->totalComment = $post->comment->count();
         foreach ($post->mediafile as $mediaFile) {
             $this->_renameMediaFile($mediaFile, $post->user->id);
+        }
+        if ($post->icon) {
+            $post->iconName = $post->icon->icon_name;
+            $post->iconPatch =
+                URL::to('icon/' . $post->icon->patch);
+        }
+        if ($post->tag) {
+            foreach ($post->tag as $tag) {
+                $post->tags = $tag->user->displayName;
+            }
         }
         return response()->json($post, 200);
     }
@@ -514,9 +524,30 @@ class PostController extends Controller
                 }
             }
 
-            $post->post_content = $request->postContent;
+            $post->post_content = $request->contentPost;
             $post->feel_activity_id = $request->faaId;
+            if ($request->tags) {
+                $tagged = Tag::Where('post_id', $post->id)->delete();
+                foreach ($request->tags as $tag) {
+                    $newTag = new Tag();
+                    $newTag->user_id = $tag;
+                    $newTag->post_id = $post->id;
+                    $newTag->save();
+                }
+            }
+
             $post->update();
+            $post->displayName = $post->user->displayName;
+            $this->_renameAvatarUserFromPost($post);
+            $post->totalMediaFile = $post->mediafile->count();
+            $post->totalComment = $post->comment->count();
+            $post->totalLike = $post->like->count();
+            $post->totalShare = Post::WHERE('parent_post', $post->id)->count();
+            if ($post->tag) {
+                foreach ($post->tag as $tag) {
+                    $post->tag = $tag->user->displayName;
+                }
+            }
             return response()->json($post, 200);
         }
     }
