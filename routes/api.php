@@ -73,6 +73,7 @@ Route::group(['middleware' => 'jwt.auth', 'prefix' => 'v1'], function () {
     Route::post('share-post-to-profile', [PostController::class, 'sharePost']);
     //* CHỈNH SỬA BÀI VIẾT
     Route::POST('update-post', [PostController::class, 'updatePost']);
+    Route::POST('delete-post', [PostController::class, 'deletePost']);
     //* LỊCH SỬ CHỈNH SỬA BÀI VIẾT
     Route::GET('fetch-history-edit-post/postId={idPost}', [PostHistoryController::class, 'fetchPostHistoryByIdPost']);
     //* CẬP NHẬT THÔNG TIN NGƯỜI DÙNG HIỆN TẠI
