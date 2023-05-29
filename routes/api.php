@@ -42,7 +42,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 
-Route::POST('fetch-post-by-id', [PostController::class, 'fetchPostById']);
+
+Route::GET('fetch-post-by-userId/userId={userId}', [PostController::class, 'fetchPostByUserId']);
 Route::post('fetch-comment-by-post', [CommentController::class, 'fetchCommentByPost']);
 Route::GET('profile-user/userId={userId}', [UserController::class, 'profileUser']);
 
@@ -64,37 +65,33 @@ Route::group(['middleware' => 'jwt.auth', 'prefix' => 'v1'], function () {
     Route::GET('/fetch-friends-suggestion', [FriendShipController::class, 'fetchFriendSuggestion']);
     //* BÌNH LUẬN BÀI VIẾT
     Route::post('create-comment-post', [CommentController::class, 'createCommentPost']);
-
     //*PHẢN HỒI BÌNH LUẬN
     Route::post('reply-comment', [CommentController::class, 'commentReply']);
-
     //* DANH SÁCH BÀI VIẾT
     Route::get('fetch-post', [PostController::class, 'fetchPost']);
-
+    Route::GET('fetch-post-by-id/postId={postId}', [PostController::class, 'fetchPostById']);
     //* TẠO BÀI VIẾT
     Route::post('create-post', [PostController::class, 'createPost']);
     //* CHIA SẺ BÀI VIẾT VỀ TRANG CÁ NHÂN
     Route::post('share-post-to-profile', [PostController::class, 'sharePost']);
+    //* CHỈNH SỬA BÀI VIẾT
+    Route::POST('update-post', [PostController::class, 'updatePost']);
     //* LỊCH SỬ CHỈNH SỬA BÀI VIẾT
     Route::GET('fetch-history-edit-post/postId={idPost}', [PostHistoryController::class, 'fetchPostHistoryByIdPost']);
     //* CẬP NHẬT THÔNG TIN NGƯỜI DÙNG HIỆN TẠI
     Route::post('edit-information-user', [UserController::class, 'editUserInformation']);
     //* GỬI LỜI MỜI KẾT BẠN
     Route::post('request-add-friend', [FriendShipController::class, 'requestAddFriend']);
-
     //* DANH SÁCH LỜI MỚI KẾT BẠN
     Route::post('fetch-friend-request-list', [FriendShipController::class, 'fetchFriendRequestList']);
     //*CHẤP NHẬN LỜI MỜI KẾT BẠN
     Route::post('accept-friend-request', [FriendShipController::class, 'acceptFriendRequest']);
-
     //* HỦY KẾT BẠN
     Route::post('unfriend', [FriendShipController::class, 'unFriend']);
-
     //* HOÀN TÁC YÊU CẦU KẾT BẠN
     Route::post('cancle-add-friend', [FriendShipController::class, 'cancelAddFriend']);
     //* DANH SÁCH BẠN BÈ THEO ID NGƯỜI DÙNG
     Route::get('fetch-friend-by-user-id/{userId}/{limit?}', [FriendShipController::class, 'fetchListFriendByUser']);
-
     //*DANH SÁCH HÌNH ẢNH ĐÃ ĐĂNG TẢI
     Route::get('fetch-image-uploaded/userId={userId}/{limit?}', [MediaFileController::class, 'photoByUploaded']);
     //* CẬP NHẬT ẢNH ĐẠI DIỆN
@@ -103,13 +100,10 @@ Route::group(['middleware' => 'jwt.auth', 'prefix' => 'v1'], function () {
     Route::post('upload-cover-image', [UserController::class, 'uploadCoverImage']);
     //* Lưu Device Token để push notification
     Route::post('save-device-token', [UserController::class, 'saveDeviceToken']);
-
     //* THÍCH BÀI VIẾT
     Route::post('post/like-post', [PostLikeController::class, 'like']);
-
     //*  DANH SÁCH ALBUM ẢNH NGƯỜI DÙNG
     Route::get('fetch-album-by-userid/userId={userId}', [AlbumController::class, 'fetcAlbumByIdUser']);
-
     //* TẠO ALBUM ẢNH
     Route::post('create-album', [AlbumController::class, 'createAlbum']);
     //* XEM CHI TIẾT ALBUM
@@ -126,7 +120,6 @@ Route::group(['middleware' => 'jwt.auth', 'prefix' => 'v1'], function () {
     Route::get('fetch-group-by-id/{groupId}', [GroupController::class, 'fetchGroupById']);
     //* DANH SÁCH TIN TỨC VIDEO
     Route::get('fetch-reels-video', [MediaFileController::class, 'fetchMediaFileVieo']);
-
     //* DANH SÁCH BẠN BÈ CHƯA THAM GIA NHÓM
     Route::get('fetch-friend-to-invite-group/{groupId}', [FriendShipController::class, 'fetchFriendToInviteGroup']);
     //* GỬI LỜI MỜI BẠN BÈ THAM GIA NHÓM
@@ -164,10 +157,8 @@ Route::group(['middleware' => 'jwt.auth', 'prefix' => 'v1'], function () {
     //* LẤY DANH SÁCH CẢM XÚC VÀ HOẠT ĐỘNG KHI TẠO BÀI VIẾT
     Route::get('fetch-fell-and-activity-posts', [FeelAndActivityController::class, 'fetchFeelAndActivity']);
     Route::get('search-feel-and-activity-posts/search={input}', [FeelAndActivityController::class, 'searchFeelAnActivity']);
-
     //* LẤY DANH SÁCH THÔNG BÁO CỦA NGƯỜI DÙNG
     Route::get('fetch-notifications', [NotificationController::class, 'fetchNotifications']);
-
     //* ĐĂNG BẢNG TIN
     Route::post('/stories/create-story', [StoriesController::class, 'creatStroies']);
     Route::get('/stories', [StoriesController::class, 'fetchStories']);

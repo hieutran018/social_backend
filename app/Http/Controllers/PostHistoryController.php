@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\PostHistory;
+use App\Models\MediaFilePost;
 use URL;
 
 class PostHistoryController extends Controller
@@ -15,6 +16,14 @@ class PostHistoryController extends Controller
         foreach ($histories as $history) {
             $this->_renameAvatarUserFromPost($history);
             $history->displayName = $history->user->displayName;
+            //? Chưa lấy ra được lịch sử có kèm danh sách files theo từng chỉnh sửa
+            //* BÀI VIẾT (text:expample, files:[file1,file2])
+            //* CHỈNH SỬA (text:expample1, files:[file1,file2])
+            //TODO LỊCH SỬ (text:expample1,files:[file1,file2])
+            //! LỊCH SỬ(text:expample1,files:[])
+            foreach ($history->mediafile as $file) {
+                $this->_renameMediaFile($file, $file->user_id);
+            }
         }
         return response()->json($histories, 200);
     }
@@ -40,5 +49,12 @@ trait PostHistoryTrait
         }
 
         $post->avatarUser = $newImage; //return $newImage
+    }
+    private function _renameMediaFile(MediaFilePost $mediaFile, int $userId): void
+    {
+        $isHttp = !empty(parse_url($mediaFile->media_file_name, PHP_URL_SCHEME));
+        if (!$isHttp) {
+            $mediaFile->media_file_name = URL::to('media_file_post/' . $userId  . '/' . $mediaFile->media_file_name);
+        }
     }
 }

@@ -34,7 +34,7 @@ class PostHistory extends Model
     }
     public function mediafile()
     {
-        return $this->hasMany(MediaFilePost::class, 'post_id', 'id');
+        return $this->hasMany(MediaFilePost::class, 'post_history_id', 'id');
     }
     protected $hidden = [
         'user',
@@ -42,8 +42,7 @@ class PostHistory extends Model
         'group',
         'updated_at',
         'deleted_at',
-        'status'
-
+        'status',
     ];
     protected $table = 'post_histories';
 }

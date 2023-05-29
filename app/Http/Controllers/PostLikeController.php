@@ -23,9 +23,8 @@ class PostLikeController extends Controller
             return response()->json($like, 200);
         } else {
             if ($isLike->type == $request->reaction) {
-
                 $isLike->delete();
-                return response()->json('UnLink successed!', 204);
+                return response()->json($isLike, 201);
             } else {
                 $isLike->type = $request->reaction;
                 $isLike->update();
