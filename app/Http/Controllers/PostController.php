@@ -325,40 +325,80 @@ class PostController extends Controller
 
         foreach ($lstPost as $post) {
             if ($post->parent_post) {
+
                 $post->parent_post = Post::find($post->parent_post);
                 if ($post->parent_post) {
-                    $post->parent_post->created_at = Carbon::parse($post->parent_post->created_at)->format('Y/m/d H:m:s');
-
-                    $this->_renameAvatarUserFromPost($post->parent_post);
-
-                    $post->parent_post->totalMediaFile = $post->parent_post->mediafile->count();
-                    $post->parent_post->totalComment = $post->parent_post->comment->count();
-                    if ($post->parent_post->tag) {
-                        foreach ($post->parent_post->tag as $tag) {
-                            $post->parent_post->tag = $tag;
+                    if ($post->parent_post->privacy === 1) {
+                        $post->parent_post->created_at = Carbon::parse($post->parent_post->created_at)->format('Y/m/d H:m:s');
+                        $this->_renameAvatarUserFromPost($post->parent_post);
+                        $post->parent_post->totalMediaFile = $post->parent_post->mediafile->count();
+                        $post->parent_post->totalComment = $post->parent_post->comment->count();
+                        if ($post->parent_post->tag) {
+                            foreach ($post->parent_post->tag as $tag) {
+                                $post->parent_post->tag = $tag;
+                            }
                         }
-                    }
-                    if ($post->parent_post->group_id) {
-                        $post->parent_post->groupName = $post->parent_post->group->group_name;
-                        $post->parent_post->displayName = $post->user->displayName;
-                        $post->parent_post->groupAvatar = $post->parent_post->group->avatar === null ? URL::to('default/avatar_group_default.jpg') :
-                            URL::to('media_file_post/' . $post->parent_post->group->avatar);
-                        foreach ($post->parent_post->mediafile as $mediaFile) {
-                            $this->_renameMediaFileForGroup($mediaFile);
+                        if ($post->parent_post->group_id) {
+                            $post->parent_post->groupName = $post->parent_post->group->group_name;
+                            $post->parent_post->displayName = $post->user->displayName;
+                            $post->parent_post->groupAvatar = $post->parent_post->group->avatar === null ? URL::to('default/avatar_group_default.jpg') :
+                                URL::to('media_file_post/' . $post->parent_post->group->avatar);
+                            foreach ($post->parent_post->mediafile as $mediaFile) {
+                                $this->_renameMediaFileForGroup($mediaFile);
+                            }
+                        } else {
+                            $post->parent_post->displayName = $post->parent_post->user->displayName;
+                            if ($post->parent_post->icon) {
+                                $post->parent_post->iconName = $post->parent_post->icon->icon_name;
+                                $post->parent_post->iconPatch =
+                                    URL::to('icon/' . $post->parent_post->icon->patch);
+                            }
+                            $post->parent_post->avatarUser = $post->parent_post->user->avatar == null ?
+                                ($post->parent_post->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
+                                URL::to('media_file_post/' . $post->parent_post->user->id . '/' . $post->parent_post->user->avatar);
+                            foreach ($post->parent_post->mediafile as $mediaFile) {
+                                $this->_renameMediaFile($mediaFile, $post->parent_post->user->id);
+                            }
                         }
-                    } else {
-                        $post->parent_post->displayName = $post->parent_post->user->displayName;
-                        if ($post->parent_post->icon) {
-                            $post->parent_post->iconName = $post->parent_post->icon->icon_name;
-                            $post->parent_post->iconPatch =
-                                URL::to('icon/' . $post->parent_post->icon->patch);
+                    } else if ($post->parent_post->privacy === 2) {
+                        // dd(Post::WhereIn('user_id', $data)->Where('id', $post->parent_post->id)->first(), $post->parent_post, $data);
+                        if (!empty(Post::WhereIn('user_id', $data)->Where('id', $post->parent_post->id)->first())) {
+                            $post->parent_post->created_at = Carbon::parse($post->parent_post->created_at)->format('Y/m/d H:m:s');
+                            $this->_renameAvatarUserFromPost($post->parent_post);
+                            $post->parent_post->totalMediaFile = $post->parent_post->mediafile->count();
+                            $post->parent_post->totalComment = $post->parent_post->comment->count();
+                            if ($post->parent_post->tag) {
+                                foreach ($post->parent_post->tag as $tag) {
+                                    $post->parent_post->tag = $tag;
+                                }
+                            }
+                            if ($post->parent_post->group_id) {
+                                $post->parent_post->groupName = $post->parent_post->group->group_name;
+                                $post->parent_post->displayName = $post->user->displayName;
+                                $post->parent_post->groupAvatar = $post->parent_post->group->avatar === null ? URL::to('default/avatar_group_default.jpg') :
+                                    URL::to('media_file_post/' . $post->parent_post->group->avatar);
+                                foreach ($post->parent_post->mediafile as $mediaFile) {
+                                    $this->_renameMediaFileForGroup($mediaFile);
+                                }
+                            } else {
+                                $post->parent_post->displayName = $post->parent_post->user->displayName;
+                                if ($post->parent_post->icon) {
+                                    $post->parent_post->iconName = $post->parent_post->icon->icon_name;
+                                    $post->parent_post->iconPatch =
+                                        URL::to('icon/' . $post->parent_post->icon->patch);
+                                }
+                                $post->parent_post->avatarUser = $post->parent_post->user->avatar == null ?
+                                    ($post->parent_post->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
+                                    URL::to('media_file_post/' . $post->parent_post->user->id . '/' . $post->parent_post->user->avatar);
+                                foreach ($post->parent_post->mediafile as $mediaFile) {
+                                    $this->_renameMediaFile($mediaFile, $post->parent_post->user->id);
+                                }
+                            }
+                        } else {
+                            $post->parent_post = 1;
                         }
-                        $post->parent_post->avatarUser = $post->parent_post->user->avatar == null ?
-                            ($post->parent_post->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
-                            URL::to('media_file_post/' . $post->parent_post->user->id . '/' . $post->parent_post->user->avatar);
-                        foreach ($post->parent_post->mediafile as $mediaFile) {
-                            $this->_renameMediaFile($mediaFile, $post->parent_post->user->id);
-                        }
+                    } else if ($post->parent_post->privacy === 0) {
+                        $post->parent_post = 1;
                     }
                 } else {
                     $post->parent_post = 1;
