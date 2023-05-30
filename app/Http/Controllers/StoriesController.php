@@ -55,13 +55,10 @@ class StoriesController extends Controller
         if ($data) {
             $stories = Stories::WhereIn('user_id', $data)->orderBy('created_at', 'DESC')->get();
             foreach ($stories as $story) {
+                $story->user->renameAvatarUserFromUser();
                 $story->file_name_story = URL::to('stories/' . $story->user_id . '/' . $story->file_name_story);
                 $story->userName = $story->user->displayName;
-                $story->avatar =
-                    $story->user->avatar == null ?
-                    ($story->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png'))
-                    :
-                    URL::to('media_file_post/' . $story->user->id . '/' . $story->user->avatar);
+                $story->avatar = $story->user->avatar;
             }
             return response()->json($stories, 200);
         }
