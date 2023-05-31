@@ -11,6 +11,7 @@ use App\Models\PostLike;
 use App\Models\MemberGroup;
 use App\Models\Tag;
 use App\Models\PostHistory;
+use App\Models\Notification;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\URL;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -23,7 +24,7 @@ class PostController extends Controller
 
     public function createPost(Request $request)
     {
-        $this->_createNoti(JWTAuth::toUser($request->token)->id);
+        // $this->_createNoti(JWTAuth::toUser($request->token)->id);
         $crPost = new Post();
         $crPost->user_id = JWTAuth::toUser($request->token)->id;
         $crPost->post_content = $request->postContent;
@@ -34,6 +35,7 @@ class PostController extends Controller
         $crPost->created_at = Carbon::now('Asia/Ho_Chi_Minh');
         $crPost->status = 1;
         $crPost->save();
+        $this->_createNotification($crPost);
         if (!empty($request->tags)) {
             foreach ($request->tags as $tag) {
                 $newTag = new Tag();
@@ -155,7 +157,7 @@ class PostController extends Controller
         $postShare->totalComment = $postShare->comment->count();
         $postShare->totalLike = $postShare->like->count();
         $postShare->parent_post = Post::find($postShare->parent_post);
-
+        $postShare->histories = $postShare->postHistory->count();
         $postShare->parent_post->created_at = Carbon::parse($postShare->parent_post->created_at)->format('Y/m/d H:m:s');
 
         $this->_renameAvatarUserFromPost($postShare->parent_post);
@@ -364,7 +366,7 @@ class PostController extends Controller
             $post->totalComment = $post->comment->count();
             $post->totalLike = $post->like->count();
             $post->totalShare = Post::WHERE('parent_post', $post->id)->count();
-            $post->isLike = !empty(PostLike::WHERE('user_id', $userId)->WHERE('post_id', $post->id)->first());
+            $post->isLike = PostLike::WHERE('user_id', $userId)->WHERE('post_id', $post->id)->first();
             $post->histories = $post->postHistory->count();
             if ($post->group_id != null) {
                 $post->groupName = $post->group->group_name;
@@ -387,9 +389,7 @@ class PostController extends Controller
         $post = Post::find($postId);
         $post->displayName = $post->user->displayName;
         $post->created_at = Carbon::parse($post->created_at)->format('Y/m/d h:m:s');
-
         $this->_renameAvatarUserFromPost($post);
-
         $post->totalMediaFile = $post->mediafile->count();
         $post->totalComment = $post->comment->count();
         foreach ($post->mediafile as $mediaFile) {
@@ -397,7 +397,7 @@ class PostController extends Controller
         }
         if ($post->icon) {
             $post->iconName = $post->icon->icon_name;
-            $post->iconPatch =
+            $post->icon->patch =
                 URL::to('icon/' . $post->icon->patch);
         }
         if ($post->tag) {
@@ -409,39 +409,7 @@ class PostController extends Controller
         }
         if ($post->parent_post) {
             $post->parent_post = Post::find($post->parent_post);
-            $post->parent_post->created_at = Carbon::parse($post->parent_post->created_at)->format('Y/m/d H:m:s');
-
-            $this->_renameAvatarUserFromPost($post->parent_post);
-
-            $post->parent_post->totalMediaFile = $post->parent_post->mediafile->count();
-            $post->parent_post->totalComment = $post->parent_post->comment->count();
-            if ($post->parent_post->tag) {
-                foreach ($post->parent_post->tag as $tag) {
-                    $post->parent_post->tag = $tag;
-                }
-            }
-            if ($post->parent_post->group_id) {
-                $post->parent_post->groupName = $post->parent_post->group->group_name;
-                $post->parent_post->displayName = $post->user->displayName;
-                $post->parent_post->groupAvatar = $post->parent_post->group->avatar === null ? URL::to('default/avatar_group_default.jpg') :
-                    URL::to('media_file_post/' . $post->parent_post->group->avatar);
-                foreach ($post->parent_post->mediafile as $mediaFile) {
-                    $this->_renameMediaFileForGroup($mediaFile);
-                }
-            } else {
-                $post->parent_post->displayName = $post->parent_post->user->displayName;
-                if ($post->parent_post->icon) {
-                    $post->parent_post->iconName = $post->parent_post->icon->icon_name;
-                    $post->parent_post->iconPatch =
-                        URL::to('icon/' . $post->parent_post->icon->patch);
-                }
-                $post->parent_post->avatarUser = $post->parent_post->user->avatar == null ?
-                    ($post->parent_post->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
-                    URL::to('media_file_post/' . $post->parent_post->user->id . '/' . $post->parent_post->user->avatar);
-                foreach ($post->parent_post->mediafile as $mediaFile) {
-                    $this->_renameMediaFile($mediaFile, $post->parent_post->user->id);
-                }
-            }
+            $this->_selectParentPost($post->parent_post);
         }
         return response()->json($post, 200);
     }
@@ -583,39 +551,7 @@ class PostController extends Controller
             }
             if ($post->parent_post) {
                 $post->parent_post = Post::find($post->parent_post);
-                $post->parent_post->created_at = Carbon::parse($post->parent_post->created_at)->format('Y/m/d H:m:s');
-
-                $this->_renameAvatarUserFromPost($post->parent_post);
-
-                $post->parent_post->totalMediaFile = $post->parent_post->mediafile->count();
-                $post->parent_post->totalComment = $post->parent_post->comment->count();
-                if ($post->parent_post->tag) {
-                    foreach ($post->parent_post->tag as $tag) {
-                        $post->parent_post->tag = $tag;
-                    }
-                }
-                if ($post->parent_post->group_id) {
-                    $post->parent_post->groupName = $post->parent_post->group->group_name;
-                    $post->parent_post->displayName = $post->user->displayName;
-                    $post->parent_post->groupAvatar = $post->parent_post->group->avatar === null ? URL::to('default/avatar_group_default.jpg') :
-                        URL::to('media_file_post/' . $post->parent_post->group->avatar);
-                    foreach ($post->parent_post->mediafile as $mediaFile) {
-                        $this->_renameMediaFileForGroup($mediaFile);
-                    }
-                } else {
-                    $post->parent_post->displayName = $post->parent_post->user->displayName;
-                    if ($post->parent_post->icon) {
-                        $post->parent_post->iconName = $post->parent_post->icon->icon_name;
-                        $post->parent_post->iconPatch =
-                            URL::to('icon/' . $post->parent_post->icon->patch);
-                    }
-                    $post->parent_post->avatarUser = $post->parent_post->user->avatar == null ?
-                        ($post->parent_post->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
-                        URL::to('media_file_post/' . $post->parent_post->user->id . '/' . $post->parent_post->user->avatar);
-                    foreach ($post->parent_post->mediafile as $mediaFile) {
-                        $this->_renameMediaFile($mediaFile, $post->parent_post->user->id);
-                    }
-                }
+                $this->_selectParentPost($post->parent_post);
             }
             return response()->json($post, 200);
         }
@@ -704,6 +640,37 @@ trait PostTrait
                 URL::to('media_file_post/' . $post->user->id . '/' . $post->user->avatar);
             foreach ($post->mediafile as $mediaFile) {
                 $this->_renameMediaFile($mediaFile, $post->user->id);
+            }
+        }
+    }
+    private function _createNotification(Post $post): void
+    {
+        $data = [];
+        $lstFriend = FriendShip::select('*')
+            ->where('status', 1)
+            ->Where(function ($query) use ($post) {
+                $query->where('user_request', $post->user_id)
+                    ->orWhere('user_accept', $post->user_id);
+            })->get();
+        foreach ($lstFriend as $friend) {
+            if ($friend->user_accept == $post->user_id) {
+                $data[] = $friend->user_request;
+            } else {
+                $data[] = $friend->user_accept;
+            }
+        }
+        if ($data) {
+            foreach ($data as $user) {
+                $new = new Notification();
+                $new->from = $post->user_id;
+                $new->to = $user;
+                $new->title = 'đã đăng một bài viết mới.';
+                $new->unread = 1;
+                $new->object_type = 'crPost';
+                $new->object_id = $post->id;
+                $new->icon_url = 'icon.png';
+                $new->created_at = Carbon::now('Asia/Ho_Chi_Minh');
+                $new->save();
             }
         }
     }
