@@ -86,6 +86,11 @@ class User extends Authenticatable implements JWTSubject
         return $this->belongsToMany(Group::class, 'member_groups', 'user_id', 'group_id');
     }
 
+    public function stories()
+    {
+        return $this->hasMany(Stories::class);
+    }
+
     public function renameAvatarUserFromUser(): void //nên return string
     {
         if ($this->avatar == null) {

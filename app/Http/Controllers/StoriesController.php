@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\FriendShip;
 use App\Models\Stories;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -53,15 +54,28 @@ class StoriesController extends Controller
         }
 
         if ($data) {
-            $stories = Stories::WhereIn('user_id', $data)->orderBy('created_at', 'DESC')->get();
+            $groupedStories = User::with(['stories' => function ($query) {
+                $query->select('id', 'expiration_timestamp', 'user_id', 'type', 'file_name_story', 'created_at', 'updated_at');
+            }])->select('id', 'displayName', 'avatar', 'sex')->WhereIn('id', $data)->get();
+            $stories = [];
+            foreach ($groupedStories as $groupedStory) {
+                if ($groupedStory->stories->count() !== 0) {
+                    $stories[] = $groupedStory;
+                }
+            }
+
             foreach ($stories as $story) {
-                $story->file_name_story = URL::to('stories/' . $story->user_id . '/' . $story->file_name_story);
-                $story->userName = $story->user->displayName;
+                $story->user_id = $story->id;
                 $story->avatar =
-                    $story->user->avatar == null ?
-                    ($story->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png'))
+                    $story->avatar == null ?
+                    ($story->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png'))
                     :
                     URL::to('media_file_post/' . $story->user->id . '/' . $story->user->avatar);
+                foreach ($story->stories as $sto) {
+                    $sto->displayName = $story->displayName;
+                    $sto->avatar = $story->avatar;
+                    $sto->file_name_story = URL::to('stories/' . $story->user_id . '/' . $sto->file_name_story);
+                }
             }
             return response()->json($stories, 200);
         }

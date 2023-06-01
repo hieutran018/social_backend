@@ -21,8 +21,12 @@ class Stories extends Model
         'user'
     ];
     protected $table = 'stories';
+    // public function user()
+    // {
+    //     return $this->hasOne(User::class, 'id', 'user_id');
+    // }
     public function user()
     {
-        return $this->hasOne(User::class, 'id', 'user_id');
+        return $this->belongsTo(User::class);
     }
 }
