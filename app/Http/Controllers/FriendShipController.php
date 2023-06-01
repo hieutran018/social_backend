@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\FriendShip; //TODO: SAU KHI CÓ DỮ LIỆU THAY BẰNG MODEL FRIENDSHIP
 use App\Models\MemberGroup;
+use App\Models\Notification;
 use URL;
 use JWTAuth;
 use Carbon\Carbon;
@@ -13,6 +14,7 @@ use DB;
 
 class FriendShipController extends Controller
 {
+    use FriendTrait;
     //TODO: SAU KHI CÓ DỮ LIỆU THÊM ID CỦA NGƯỜI HIỆN TẠI
     public function fetchFriendSuggestion(Request $request)
     {
@@ -91,6 +93,7 @@ class FriendShipController extends Controller
         $invite->status = 0;
         $invite->created_at = Carbon::now('Asia/Ho_Chi_Minh');
         $invite->save();
+        $this->_createNotification($invite);
         return response()->json('success', 200);
     }
 
@@ -119,6 +122,7 @@ class FriendShipController extends Controller
 
         $invite->status = 1;
         $invite->update();
+        $this->_createNotification($invite);
         return response()->json('success', 200);
     }
 
@@ -186,5 +190,22 @@ class FriendShipController extends Controller
             }
         }
         return response()->json($lstFriend, 200);
+    }
+}
+
+trait FriendTrait
+{
+    private function _createNotification(FriendShip $invitation): void
+    {
+        $new = new Notification();
+        $new->from = $invitation->status === 0 ? $invitation->user_request : $invitation->user_accept;
+        $new->to = $invitation->status === 0 ? $invitation->user_accept : $invitation->user_request;
+        $new->title = $invitation->status === 0 ? 'đã gửi cho bạn lời mời kết bạn.' : 'đã chấp nhận yêu cầu kết bạn.';
+        $new->unread = 1;
+        $new->object_type = 'FrInvitation';
+        $new->object_id = $invitation->id;
+        $new->icon_url = 'icon.png';
+        $new->created_at = Carbon::now('Asia/Ho_Chi_Minh');
+        $new->save();
     }
 }

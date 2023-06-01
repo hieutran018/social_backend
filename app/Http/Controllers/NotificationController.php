@@ -18,7 +18,7 @@ class NotificationController extends Controller
     public function fetchNotifications(Request $request)
     {
         $userId = JWTAuth::toUser($request->token)->id;
-        $data = Notification::WHERE('to', $userId)->get();
+        $data = Notification::WHERE('to', $userId)->orderBy('created_at', 'DESC')->get();
         foreach ($data as $item) {
             $item->userNameFrom = $item->user->displayName;
         }
