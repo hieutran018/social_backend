@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\FriendShip;
 use App\Models\Stories;
 use App\Models\User;
+use App\Models\Notification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -13,6 +14,7 @@ use URL;
 
 class StoriesController extends Controller
 {
+    use StoriesTrait;
     public function creatStroies(Request $request)
     {
         $userId = JWTAuth::toUser($request->token)->id;
@@ -31,6 +33,7 @@ class StoriesController extends Controller
             $new->file_name_story = $fileName;
         }
         $new->save();
+        $this->_createNotification($new);
         return response()->json($new, 200);
     }
 
@@ -78,6 +81,41 @@ class StoriesController extends Controller
                 }
             }
             return response()->json($stories, 200);
+        }
+    }
+}
+
+trait StoriesTrait
+{
+    private function _createNotification(Stories $story): void
+    {
+        $data = [];
+        $lstFriend = FriendShip::select('*')
+            ->where('status', 1)
+            ->Where(function ($query) use ($story) {
+                $query->where('user_request', $story->user_id)
+                    ->orWhere('user_accept', $story->user_id);
+            })->get();
+        foreach ($lstFriend as $friend) {
+            if ($friend->user_accept == $story->user_id) {
+                $data[] = $friend->user_request;
+            } else {
+                $data[] = $friend->user_accept;
+            }
+        }
+        if ($data) {
+            foreach ($data as $user) {
+                $new = new Notification();
+                $new->from = $story->user_id;
+                $new->to = $user;
+                $new->title = 'đã đăng bản tin mới.';
+                $new->unread = 1;
+                $new->object_type = 'crStory';
+                $new->object_id = $story->id;
+                $new->icon_url = 'icon.png';
+                $new->created_at = Carbon::now('Asia/Ho_Chi_Minh');
+                $new->save();
+            }
         }
     }
 }

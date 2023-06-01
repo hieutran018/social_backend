@@ -35,7 +35,7 @@ trait PostTrait
     private function _selectParentPost($post): void
     {
         $post->created_at = Carbon::parse($post->created_at)->format('Y/m/d H:m:s');
-        $this->_renameAvatarUserFromPost($post);
+
         $post->totalMediaFile = $post->mediafile->count();
         $post->totalComment = $post->comment->count();
         if ($post->tag) {
@@ -49,7 +49,7 @@ trait PostTrait
             $post->groupAvatar = $post->group->avatar === null ? URL::to('default/avatar_group_default.jpg') :
                 URL::to('media_file_post/' . $post->group->avatar);
             foreach ($post->mediafile as $mediaFile) {
-                $this->_renameMediaFileForGroup($mediaFile);
+                $this->_renameMediaFile($mediaFile, 'media_file_name');
             }
         } else {
             $post->displayName = $post->user->displayName;
@@ -58,11 +58,9 @@ trait PostTrait
                 $post->iconPatch =
                     URL::to('icon/' . $post->icon->patch);
             }
-            $post->avatarUser = $post->user->avatar == null ?
-                ($post->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
-                URL::to('media_file_post/' . $post->user->id . '/' . $post->user->avatar);
+            $this->_renameAvatarUserFromPost($post);
             foreach ($post->mediafile as $mediaFile) {
-                $this->_renameMediaFile($mediaFile, $post->user->id);
+                $this->_renameMediaFile($mediaFile, 'media_file_name', $post->user->id);
             }
         }
     }

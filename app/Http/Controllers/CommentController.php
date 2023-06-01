@@ -3,9 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use App\Models\CommentPost;
-use App\Http\Controllers\AuthController;
 use App\Models\MediaFileComment;
 use Carbon\Carbon;
 use URL;
@@ -14,13 +12,13 @@ use Illuminate\Support\Str;
 
 class CommentController extends Controller
 {
+    use CommentTrait;
     public function fetchCommentByPost(Request $request)
     {
         $lstComment = CommentPost::WHERE('post_id', $request->postId)->WHERE('parent_comment', null)->orderBy('created_at')->get();
         foreach ($lstComment as $comment) {
-
             $comment->userId = $comment->user_id;
-            $comment->avatarUser = $comment->user->avatar;
+            $this->_renameAvatarUserFromComment($comment);
             $comment->displayName = $comment->user->displayName;
             //chổ này sao không để mạc định trả về, tào lao parse lại chi nó sai
             // $comment->created_at = Carbon::parse($comment->created_at)->format('Y/m/d H:m:s');
@@ -30,7 +28,7 @@ class CommentController extends Controller
             }
             foreach ($comment->replies as $reply) {
                 $reply->userId = $reply->user_id;
-                $reply->avatarUser = $reply->user->avatar;
+                $this->_renameAvatarUserFromComment($reply);
                 $reply->displayName = $reply->user->displayName;
                 // $reply->created_at = Carbon::parse($reply->created_at)->format('Y/m/d H:m:s');
             }
@@ -62,7 +60,11 @@ class CommentController extends Controller
             $media->comment_id = $comment->id;
             $media->save();
         }
-        $comment->fileName = URL::to('/comment/' . $comment->file->media_file_name);
+        if ($comment->fileName) {
+            $comment->fileName = URL::to('/comment/' . $comment->file->media_file_name);
+        } else {
+            $comment->fileName = null;
+        }
         // $countComment = CommentPost::WHERE('post_id', $input['postId'])->count();
 
         return response()->json($comment, 200);
@@ -80,5 +82,15 @@ class CommentController extends Controller
         $reply->created_at = Carbon::now('Asia/Ho_Chi_Minh');
         $reply->save();
         return response($reply, 200);
+    }
+}
+trait CommentTrait
+{
+    private function _renameAvatarUserFromComment(CommentPost $comment): void //nên return string
+    {
+        $user = $comment->user;
+        $user->renameAvatarUserFromUser();
+
+        $comment->avatarUser = $user->avatar;
     }
 }
