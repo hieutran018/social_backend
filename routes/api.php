@@ -14,6 +14,9 @@ use App\Http\Controllers\FeelAndActivityController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\SearchController;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Str;
+use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Http\Controllers\StoriesController;
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\AdminDashboardController;
@@ -161,8 +164,26 @@ Route::group(['middleware' => 'jwt.auth', 'prefix' => 'v1'], function () {
     Route::post('/stories/create-story', [StoriesController::class, 'creatStroies']);
     Route::get('/stories', [StoriesController::class, 'fetchStories']);
     //? NotificationController
-    Route::prefix('notification')->group(function () {
-        Route::get('send-notifi-to-friends', [NotificationController::class, 'sendNotifiToFriends']);
+    // Route::prefix('notification')->group(function () {
+    //     Route::get('send-notifi-to-friends', [NotificationController::class, 'sendNotifiToFriends']);
+    // });
+
+    //viết tạm để upload file cho message
+    Route::post('message/upload-file', function (Request $request) {
+        //api/v1/message/upload-file
+        $user = JWTAuth::toUser($request->token);
+        $data = [];
+        if ($request->hasFile('files')) {
+            foreach ($request->file('files') as $file) {
+                $fileExtentsion = $file->getClientOriginalExtension();
+                $random = Str::random(10);
+                $fileName = time() . $random . '.' . $fileExtentsion;
+                $file->move("media_file_post/$user->id", $fileName);
+
+                $data[] = URL::to("media_file_post/$user->id/$fileName");
+            }
+        }
+        return response()->json($data);
     });
 });
 

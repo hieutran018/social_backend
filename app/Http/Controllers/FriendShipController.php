@@ -51,7 +51,7 @@ class FriendShipController extends Controller
                 } else {
                     foreach ($fr->users as $user) {
                         $fr->friendId = $user->id;
-                        $fr->displayName = $user->fdisplayName;
+                        $fr->displayName = $user->displayName;
                         $user->renameAvatarUserFromUser();
                         $fr->avatar = $user->avatar;
                     }

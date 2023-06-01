@@ -8,9 +8,12 @@ use App\Models\Group;
 use DB;
 use URL;
 use Carbon\Carbon;
+use App\Http\Traits\PostTrait;
 
 class MediaFileController extends Controller
 {
+    use PostTrait;
+
     public function photoByUploaded($userId, $limit = null)
     {
 
@@ -35,10 +38,9 @@ class MediaFileController extends Controller
                         ->orWhere('media_type', '=', 'jpeg');
                 })->orderBy('created_at', 'DESC')->get();
         }
-
-
         foreach ($lst as $item) {
-            $item->media_file_name = URL::to('media_file_post/' . $userId . '/' . $item->media_file_name);
+            $item = collect($item);
+            $this->_renameMediaFile($item, 'media_file_name', $userId);
         }
         return response()->json($lst, 200);
     }

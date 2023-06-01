@@ -25,9 +25,9 @@ class NotificationController extends Controller
         return response()->json($data, 200);
     }
 
-    public function sendNotifiToFriends(Request $request)
+    public function sendNotifiToFriends(User $user, $data = [])
     {
-        $user = JWTAuth::toUser($request->token);
+        // $user = JWTAuth::toUser($request->token);
         //get friendship of user
         $friendShips = FriendShip::WHERE('status', 1)
             ->WHERE('user_accept', $user->id)
@@ -46,15 +46,7 @@ class NotificationController extends Controller
         //remove null value of device token
         $deviceTokens = array_filter($deviceTokens);
         //send notification
-        $this->sendBatchNotification(
-            $deviceTokens,
-            [
-                'topicName' => 'birthday',
-                'title' => 'Chúc mứng sinh nhật',
-                'body' => 'Chúc bạn sinh nhật vui vẻ',
-                'image' => 'https://picsum.photos/536/354',
-            ],
-        );
+        $this->sendBatchNotification($deviceTokens, $data);
 
         return response()->json([
             'message' => 'success',
@@ -92,10 +84,13 @@ trait NotificationService
                 'body' => $data['body'] ?? 'Something',
                 'image' => $data['image'] ?? null,
             ],
-            'data' => [
-                'url' => $data['url'] ?? null,
-                'redirect_to' => $data['redirect_to'] ?? null,
-            ],
+            'data' => collect([
+                [
+                    'payload' => $data['payload'] ?? null,
+                    'image' => $data['image'] ?? null,
+                ],
+                $data['data'],
+            ])->filter()->collapse(), //remove null/empty and merge array
             // 'apns' => [
             //     'payload' => [
             //         'aps' => [

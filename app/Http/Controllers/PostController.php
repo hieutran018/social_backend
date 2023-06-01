@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Traits\PostTrait;
 use Illuminate\Http\Request;
 use App\Models\Post;
 // use App\Models\CommentPost;
@@ -11,7 +12,6 @@ use App\Models\PostLike;
 use App\Models\MemberGroup;
 use App\Models\Tag;
 use App\Models\PostHistory;
-use App\Models\Notification;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\URL;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -24,9 +24,10 @@ class PostController extends Controller
 
     public function createPost(Request $request)
     {
+        $user = JWTAuth::toUser($request->token);
         // $this->_createNoti(JWTAuth::toUser($request->token)->id);
         $crPost = new Post();
-        $crPost->user_id = JWTAuth::toUser($request->token)->id;
+        $crPost->user_id = $user->id;
         $crPost->post_content = $request->postContent;
         $crPost->privacy = $request->privacy;
         $crPost->parent_post = null;
@@ -54,14 +55,14 @@ class PostController extends Controller
                 if ($request->groupId) {
                     $file->move('media_file_post/', $fileName);
                 } else {
-                    $file->move('media_file_post/' . JWTAuth::toUser($request->token)->id, $fileName);
+                    $file->move('media_file_post/' . $user->id, $fileName);
                 }
                 $media = new MediaFilePost();
                 $media->media_file_name = $fileName;
                 $media->media_type = $fileExtentsion;
                 $media->post_id = $crPost->id;
                 $media->group_id = $request->groupId;
-                $media->user_id = JWTAuth::toUser($request->token)->id;
+                $media->user_id = $user->id;
                 $media->created_at = Carbon::now('Asia/Ho_Chi_Minh');
                 $media->status = 1;
                 $media->save();
@@ -78,7 +79,7 @@ class PostController extends Controller
                 $media->media_type = $fileExtentsion;
                 $media->post_id = $crPost->id;
                 // $media->group_id = $request->groupId;
-                $media->user_id = JWTAuth::toUser($request->token)->id;
+                $media->user_id = $user->id;
                 $media->created_at = Carbon::now('Asia/Ho_Chi_Minh');
                 $media->status = 1;
                 $media->save();
@@ -104,11 +105,11 @@ class PostController extends Controller
         $crPost->totalComment = $crPost->comment->count();
         if ($request->groupId) {
             foreach ($crPost->mediafile as $mediaFile) {
-                $this->_renameMediaFileForGroup($mediaFile);
+                $this->_renameMediaFile($mediaFile, 'media_file_name');
             }
         } else {
             foreach ($crPost->mediafile as $mediaFile) {
-                $this->_renameMediaFile($mediaFile, $crPost->user->id);
+                $this->_renameMediaFile($mediaFile, 'media_file_name', $crPost->user->id);
             }
         }
         if ($crPost->tag) {
@@ -116,6 +117,22 @@ class PostController extends Controller
                 $crPost->tags = $tag->user->displayName;
             }
         }
+
+        //thông báo đến bạn bè bài viết vừa được tạo (gửi đến android)
+        // chổ này thiếu lưu DB notification
+        $notify = new NotificationController();
+        $notify->sendNotifiToFriends(
+            $user,
+            [
+                'topicName' => "new-post-create-by-friends-$user->id",
+                'title' => "$user->displayName vừa đăng bài viết",
+                'body' => 'Bạn của bạn vừa đăng bài viết mới, xem ngay!',
+                'image' => $crPost->mediafile[0]->media_file_name ?? null, // 'https://picsum.photos/536/354' random image
+                'payload' => "post-id-$crPost->id",
+                'data' => [],
+            ],
+        );
+
 
         return response()->json($crPost, 200);
     }
@@ -170,7 +187,7 @@ class PostController extends Controller
             $postShare->parent_post->groupAvatar = $postShare->parent_post->group->avatar === null ? URL::to('default/avatar_group_default.jpg') :
                 URL::to('media_file_post/' . $postShare->parent_post->group->avatar);
             foreach ($postShare->parent_post->mediafile as $mediaFile) {
-                $this->_renameMediaFileForGroup($mediaFile);
+                $this->_renameMediaFile($mediaFile, 'media_file_name');
             }
         } else {
             $postShare->parent_post->displayName = $postShare->parent_post->user->displayName;
@@ -189,7 +206,7 @@ class PostController extends Controller
             }
         }
         foreach ($postShare->parent_post->mediafile as $mediaFile) {
-            $this->_renameMediaFile($mediaFile, $postShare->parent_post->user->id);
+            $this->_renameMediaFile($mediaFile, 'media_file_name', $postShare->parent_post->user->id);
         }
 
         return response()->json($postShare, 200);
@@ -242,20 +259,19 @@ class PostController extends Controller
                     $post->parent_post->groupAvatar = $post->parent_post->group->avatar === null ? URL::to('default/avatar_group_default.jpg') :
                         URL::to('media_file_post/' . $post->parent_post->group->avatar);
                     foreach ($post->parent_post->mediafile as $mediaFile) {
-                        $this->_renameMediaFileForGroup($mediaFile);
+                        $this->_renameMediaFile($mediaFile, 'media_file_name');
                     }
                 } else {
+                    $this->_renameAvatarUserFromPost($post->parent_post);
                     $post->parent_post->displayName = $post->parent_post->user->displayName;
                     if ($post->parent_post->icon) {
                         $post->parent_post->iconName = $post->parent_post->icon->icon_name;
                         $post->parent_post->iconPatch =
                             URL::to('icon/' . $post->parent_post->icon->patch);
                     }
-                    $post->parent_post->avatarUser = $post->parent_post->user->avatar == null ?
-                        ($post->parent_post->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
-                        URL::to('media_file_post/' . $post->parent_post->user->id . '/' . $post->parent_post->user->avatar);
+
                     foreach ($post->parent_post->mediafile as $mediaFile) {
-                        $this->_renameMediaFile($mediaFile, $post->parent_post->user->id);
+                        $this->_renameMediaFile($mediaFile, 'media_file_name', $post->parent_post->user->id);
                     }
                 }
             }
@@ -287,11 +303,11 @@ class PostController extends Controller
                 $post->groupAvatar = $post->group->avatar === null ? URL::to('default/avatar_group_default.jpg') :
                     URL::to('media_file_post/' . $post->group->avatar);
                 foreach ($post->mediafile as $mediaFile) {
-                    $this->_renameMediaFileForGroup($mediaFile);
+                    $this->_renameMediaFile($mediaFile, 'media_file_name');
                 }
             } else {
                 foreach ($post->mediafile as $mediaFile) {
-                    $this->_renameMediaFile($mediaFile, $post->user->id);
+                    $this->_renameMediaFile($mediaFile, 'media_file_name', $post->user->id);
                 }
             }
         }
@@ -373,7 +389,7 @@ class PostController extends Controller
                 $post->groupAvatar = $post->group->avatar === null ? URL::to('default/avatar_group_default.jpg') :
                     URL::to('media_file_post/' . $post->group->avatar);
                 foreach ($post->mediafile as $mediaFile) {
-                    $this->_renameMediaFileForGroup($mediaFile);
+                    $this->_renameMediaFile($mediaFile, 'media_file_name');
                 }
             } else {
                 foreach ($post->mediafile as $mediaFile) {
@@ -393,7 +409,7 @@ class PostController extends Controller
         $post->totalMediaFile = $post->mediafile->count();
         $post->totalComment = $post->comment->count();
         foreach ($post->mediafile as $mediaFile) {
-            $this->_renameMediaFile($mediaFile, $post->user->id);
+            $this->_renameMediaFile($mediaFile, 'media_file_name', $post->user->id);
         }
         if ($post->icon) {
             $post->iconName = $post->icon->icon_name;
@@ -432,7 +448,7 @@ class PostController extends Controller
             $post->totalShare = Post::WHERE('parent_post', $post->id)->count();
             $post->isLike = !empty(PostLike::WHERE('user_id', $userId)->WHERE('post_id', $post->id)->first());
             foreach ($post->mediafile as $mediaFile) {
-                $this->_renameMediaFileForGroup($mediaFile);
+                $this->_renameMediaFile($mediaFile, 'media_file_name');
             }
         }
         return response()->json($lst, 200);
@@ -457,15 +473,19 @@ class PostController extends Controller
             $this->_renameAvatarUserFromPost($post);
 
             $post->groupName = $post->group->group_name;
-            $post->groupAvatar = $post->group->avatar === null ? URL::to('default/avatar_group_default.jpg') :
-                URL::to('media_file_post/' . $post->group->avatar);
+
+            //! mấy chổ như này xài Eager loading vẫn tốt hơn
+            // do sợ bên fontend lỗi nên t k sửa lại json trả về
+            // fix URL response
+            $post->group->renameAvatar();
+            $post->groupAvatar = $post->group->avatar;
             $post->totalMediaFile = $post->mediafile->count();
             $post->totalComment = $post->comment->count();
             $post->totalLike = $post->like->count();
             $post->totalShare = Post::WHERE('parent_post', $post->id)->count();
             $post->isLike = !empty(PostLike::WHERE('user_id', $userId)->WHERE('post_id', $post->id)->first());
             foreach ($post->mediafile as $mediaFile) {
-                $this->_renameMediaFileForGroup($mediaFile);
+                $this->_renameMediaFile($mediaFile, 'media_file_name');
             }
         }
         return response()->json($posts, 200);
@@ -566,112 +586,6 @@ class PostController extends Controller
         } else {
             $post->delete();
             return response()->json($post, 201);
-        }
-    }
-}
-
-trait PostTrait
-{
-    //? code bị lặp lại trên 2 lần ? => hãy nghĩ cách tách thành hàm để gọi lại
-    //! rút ngắn mà dễ hiểu thì rút ngắn, không thì cứ viết dài ra không sao cả => cho dễ đọc, mainTain sau này
-
-    private function _renameMediaFile(MediaFilePost $mediaFile, int $userId): void
-    {
-        $isHttp = !empty(parse_url($mediaFile->media_file_name, PHP_URL_SCHEME));
-        if (!$isHttp) {
-            $mediaFile->media_file_name = URL::to('media_file_post/' . $userId  . '/' . $mediaFile->media_file_name);
-        }
-    }
-    private function _renameMediaFileForGroup(MediaFilePost $mediaFile): void
-    {
-        $isHttp = !empty(parse_url($mediaFile->media_file_name, PHP_URL_SCHEME));
-        if (!$isHttp) {
-            $mediaFile->media_file_name = URL::to('media_file_post/' . $mediaFile->media_file_name);
-        }
-    }
-
-    private function _renameAvatarUserFromPost(Post $post): void //nên return string
-    {
-
-        $newImage = "";
-        $user = $post->user;
-        if ($user->avatar == null) {
-            $newImage = ($user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png'));
-        } else {
-            //check if user has avatar is link http
-            $isHttp = !empty(parse_url($user->avatar, PHP_URL_SCHEME));
-            if ($isHttp) {
-                $newImage = $user->avatar;
-            } else {
-                $newImage = URL::to('media_file_post/' . $user->id . '/' . $user->avatar);
-            }
-        }
-
-        $post->avatarUser = $newImage; //return $newImage
-    }
-    private function _selectParentPost($post): void
-    {
-        $post->created_at = Carbon::parse($post->created_at)->format('Y/m/d H:m:s');
-        $this->_renameAvatarUserFromPost($post);
-        $post->totalMediaFile = $post->mediafile->count();
-        $post->totalComment = $post->comment->count();
-        if ($post->tag) {
-            foreach ($post->tag as $tag) {
-                $post->tag = $tag;
-            }
-        }
-        if ($post->group_id) {
-            $post->groupName = $post->group->group_name;
-            $post->displayName = $post->user->displayName;
-            $post->groupAvatar = $post->group->avatar === null ? URL::to('default/avatar_group_default.jpg') :
-                URL::to('media_file_post/' . $post->group->avatar);
-            foreach ($post->mediafile as $mediaFile) {
-                $this->_renameMediaFileForGroup($mediaFile);
-            }
-        } else {
-            $post->displayName = $post->user->displayName;
-            if ($post->icon) {
-                $post->iconName = $post->icon->icon_name;
-                $post->iconPatch =
-                    URL::to('icon/' . $post->icon->patch);
-            }
-            $post->avatarUser = $post->user->avatar == null ?
-                ($post->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
-                URL::to('media_file_post/' . $post->user->id . '/' . $post->user->avatar);
-            foreach ($post->mediafile as $mediaFile) {
-                $this->_renameMediaFile($mediaFile, $post->user->id);
-            }
-        }
-    }
-    private function _createNotification(Post $post): void
-    {
-        $data = [];
-        $lstFriend = FriendShip::select('*')
-            ->where('status', 1)
-            ->Where(function ($query) use ($post) {
-                $query->where('user_request', $post->user_id)
-                    ->orWhere('user_accept', $post->user_id);
-            })->get();
-        foreach ($lstFriend as $friend) {
-            if ($friend->user_accept == $post->user_id) {
-                $data[] = $friend->user_request;
-            } else {
-                $data[] = $friend->user_accept;
-            }
-        }
-        if ($data) {
-            foreach ($data as $user) {
-                $new = new Notification();
-                $new->from = $post->user_id;
-                $new->to = $user;
-                $new->title = 'đã đăng một bài viết mới.';
-                $new->unread = 1;
-                $new->object_type = 'crPost';
-                $new->object_id = $post->id;
-                $new->icon_url = 'icon.png';
-                $new->created_at = Carbon::now('Asia/Ho_Chi_Minh');
-                $new->save();
-            }
         }
     }
 }
