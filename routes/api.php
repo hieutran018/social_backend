@@ -14,6 +14,7 @@ use App\Http\Controllers\FeelAndActivityController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -163,6 +164,8 @@ Route::group(['middleware' => 'jwt.auth', 'prefix' => 'v1'], function () {
     //* ĐĂNG BẢNG TIN
     Route::post('/stories/create-story', [StoriesController::class, 'creatStroies']);
     Route::get('/stories', [StoriesController::class, 'fetchStories']);
+
+    Route::POST('/create-report', [ReportController::class, 'createReport']);
     //? NotificationController
     // Route::prefix('notification')->group(function () {
     //     Route::get('send-notifi-to-friends', [NotificationController::class, 'sendNotifiToFriends']);
