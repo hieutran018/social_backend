@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\CommentPost;
 use App\Models\MediaFileComment;
+use App\Models\Post;
+use App\Models\Notification;
 use Carbon\Carbon;
 use URL;
 use JWTAuth;
@@ -66,7 +68,7 @@ class CommentController extends Controller
             $comment->fileName = null;
         }
         // $countComment = CommentPost::WHERE('post_id', $input['postId'])->count();
-
+        $this->_createNotification($comment);
         return response()->json($comment, 200);
     }
 
@@ -92,5 +94,20 @@ trait CommentTrait
         $user->renameAvatarUserFromUser();
 
         $comment->avatarUser = $user->avatar;
+    }
+
+    private function _createNotification(CommentPost $comment)
+    {
+        $post = Post::Where('id', $comment->post_id)->first();
+        $noti = new Notification();
+        $noti->from = $comment->user_id;
+        $noti->to = $post->user_id;
+        $noti->title = 'đã đăng bản tin mới.';
+        $noti->unread = 1;
+        $noti->object_type = 'comment';
+        $noti->object_id = $post->id;
+        $noti->icon_url = 'icon.png';
+        $noti->created_at = Carbon::now('Asia/Ho_Chi_Minh');
+        $noti->save();
     }
 }

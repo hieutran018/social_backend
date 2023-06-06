@@ -15,10 +15,23 @@ use DB;
 class FriendShipController extends Controller
 {
     use FriendTrait;
-    //TODO: SAU KHI CÓ DỮ LIỆU THÊM ID CỦA NGƯỜI HIỆN TẠI
+
     public function fetchFriendSuggestion(Request $request)
     {
-        $frs = User::WHERE('id', '!=', JWTAuth::toUser($request->token)->id)->get();
+        $userId = JWTAuth::toUser($request->token)->id;
+        $data[] = $userId;
+        $friends = FriendShip::Where('status', 1)->orWhere('status', 0)->where(function ($query) use ($userId) {
+            $query->where('user_accept', $userId)->orWhere('user_request', $userId)->get();
+        })->get();
+
+        foreach ($friends as $friend) {
+            if ($friend->user_accept === $userId) {
+                $data[] = $friend->user_request;
+            } else {
+                $data[] = $friend->user_accept;
+            }
+        }
+        $frs = User::WhereNotIn('id', $data)->get();
 
         foreach ($frs as $user) {
             $user->displayName = $user->displayName;
@@ -31,14 +44,10 @@ class FriendShipController extends Controller
     {
 
         if ($limit != null) {
-            $lstFriend = FriendShip::WHERE('status', 1)->WHERE('user_accept', $userId)->orWhere('user_request', $userId)->orderBy('created_at', 'DESC')->limit(6)->get();
-            // $lstFriend = DB::table('list_friend')
-            //     ->select('*')
-            //     ->where('status','=','1')
-            //     ->Where(function($query){
-            //             $query->where('user_accept','=',$userId)
-            //             ->orWhere('user_request','=',$userId);
-            //     })->orderBy('created_at','DESC')->limit(6)->get();
+            $lstFriend = FriendShip::Where('status', 1)->Where(function ($query) use ($userId) {
+                $query->Where('user_accept', $userId)->orWhere('user_request', $userId)->get();
+            })->orderBy('created_at', 'DESC')->limit(6)->get();
+
 
             foreach ($lstFriend as $fr) {
                 if ($fr->user_accept == $userId) {
@@ -58,7 +67,9 @@ class FriendShipController extends Controller
                 }
             }
         } else {
-            $lstFriend = FriendShip::WHERE('status', 1)->WHERE('user_accept', $userId)->orWhere('user_request', $userId)->orderBy('created_at', 'DESC')->paginate(10);
+            $lstFriend = FriendShip::Where('status', 1)->Where(function ($query) use ($userId) {
+                $query->Where('user_accept', $userId)->orWhere('user_request', $userId)->get();
+            })->orderBy('created_at', 'DESC')->paginate(10);
 
             foreach ($lstFriend as $fr) {
                 if ($fr->user_accept == $userId) {

@@ -9,10 +9,11 @@ use App\Models\CommentPost;
 use App\Models\PostLike;
 use App\Models\MediaFilePost;
 use App\Models\FeelAndActivity;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Post extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
     protected $fillable = [
         'post_content',
         'user_id',

@@ -65,7 +65,7 @@ class PostController extends Controller
                 $media->post_id = $crPost->id;
                 $media->group_id = $request->groupId;
                 $media->user_id = JWTAuth::toUser($request->token)->id;
-                $media->created_at = Carbon::now('Asia/Ho_Chi_Minh');
+                $media->created_at = Carbon::now("Asia/Ho_Chi_Minh");
                 $media->status = 1;
                 $media->save();
             }
@@ -93,7 +93,7 @@ class PostController extends Controller
             $crPost->iconPatch =
                 URL::to('icon/' . $crPost->icon->patch);
         }
-        $crPost->created_at = Carbon::parse($crPost->created_at)->format('Y/m/d H:m:s');
+        // $crPost->created_at = Carbon::parse($crPost->created_at)->format('Y/m/d H:m:s');
         if ($crPost->group_id != null) {
             $crPost->groupName = $crPost->group->group_name;
             $crPost->groupAvatar = $crPost->group->avatar == null ?
@@ -226,38 +226,20 @@ class PostController extends Controller
         foreach ($lstPost as $post) {
             if ($post->parent_post) {
                 $post->parent_post = Post::find($post->parent_post);
-                $post->parent_post->created_at = Carbon::parse($post->parent_post->created_at)->format('Y/m/d H:m:s');
-
-                $this->_renameAvatarUserFromPost($post->parent_post);
-
-                $post->parent_post->totalMediaFile = $post->parent_post->mediafile->count();
-                $post->parent_post->totalComment = $post->parent_post->comment->count();
-                if ($post->parent_post->tag) {
-                    foreach ($post->parent_post->tag as $tag) {
-                        $post->parent_post->tag = $tag;
-                    }
-                }
-                if ($post->parent_post->group_id) {
-                    $post->parent_post->groupName = $post->parent_post->group->group_name;
-                    $post->parent_post->displayName = $post->user->displayName;
-                    $post->parent_post->groupAvatar = $post->parent_post->group->avatar === null ? URL::to('default/avatar_group_default.jpg') :
-                        URL::to('media_file_post/' . $post->parent_post->group->avatar);
-                    foreach ($post->parent_post->mediafile as $mediaFile) {
-                        $this->_renameMediaFileForGroup($mediaFile);
+                if ($post->parent_post) {
+                    if ($post->parent_post->privacy === 1) {
+                        $this->_selectParentPost($post->parent_post);
+                    } else if ($post->parent_post->privacy === 2) {
+                        if (!empty(Post::WhereIn('user_id', $data)->Where('id', $post->parent_post->id)->first())) {
+                            $this->_selectParentPost($post->parent_post);
+                        } else {
+                            $post->parent_post = 1;
+                        }
+                    } else if ($post->parent_post->privacy === 0) {
+                        $post->parent_post = 1;
                     }
                 } else {
-                    $post->parent_post->displayName = $post->parent_post->user->displayName;
-                    if ($post->parent_post->icon) {
-                        $post->parent_post->iconName = $post->parent_post->icon->icon_name;
-                        $post->parent_post->iconPatch =
-                            URL::to('icon/' . $post->parent_post->icon->patch);
-                    }
-                    $post->parent_post->avatarUser = $post->parent_post->user->avatar == null ?
-                        ($post->parent_post->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
-                        URL::to('media_file_post/' . $post->parent_post->user->id . '/' . $post->parent_post->user->avatar);
-                    foreach ($post->parent_post->mediafile as $mediaFile) {
-                        $this->_renameMediaFile($mediaFile, $post->parent_post->user->id);
-                    }
+                    $post->parent_post = 1;
                 }
             }
 
@@ -388,13 +370,14 @@ class PostController extends Controller
     public function fetchPostById($postId)
     {
         $post = Post::find($postId);
+
         $post->displayName = $post->user->displayName;
         $post->created_at = Carbon::parse($post->created_at)->format('Y/m/d h:m:s');
         $this->_renameAvatarUserFromPost($post);
         $post->totalMediaFile = $post->mediafile->count();
         $post->totalComment = $post->comment->count();
         foreach ($post->mediafile as $mediaFile) {
-            $this->_renameMediaFile($mediaFile, $post->user->id);
+            $this->_renameMediaFile($mediaFile, 'media_file_name', $post->user_id);
         }
         if ($post->icon) {
             $post->iconName = $post->icon->icon_name;
@@ -410,7 +393,11 @@ class PostController extends Controller
         }
         if ($post->parent_post) {
             $post->parent_post = Post::find($post->parent_post);
-            $this->_selectParentPost($post->parent_post);
+            if ($post->parent_post) {
+                $this->_selectParentPost($post->parent_post);
+            } else {
+                $post->parent_post = 1;
+            }
         }
         return response()->json($post, 200);
     }
@@ -443,6 +430,7 @@ class PostController extends Controller
     {
         $userId = JWTAuth::toUser($request->token)->id;
         $isJoined = MemberGroup::WHERE('user_id', $userId)->WHERE('status', 1)->get();
+        $data = [];
         foreach ($isJoined as $group) {
             $data[] = $group->group_id;
         }
@@ -538,7 +526,7 @@ class PostController extends Controller
             $post->totalLike = $post->like->count();
             $post->totalShare = Post::WHERE('parent_post', $post->id)->count();
             foreach ($post->mediafile as $mediaFile) {
-                $this->_renameMediaFile($mediaFile, $post->user->id);
+                $this->_renameMediaFile($mediaFile, 'media_file_name', $post->user->id);
             }
             if ($post->icon) {
                 $post->iconName = $post->icon->icon_name;

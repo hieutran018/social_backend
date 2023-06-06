@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\NotificationEvent;
 use App\Models\FriendShip;
 use App\Models\Stories;
 use App\Models\User;
@@ -33,6 +34,7 @@ class StoriesController extends Controller
             $new->file_name_story = $fileName;
         }
         $new->save();
+        $new->userNameForm = $new->user->displayName;
         $this->_createNotification($new);
         return response()->json($new, 200);
     }
@@ -58,7 +60,7 @@ class StoriesController extends Controller
 
         if ($data) {
             $groupedStories = User::with(['stories' => function ($query) {
-                $query->select('id', 'expiration_timestamp', 'user_id', 'type', 'file_name_story', 'created_at', 'updated_at');
+                $query->select('id', 'expiration_timestamp', 'user_id', 'type', 'file_name_story', 'created_at', 'updated_at')->orderBy('created_at', 'DESC');
             }])->select('id', 'displayName', 'avatar', 'sex')->WhereIn('id', $data)->get();
             $stories = [];
             foreach ($groupedStories as $groupedStory) {
@@ -67,13 +69,14 @@ class StoriesController extends Controller
                 }
             }
 
+
             foreach ($stories as $story) {
                 $story->user_id = $story->id;
                 $story->avatar =
                     $story->avatar == null ?
                     ($story->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png'))
                     :
-                    URL::to('media_file_post/' . $story->user->id . '/' . $story->user->avatar);
+                    URL::to('media_file_post/' . $story->user_id . '/' . $story->avatar);
                 foreach ($story->stories as $sto) {
                     $sto->displayName = $story->displayName;
                     $sto->avatar = $story->avatar;
@@ -104,17 +107,21 @@ trait StoriesTrait
             }
         }
         if ($data) {
-            foreach ($data as $user) {
-                $new = new Notification();
-                $new->from = $story->user_id;
-                $new->to = $user;
-                $new->title = 'đã đăng bản tin mới.';
-                $new->unread = 1;
-                $new->object_type = 'crStory';
-                $new->object_id = $story->id;
-                $new->icon_url = 'icon.png';
-                $new->created_at = Carbon::now('Asia/Ho_Chi_Minh');
-                $new->save();
+            foreach ($data as $userId) {
+                $noti = new Notification();
+                $noti->from = $story->user_id;
+                $noti->to = $userId;
+                $noti->title = 'đã đăng bản tin mới.';
+                $noti->unread = 1;
+                $noti->object_type = 'crStory';
+                $noti->object_id = $story->id;
+                $noti->icon_url = 'icon.png';
+                $noti->created_at = Carbon::now('Asia/Ho_Chi_Minh');
+                $noti->save();
+
+                $noti->userNameFrom = $noti->user->displayName;
+
+                event(new NotificationEvent($noti));
             }
         }
     }

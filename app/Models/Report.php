@@ -18,4 +18,13 @@ class Report extends Model
     ];
     public $timestamp = false;
     protected $table = 'reports';
+    protected $hidden = [
+        'user',
+        'isProcessed',
+    ];
+
+    public function user()
+    {
+        return $this->hasOne(User::class, 'id', 'user_id');
+    }
 }

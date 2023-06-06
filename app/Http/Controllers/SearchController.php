@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Group;
 use App\Models\MemberGroup;
+use App\Models\FriendShip;
 use App\Models\Post;
 use App\Models\PostLike;
 use Carbon\Carbon;
@@ -17,6 +18,20 @@ class SearchController extends Controller
     public function searchData(Request $request, $input = null)
     {
         $userId = JWTAuth::toUser($request->token)->id;
+        $data = [];
+        $lstFriend = FriendShip::WHERE('status', 1)->WHERE('user_accept', $userId)->orWhere('user_request', $userId)->orderBy('created_at', 'DESC')->get();
+        foreach ($lstFriend as $fr) {
+            if ($fr->user_accept == $userId) {
+                foreach ($fr->user as $user) {
+                    $data[] = $user->id;
+                }
+            } else {
+                foreach ($fr->users as $users) {
+                    $data[]  = $users->id;
+                }
+            }
+        }
+
         $dataUser = User::WHERE('email_verified_at', '!=', null)
             ->Where(function ($query) use ($input) {
                 $query->where('displayName', 'LIKE', "%$input%");
@@ -27,6 +42,11 @@ class SearchController extends Controller
                 ($user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png'))
                 :
                 URL::to('media_file_post/' . $user->id . '/' . $user->avatar);
+            $user->isFriend = FriendShip::Where('status', 1)->where(function ($query) use ($user) {
+                $query->where('user_accept', $user->id)->orWhere('user_request', $user->id)->first();
+            })->Where(function ($query) use ($userId) {
+                $query->where('user_accept', $userId)->orWhere('user_request', $userId)->first();
+            })->first();
         }
         $dataGroup = Group::WHERE('group_name', 'LIKE', "%$input%")->limit(4)->get();
         foreach ($dataGroup as $group) {
@@ -39,20 +59,20 @@ class SearchController extends Controller
         foreach ($dataPost as $post) {
             if ($post->parent_post) {
                 $post->parent_post = Post::find($post->parent_post);
-                $post->parent_post->displayName = $post->parent_post->user->displayName;
-                $post->parent_post->created_at = Carbon::parse($post->parent_post->created_at)->format('Y/m/d H:m:s');
-                $post->parent_post->avatarUser = $post->parent_post->user->avatar == null ?
-                    ($post->parent_post->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
-                    URL::to('media_file_post/' . $post->parent_post->user->id . '/' . $post->parent_post->user->avatar);
-                $post->parent_post->totalMediaFile = $post->parent_post->mediafile->count();
-                $post->parent_post->totalComment = $post->parent_post->comment->count();
-                foreach ($post->parent_post->mediafile as $mediaFile) {
-                    $mediaFile->media_file_name = URL::to('media_file_post/' . $post->parent_post->user->id . '/' . $mediaFile->media_file_name);
-                    if ($post->parent_post->group_id != null) {
-                        $post->parent_post->groupName = $post->parent_post->group->group_name;
-                        $post->parent_post->groupAvatar = $post->parent_post->group->avatar === null ? URL::to('default/avatar_group_default.jpg') :
-                            URL::to('media_file_post/' . $post->parent_post->group->avatar);
+                if ($post->parent_post) {
+                    if ($post->parent_post->privacy === 1) {
+                        $this->_selectParentPost($post->parent_post);
+                    } else if ($post->parent_post->privacy === 2) {
+                        if (!empty(Post::WhereIn('user_id', $data)->Where('id', $post->parent_post->id)->first())) {
+                            $this->_selectParentPost($post->parent_post);
+                        } else {
+                            $post->parent_post = 1;
+                        }
+                    } else if ($post->parent_post->privacy === 0) {
+                        $post->parent_post = 1;
                     }
+                } else {
+                    $post->parent_post = 1;
                 }
             }
             if ($post->group_id != null) {

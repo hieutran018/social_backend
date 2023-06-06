@@ -24,6 +24,7 @@ use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminFeelAndActivityController;
 use App\Http\Controllers\Admin\AdminGroupController;
 use App\Http\Controllers\Admin\AdminPostController;
+use App\Http\Controllers\Admin\AdminReportController;
 use App\Http\Controllers\Admin\AdminUserController;
 
 
@@ -44,7 +45,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 
 
-Route::GET('fetch-post-by-userId/userId={userId}', [PostController::class, 'fetchPostByUserId']);
+Route::GET('/fetch-post-by-userId/userId={userId}', [PostController::class, 'fetchPostByUserId']);
 Route::post('fetch-comment-by-post', [CommentController::class, 'fetchCommentByPost']);
 Route::GET('profile-user/userId={userId}', [UserController::class, 'profileUser']);
 
@@ -53,10 +54,14 @@ Route::group(
     function () {
         Route::GET('/admin-dashboard-statistics', [AdminDashboardController::class, 'adminDashboardStatistics']);
         Route::GET('/fetch-list-post', [AdminPostController::class, 'fetchListPost']);
+        Route::GET('/fetch-post-by-id/postId={postId}', [AdminPostController::class, 'fetchPostById']);
         Route::GET('/fetch-list-user', [AdminUserController::class, 'fetchListUser']);
         Route::GET('/fetch-list-group', [AdminGroupController::class, 'fetchListGroup']);
         Route::GET('/fetch-list-feel-and-activity', [AdminFeelAndActivityController::class, 'fetchListFeelAndActivity']);
         Route::POST('/create-feel-and-activity', [AdminFeelAndActivityController::class, 'createFeelAndActivity']);
+        Route::GET('/fetch-list-report', [AdminReportController::class, 'fetchReport']);
+        Route::GET('/fetch-report-by-id/reportId={reportId}', [AdminReportController::class, 'fetchReportById']);
+        Route::POST('/check-report', [AdminReportController::class, 'checkTheReport']);
     }
 );
 
@@ -155,7 +160,7 @@ Route::group(['middleware' => 'jwt.auth', 'prefix' => 'v1'], function () {
     //* CẬP NHẬT MẬT KHẨU NGƯỜI DÙNG
     Route::post('update-password-user', [UserController::class, 'updatePasswordUser']);
     //* TÌM KIẾM NGƯỜI DÙNG VÀ NHÓM
-    Route::get('search-users-and-groups/{input?}', [SearchController::class, 'searchData']);
+    Route::get('search-users-and-groups/input={input?}', [SearchController::class, 'searchData']);
     //* LẤY DANH SÁCH CẢM XÚC VÀ HOẠT ĐỘNG KHI TẠO BÀI VIẾT
     Route::get('fetch-fell-and-activity-posts', [FeelAndActivityController::class, 'fetchFeelAndActivity']);
     Route::get('search-feel-and-activity-posts/search={input}', [FeelAndActivityController::class, 'searchFeelAnActivity']);

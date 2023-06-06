@@ -15,6 +15,7 @@ trait PostTrait
 
     private function _renameMediaFile(object &$objectRename, string $namePath, int $userId = null): void
     {
+
         $isHttp = !empty(parse_url($objectRename[$namePath], PHP_URL_SCHEME));
         if (!$isHttp) {
             if ($userId == null)
