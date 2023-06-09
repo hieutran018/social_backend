@@ -32,7 +32,7 @@ class NotificationEvent implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return ['notif-' . $this->notif->to];
+        return ['notif-' . $this->notif['to']];
     }
 
     public function broadcastAs()

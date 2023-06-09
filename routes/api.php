@@ -46,7 +46,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 
 Route::GET('/fetch-post-by-userId/userId={userId}', [PostController::class, 'fetchPostByUserId']);
-Route::post('fetch-comment-by-post', [CommentController::class, 'fetchCommentByPost']);
 Route::GET('profile-user/userId={userId}', [UserController::class, 'profileUser']);
 
 Route::group(
@@ -69,6 +68,8 @@ Route::group(
 Route::group(['middleware' => 'jwt.auth', 'prefix' => 'v1'], function () {
     //* DANH SÁCH GỢI Ý KẾT BẠN
     Route::GET('/fetch-friends-suggestion', [FriendShipController::class, 'fetchFriendSuggestion']);
+    Route::GET('/fetch-comment-by-post/postId={postId}', [CommentController::class, 'fetchCommentByPost']);
+    Route::GET('/fetch-reply-comment/commentId={commentId}', [CommentController::class, 'fetchReplyComment']);
     //* BÌNH LUẬN BÀI VIẾT
     Route::post('create-comment-post', [CommentController::class, 'createCommentPost']);
     //*PHẢN HỒI BÌNH LUẬN

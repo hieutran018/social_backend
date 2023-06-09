@@ -15,31 +15,22 @@ use Illuminate\Support\Str;
 class CommentController extends Controller
 {
     use CommentTrait;
-    public function fetchCommentByPost(Request $request)
+    public function fetchCommentByPost($postId)
     {
-        $lstComment = CommentPost::WHERE('post_id', $request->postId)->WHERE('parent_comment', null)->orderBy('created_at')->get();
+        $lstComment = CommentPost::WHERE('post_id', $postId)->WHERE('parent_comment', null)->orderBy('created_at', 'DESC')->get();
         foreach ($lstComment as $comment) {
+            $comment->countComment = CommentPost::WHERE('parent_comment', $comment->id)->count();
             $comment->userId = $comment->user_id;
             $this->_renameAvatarUserFromComment($comment);
             $comment->displayName = $comment->user->displayName;
-            //chổ này sao không để mạc định trả về, tào lao parse lại chi nó sai
-            // $comment->created_at = Carbon::parse($comment->created_at)->format('Y/m/d H:m:s');
             if ($comment->file) {
                 $comment->fileName = URL::to('comment/' . $comment->file->media_file_name);
                 $comment->mediaType = $comment->file->media_type;
-            }
-            foreach ($comment->replies as $reply) {
-                $reply->userId = $reply->user_id;
-                $this->_renameAvatarUserFromComment($reply);
-                $reply->displayName = $reply->user->displayName;
-                // $reply->created_at = Carbon::parse($reply->created_at)->format('Y/m/d H:m:s');
             }
         }
         return response()->json($lstComment, 200);
     }
 
-
-    //TODO: Validate input
     public function createCommentPost(Request $request)
     {
         $input = $request->all();
@@ -48,6 +39,7 @@ class CommentController extends Controller
         $comment->comment_content = $input['commentContent'];
         $comment->user_id = JWTAuth::toUser($request->token)->id;
         $comment->created_at = Carbon::Now('Asia/Ho_Chi_Minh');
+        $comment->parent_comment = null;
         $comment->save();
 
         if ($request->hasFile('file')) {
@@ -67,7 +59,18 @@ class CommentController extends Controller
         } else {
             $comment->fileName = null;
         }
-        // $countComment = CommentPost::WHERE('post_id', $input['postId'])->count();
+
+        $comment->userId = $comment->user_id;
+        $this->_renameAvatarUserFromComment($comment);
+        $comment->displayName = $comment->user->displayName;
+
+        if ($comment->file) {
+            $comment->fileName = URL::to('comment/' . $comment->file->media_file_name);
+            $comment->mediaType = $comment->file->media_type;
+        }
+
+        $comment->created_at = Carbon::parse($comment->created_at)->toDateTimeString();
+
         $this->_createNotification($comment);
         return response()->json($comment, 200);
     }
@@ -83,7 +86,34 @@ class CommentController extends Controller
         $reply->parent_comment = $request->commentId;
         $reply->created_at = Carbon::now('Asia/Ho_Chi_Minh');
         $reply->save();
+
+        $reply->userId = $reply->user_id;
+        $this->_renameAvatarUserFromComment($reply);
+        $reply->displayName = $reply->user->displayName;
+
+        if ($reply->file) {
+            $reply->fileName = URL::to('comment/' . $reply->file->media_file_name);
+            $reply->mediaType = $reply->file->media_type;
+        }
+
+        $reply->created_at = Carbon::parse($reply->created_at)->toDateTimeString();
         return response($reply, 200);
+    }
+
+    public function fetchReplyComment($commentId)
+    {
+        $lstComment = CommentPost::WHERE('parent_comment', $commentId)->orderBy('created_at', 'DESC')->get();
+        foreach ($lstComment as $comment) {
+            $comment->countComment = CommentPost::WHERE('parent_comment', $comment->id)->count();
+            $comment->userId = $comment->user_id;
+            $this->_renameAvatarUserFromComment($comment);
+            $comment->displayName = $comment->user->displayName;
+            if ($comment->file) {
+                $comment->fileName = URL::to('comment/' . $comment->file->media_file_name);
+                $comment->mediaType = $comment->file->media_type;
+            }
+        }
+        return response()->json($lstComment, 200);
     }
 }
 trait CommentTrait

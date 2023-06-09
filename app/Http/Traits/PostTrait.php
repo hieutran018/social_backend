@@ -2,6 +2,7 @@
 
 namespace App\Http\Traits;
 
+use App\Events\NotificationEvent;
 use App\Models\Post;
 use Illuminate\Support\Facades\URL;
 use Carbon\Carbon;
@@ -93,6 +94,12 @@ trait PostTrait
                 $new->icon_url = 'icon.png';
                 $new->created_at = Carbon::now('Asia/Ho_Chi_Minh');
                 $new->save();
+                $new->userNameFrom = $new->user->displayName;
+                $new->userAvatarFrom = $new->user->avatar === null ?
+                    ($new->user->sex === 0 ?
+                        URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')
+                    ) : URL::to('media_file_post/' . $new->user->id . '/' . $new->user->avatar);
+                event(new NotificationEvent($new->toArray()));
             }
         }
     }

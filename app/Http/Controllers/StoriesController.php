@@ -120,8 +120,11 @@ trait StoriesTrait
                 $noti->save();
 
                 $noti->userNameFrom = $noti->user->displayName;
-
-                event(new NotificationEvent($noti));
+                $noti->userAvatarFrom = $noti->user->avatar === null ?
+                    ($noti->user->sex === 0 ?
+                        URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')
+                    ) : URL::to('media_file_post/' . $noti->user->id . '/' . $noti->user->avatar);
+                event(new NotificationEvent($noti->toArray()));
             }
         }
     }

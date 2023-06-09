@@ -270,11 +270,11 @@ class PostController extends Controller
                 $post->groupAvatar = $post->group->avatar === null ? URL::to('default/avatar_group_default.jpg') :
                     URL::to('media_file_post/' . $post->group->avatar);
                 foreach ($post->mediafile as $mediaFile) {
-                    $this->_renameMediaFileForGroup($mediaFile);
+                    $this->_renameMediaFile($mediaFile, 'media_file_name');
                 }
             } else {
                 foreach ($post->mediafile as $mediaFile) {
-                    $this->_renameMediaFile($mediaFile, $post->user->id);
+                    $this->_renameMediaFile($mediaFile, 'media_file_name', $post->user->id);
                 }
             }
         }
@@ -367,36 +367,78 @@ class PostController extends Controller
         return response()->json($lstPost, 200);
     }
 
-    public function fetchPostById($postId)
+    public function fetchPostById(Request $request, $postId)
     {
-        $post = Post::find($postId);
 
-        $post->displayName = $post->user->displayName;
-        $post->created_at = Carbon::parse($post->created_at)->format('Y/m/d h:m:s');
-        $this->_renameAvatarUserFromPost($post);
-        $post->totalMediaFile = $post->mediafile->count();
-        $post->totalComment = $post->comment->count();
-        foreach ($post->mediafile as $mediaFile) {
-            $this->_renameMediaFile($mediaFile, 'media_file_name', $post->user_id);
-        }
-        if ($post->icon) {
-            $post->iconName = $post->icon->icon_name;
-            $post->icon->patch =
-                URL::to('icon/' . $post->icon->patch);
-        }
-        if ($post->tag) {
-            foreach ($post->tag as $tag) {
-                $tag->displayName = $tag->user->displayName;
-                $tag->avatar = $tag->user->avatar === null ? ($tag->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
-                    URL::to('media_file_post/' . $tag->user->id . '/' . $tag->user->avatar);
+        $userId = JWTAuth::toUser($request->token)->id;
+        $data[] = $userId;
+        $lstFriend = FriendShip::WHERE('status', 1)->WHERE('user_accept', $userId)->orWhere('user_request', $userId)->orderBy('created_at', 'DESC')->get();
+        $lstGroup = MemberGroup::WHERE('status', 1)->WHERE('user_id', $userId)->get();
+        foreach ($lstFriend as $fr) {
+            if ($fr->user_accept == $userId) {
+                foreach ($fr->user as $user) {
+                    $data[] = $user->id;
+                }
+            } else {
+                foreach ($fr->users as $users) {
+                    $data[]  = $users->id;
+                }
             }
         }
+
+        $post = Post::find($postId);
+
         if ($post->parent_post) {
             $post->parent_post = Post::find($post->parent_post);
             if ($post->parent_post) {
-                $this->_selectParentPost($post->parent_post);
+                if ($post->parent_post->privacy === 1) {
+                    $this->_selectParentPost($post->parent_post);
+                } else if ($post->parent_post->privacy === 2) {
+                    if (!empty(Post::WhereIn('user_id', $data)->Where('id', $post->parent_post->id)->first())) {
+                        $this->_selectParentPost($post->parent_post);
+                    } else {
+                        $post->parent_post = 1;
+                    }
+                } else if ($post->parent_post->privacy === 0) {
+                    $post->parent_post = 1;
+                }
             } else {
                 $post->parent_post = 1;
+            }
+        }
+
+        if ($post->tag) {
+            foreach ($post->tag as $tag) {
+                $post->tags = $tag->user->displayName;
+            }
+        }
+
+        $post->displayName = $post->user->displayName;
+        if ($post->icon) {
+            $post->iconName = $post->icon->icon_name;
+            $post->iconPatch =
+                URL::to('icon/' . $post->icon->patch);
+        }
+        $post->created_at = Carbon::parse($post->created_at)->format('Y/m/d H:m:s');
+
+        $this->_renameAvatarUserFromPost($post);
+
+        $post->totalMediaFile = $post->mediafile->count();
+        $post->totalComment = $post->comment->count();
+        $post->totalLike = $post->like->count();
+        $post->totalShare = Post::WHERE('parent_post', $post->id)->count();
+        $post->isLike = PostLike::WHERE('user_id', $userId)->WHERE('post_id', $post->id)->first();
+        $post->histories = $post->postHistory->count();
+        if ($post->group_id != null) {
+            $post->groupName = $post->group->group_name;
+            $post->groupAvatar = $post->group->avatar === null ? URL::to('default/avatar_group_default.jpg') :
+                URL::to('media_file_post/' . $post->group->avatar);
+            foreach ($post->mediafile as $mediaFile) {
+                $this->_renameMediaFile($mediaFile, 'media_file_name');
+            }
+        } else {
+            foreach ($post->mediafile as $mediaFile) {
+                $this->_renameMediaFile($mediaFile, 'media_file_name', $post->user->id);
             }
         }
         return response()->json($post, 200);

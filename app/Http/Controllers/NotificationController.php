@@ -9,6 +9,7 @@ use Exception;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\URL;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class NotificationController extends Controller
@@ -21,6 +22,10 @@ class NotificationController extends Controller
         $data = Notification::WHERE('to', $userId)->orderBy('created_at', 'DESC')->get();
         foreach ($data as $item) {
             $item->userNameFrom = $item->user->displayName;
+            $item->userAvatarFrom = $item->user->avatar === null ?
+                ($item->user->sex === 0 ?
+                    URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')
+                ) : URL::to('media_file_post/' . $item->user->id . '/' . $item->user->avatar);
         }
         return response()->json($data, 200);
     }
