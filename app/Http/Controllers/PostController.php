@@ -93,7 +93,7 @@ class PostController extends Controller
             $crPost->iconPatch =
                 URL::to('icon/' . $crPost->icon->patch);
         }
-        // $crPost->created_at = Carbon::parse($crPost->created_at)->format('Y/m/d H:m:s');
+        $crPost->created_at = Carbon::parse($crPost->created_at)->toDateTimeString();
         if ($crPost->group_id != null) {
             $crPost->groupName = $crPost->group->group_name;
             $crPost->groupAvatar = $crPost->group->avatar == null ?
@@ -341,7 +341,7 @@ class PostController extends Controller
                 $post->iconPatch =
                     URL::to('icon/' . $post->icon->patch);
             }
-            $post->created_at = Carbon::parse($post->created_at)->format('Y/m/d H:m:s');
+            $post->created_at = Carbon::parse($post->created_at)->toDateTimeString();
 
             $this->_renameAvatarUserFromPost($post);
 

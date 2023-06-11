@@ -15,6 +15,7 @@ use App\Http\Controllers\GroupController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\ChatController;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -46,7 +47,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 
 Route::GET('/fetch-post-by-userId/userId={userId}', [PostController::class, 'fetchPostByUserId']);
-Route::GET('profile-user/userId={userId}', [UserController::class, 'profileUser']);
+
 
 Route::group(
     ['middleware' => 'jwt.auth', 'prefix' => 'v1/admin'],
@@ -66,6 +67,8 @@ Route::group(
 
 
 Route::group(['middleware' => 'jwt.auth', 'prefix' => 'v1'], function () {
+    //* TRANG CÁ NHÂN NGƯỜI DÙNG
+    Route::GET('/profile-user/userId={userId}', [UserController::class, 'profileUser']);
     //* DANH SÁCH GỢI Ý KẾT BẠN
     Route::GET('/fetch-friends-suggestion', [FriendShipController::class, 'fetchFriendSuggestion']);
     Route::GET('/fetch-comment-by-post/postId={postId}', [CommentController::class, 'fetchCommentByPost']);
@@ -172,6 +175,9 @@ Route::group(['middleware' => 'jwt.auth', 'prefix' => 'v1'], function () {
     Route::get('/stories', [StoriesController::class, 'fetchStories']);
 
     Route::POST('/create-report', [ReportController::class, 'createReport']);
+    Route::POST('/chats', [ChatController::class, 'chatOneToOne']);
+    Route::GET('/fetch-list-chats', [ChatController::class, 'fetchChats']);
+    Route::GET('/fetch-message/userId={userId}', [ChatController::class, 'fetchMessage']);
     //? NotificationController
     // Route::prefix('notification')->group(function () {
     //     Route::get('send-notifi-to-friends', [NotificationController::class, 'sendNotifiToFriends']);

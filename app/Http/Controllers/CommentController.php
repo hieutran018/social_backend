@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\NotificationEvent;
 use Illuminate\Http\Request;
 use App\Models\CommentPost;
 use App\Models\MediaFileComment;
@@ -132,12 +133,18 @@ trait CommentTrait
         $noti = new Notification();
         $noti->from = $comment->user_id;
         $noti->to = $post->user_id;
-        $noti->title = 'đã đăng bản tin mới.';
+        $noti->title = 'đã bình luận về bài viết của bạn.';
         $noti->unread = 1;
         $noti->object_type = 'comment';
         $noti->object_id = $post->id;
         $noti->icon_url = 'icon.png';
         $noti->created_at = Carbon::now('Asia/Ho_Chi_Minh');
         $noti->save();
+        $noti->userNameFrom = $noti->user->displayName;
+        $noti->userAvatarFrom = $noti->user->avatar === null ?
+            ($noti->user->sex === 0 ?
+                URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')
+            ) : URL::to('media_file_post/' . $noti->user->id . '/' . $noti->user->avatar);
+        event(new NotificationEvent($noti->toArray()));
     }
 }

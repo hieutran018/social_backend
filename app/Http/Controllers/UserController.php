@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Post;
 use App\Models\MediaFilePost;
 use App\Models\Album;
+use App\Models\FriendShip;
 use JWTAuth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -22,15 +23,25 @@ class UserController extends Controller
         $this->user = $user;
     }
 
-    public function profileUser($userId)
+    public function profileUser($userId, Request $request)
     {
+        $userCurrent = JWTAuth::toUser($request->token)->id;
         $profile = User::find($userId);
-        $profile->renameAvatarUserFromUser();
-        $profile->coverImage = $profile->cover_image == null ?
-            URL::to('default/cover_image_default.jpeg') :
-            URL::to('media_file_post/' . $profile->id . '/' . $profile->cover_image);
-
-        return response()->json($profile, 200);
+        if (empty($profile)) {
+            return response()->json('Không tìm thấy yêu cầu!', 404);
+        } else {
+            $isFriend = FriendShip::Where('status', 1)->where(function ($query) use ($userCurrent, $profile) {
+                $query->where('user_accept', $userCurrent)->where('user_request', $profile->id);
+            })->orWhere(function ($query) use ($userCurrent, $profile) {
+                $query->where('user_accept', $profile->id)->where('user_request', $userCurrent);
+            })->first();
+            $profile->renameAvatarUserFromUser();
+            $profile->coverImage = $profile->cover_image == null ?
+                URL::to('default/cover_image_default.jpeg') :
+                URL::to('media_file_post/' . $profile->id . '/' . $profile->cover_image);
+            $profile->isFriend = !empty($isFriend);
+            return response()->json($profile, 200);
+        }
     }
 
     public function updateDisplayName(Request $request)
