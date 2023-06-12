@@ -2,7 +2,6 @@
 
 namespace App\Events;
 
-use App\Models\Notification;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -11,18 +10,18 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class NotificationEvent implements ShouldBroadcast
+class MessageEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
-    public $notif;
+    public $message;
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($notif)
+    public function __construct($message)
     {
-        $this->notif = $notif;
+        $this->message = $message;
     }
 
     /**
@@ -32,11 +31,11 @@ class NotificationEvent implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return ['notif-' . $this->notif['to']];
+        return ['conversation-' . $this->message['conversation_id']];
     }
 
     public function broadcastAs()
     {
-        return 'my-event';
+        return 'message';
     }
 }

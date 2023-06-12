@@ -176,6 +176,8 @@ Route::group(['middleware' => 'jwt.auth', 'prefix' => 'v1'], function () {
 
     Route::POST('/create-report', [ReportController::class, 'createReport']);
     Route::POST('/chats', [ChatController::class, 'chatOneToOne']);
+    Route::POST('/chats/create-chat', [ChatController::class, 'isChatOneToOne']);
+    Route::POST('/chats/send-message', [ChatController::class, 'sendMessage']);
     Route::GET('/fetch-list-chats', [ChatController::class, 'fetchChats']);
     Route::GET('/fetch-message/userId={userId}', [ChatController::class, 'fetchMessage']);
     //? NotificationController

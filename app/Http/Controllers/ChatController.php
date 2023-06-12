@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\MessageEvent;
 use App\Models\Conversation;
 use App\Models\Message;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -39,6 +41,27 @@ class ChatController extends Controller
         return response()->json($chats, 200);
     }
 
+    public function sendMessage(Request $request)
+    {
+        $userCurrent = JWTAuth::toUser($request->token)->id;
+        $newMessage = new Message();
+        $newMessage->user_id = $userCurrent;
+        $newMessage->conversation_id = $request->conversationId;
+        $newMessage->content = $request->contentMessage;
+        $newMessage->created_at = Carbon::now('Asia/Ho_Chi_Minh');
+        $newMessage->save();
+
+        $newMessage->userName = $newMessage->user->displayName;
+        $newMessage->avatar =
+            $newMessage->user->avatar === null ?
+            ($newMessage->user->sex === 0 ?
+                URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
+            URL::to('media_file_post/' . $newMessage->user->id . '/' . $newMessage->user->avatar);
+
+        event(new MessageEvent($newMessage->toArray()));
+        return response()->json($newMessage, 200);
+    }
+
     public function fetchMessage(Request $request, $userId)
     {
         $userCurrent = JWTAuth::touser($request->token)->id;
@@ -63,7 +86,7 @@ class ChatController extends Controller
                     URL::to('media_file_post/' . $conversation->userOne->id . '/' . $conversation->userOne->avatar);
                 $conversation->userId = $conversation->userTwo->id;
             }
-            $messages = Message::Where('conversation_id', $conversation->id)->get();
+            $messages = Message::Where('conversation_id', $conversation->id)->orderBy('created_at', 'DESC')->get();
             foreach ($messages as $message) {
                 $message->userName = $message->user->displayName;
                 $message->avatar =
@@ -80,6 +103,29 @@ class ChatController extends Controller
             $newConversation->user_two = $userId;
             $newConversation->save();
             return response()->json($newConversation, 200);
+        }
+    }
+
+    public function isChatOneToOne(Request $request)
+    {
+        $userCurrent = JWTAuth::toUser($request->token)->id;
+        $userId = $request->userId;
+        $isConversation = Conversation::where(function ($query) use ($userCurrent, $userId) {
+            $query->where('user_one', $userCurrent)->where('user_two', $userId);
+        })->orWhere(function ($query) use ($userCurrent, $userId) {
+            $query->where('user_one', $userId)->where('user_two', $userCurrent);
+        })->first();
+
+        if ($isConversation) {
+            return response()->json('success', 200);
+        } else {
+            //? Chưa từng có đoạn chat thì tạo một room mới -> tạo tin nhắn
+            $newConversation = new Conversation();
+            $newConversation->conversation_type = 0;  //? chat 1 - 1
+            $newConversation->user_one = $userCurrent;
+            $newConversation->user_two = $request->userId;
+            $newConversation->save();
+            return response()->json('success', 200);
         }
     }
 
