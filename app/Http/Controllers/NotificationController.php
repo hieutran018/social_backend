@@ -21,11 +21,9 @@ class NotificationController extends Controller
         $userId = JWTAuth::toUser($request->token)->id;
         $data = Notification::WHERE('to', $userId)->orderBy('created_at', 'DESC')->get();
         foreach ($data as $item) {
+            $item->user->renameAvatarUserFromUser();
             $item->userNameFrom = $item->user->displayName;
-            $item->userAvatarFrom = $item->user->avatar === null ?
-                ($item->user->sex === 0 ?
-                    URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')
-                ) : URL::to('media_file_post/' . $item->user->id . '/' . $item->user->avatar);
+            $item->userAvatarFrom = $item->user->avatar;
         }
         return response()->json($data, 200);
     }

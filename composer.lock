@@ -1323,20 +1323,20 @@
         },
         {
             "name": "lcobucci/clock",
-            "version": "3.0.0",
+            "version": "3.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lcobucci/clock.git",
-                "reference": "039ef98c6b57b101d10bd11d8fdfda12cbd996dc"
+                "reference": "30a854ceb22bd87d83a7a4563b3f6312453945fc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lcobucci/clock/zipball/039ef98c6b57b101d10bd11d8fdfda12cbd996dc",
-                "reference": "039ef98c6b57b101d10bd11d8fdfda12cbd996dc",
+                "url": "https://api.github.com/repos/lcobucci/clock/zipball/30a854ceb22bd87d83a7a4563b3f6312453945fc",
+                "reference": "30a854ceb22bd87d83a7a4563b3f6312453945fc",
                 "shasum": ""
             },
             "require": {
-                "php": "~8.1.0 || ~8.2.0",
+                "php": "~8.2.0",
                 "psr/clock": "^1.0"
             },
             "provide": {
@@ -1344,13 +1344,13 @@
             },
             "require-dev": {
                 "infection/infection": "^0.26",
-                "lcobucci/coding-standard": "^9.0",
+                "lcobucci/coding-standard": "^10.0.0",
                 "phpstan/extension-installer": "^1.2",
-                "phpstan/phpstan": "^1.9.4",
-                "phpstan/phpstan-deprecation-rules": "^1.1.1",
-                "phpstan/phpstan-phpunit": "^1.3.2",
-                "phpstan/phpstan-strict-rules": "^1.4.4",
-                "phpunit/phpunit": "^9.5.27"
+                "phpstan/phpstan": "^1.10.7",
+                "phpstan/phpstan-deprecation-rules": "^1.1.3",
+                "phpstan/phpstan-phpunit": "^1.3.10",
+                "phpstan/phpstan-strict-rules": "^1.5.0",
+                "phpunit/phpunit": "^10.0.17"
             },
             "type": "library",
             "autoload": {
@@ -1371,7 +1371,7 @@
             "description": "Yet another clock abstraction",
             "support": {
                 "issues": "https://github.com/lcobucci/clock/issues",
-                "source": "https://github.com/lcobucci/clock/tree/3.0.0"
+                "source": "https://github.com/lcobucci/clock/tree/3.1.0"
             },
             "funding": [
                 {
@@ -1383,7 +1383,7 @@
                     "type": "patreon"
                 }
             ],
-            "time": "2022-12-19T15:00:24+00:00"
+            "time": "2023-03-20T19:12:25+00:00"
         },
         {
             "name": "lcobucci/jwt",
@@ -6199,16 +6199,16 @@
         },
         {
             "name": "fakerphp/faker",
-            "version": "v1.22.0",
+            "version": "v1.23.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/FakerPHP/Faker.git",
-                "reference": "f85772abd508bd04e20bb4b1bbe260a68d0066d2"
+                "reference": "e3daa170d00fde61ea7719ef47bb09bb8f1d9b01"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FakerPHP/Faker/zipball/f85772abd508bd04e20bb4b1bbe260a68d0066d2",
-                "reference": "f85772abd508bd04e20bb4b1bbe260a68d0066d2",
+                "url": "https://api.github.com/repos/FakerPHP/Faker/zipball/e3daa170d00fde61ea7719ef47bb09bb8f1d9b01",
+                "reference": "e3daa170d00fde61ea7719ef47bb09bb8f1d9b01",
                 "shasum": ""
             },
             "require": {
@@ -6261,9 +6261,9 @@
             ],
             "support": {
                 "issues": "https://github.com/FakerPHP/Faker/issues",
-                "source": "https://github.com/FakerPHP/Faker/tree/v1.22.0"
+                "source": "https://github.com/FakerPHP/Faker/tree/v1.23.0"
             },
-            "time": "2023-05-14T12:31:37+00:00"
+            "time": "2023-06-12T08:44:38+00:00"
         },
         {
             "name": "filp/whoops",
@@ -6454,22 +6454,22 @@
         },
         {
             "name": "mockery/mockery",
-            "version": "1.6.0",
+            "version": "1.6.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mockery/mockery.git",
-                "reference": "bac1765cb52bbd3364a870e920cb69cd859ee302"
+                "reference": "13a7fa2642c76c58fa2806ef7f565344c817a191"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mockery/mockery/zipball/bac1765cb52bbd3364a870e920cb69cd859ee302",
-                "reference": "bac1765cb52bbd3364a870e920cb69cd859ee302",
+                "url": "https://api.github.com/repos/mockery/mockery/zipball/13a7fa2642c76c58fa2806ef7f565344c817a191",
+                "reference": "13a7fa2642c76c58fa2806ef7f565344c817a191",
                 "shasum": ""
             },
             "require": {
                 "hamcrest/hamcrest-php": "^2.0.1",
                 "lib-pcre": ">=7.0",
-                "php": "^7.3 || ^8.0"
+                "php": "^7.4 || ^8.0"
             },
             "conflict": {
                 "phpunit/phpunit": "<8.0"
@@ -6482,7 +6482,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.4.x-dev"
+                    "dev-main": "1.6.x-dev"
                 }
             },
             "autoload": {
@@ -6526,9 +6526,9 @@
             ],
             "support": {
                 "issues": "https://github.com/mockery/mockery/issues",
-                "source": "https://github.com/mockery/mockery/tree/1.6.0"
+                "source": "https://github.com/mockery/mockery/tree/1.6.2"
             },
-            "time": "2023-05-03T12:55:29+00:00"
+            "time": "2023-06-07T09:07:52+00:00"
         },
         {
             "name": "myclabs/deep-copy",
@@ -7107,16 +7107,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "9.6.8",
+            "version": "9.6.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "17d621b3aff84d0c8b62539e269e87d8d5baa76e"
+                "reference": "a9aceaf20a682aeacf28d582654a1670d8826778"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/17d621b3aff84d0c8b62539e269e87d8d5baa76e",
-                "reference": "17d621b3aff84d0c8b62539e269e87d8d5baa76e",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/a9aceaf20a682aeacf28d582654a1670d8826778",
+                "reference": "a9aceaf20a682aeacf28d582654a1670d8826778",
                 "shasum": ""
             },
             "require": {
@@ -7190,7 +7190,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/9.6.8"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/9.6.9"
             },
             "funding": [
                 {
@@ -7206,7 +7206,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-05-11T05:14:45+00:00"
+            "time": "2023-06-11T06:13:56+00:00"
         },
         {
             "name": "sebastian/cli-parser",
