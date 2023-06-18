@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Traits\PostTrait;
 use Illuminate\Http\Request;
 use App\Models\Album;
 use App\Models\Post;
 use App\Models\MediaFilePost;
+use App\Models\Tag;
 use URL;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
@@ -13,6 +15,7 @@ use JWTAuth;
 
 class AlbumController extends Controller
 {
+    use PostTrait;
     public function fetcAlbumByIdUser($userId)
     {
         $lstAlbum = Album::WHERE('user_id', $userId)->get();
@@ -83,9 +86,6 @@ class AlbumController extends Controller
                 $image->media_file_name = URL::to('media_file_post/' . $image->user_id . '/' . $image->media_file_name);
             }
         }
-
-
-
         return response()->json($isAlbum, 200);
     }
 
@@ -157,6 +157,27 @@ class AlbumController extends Controller
             }
             $isAlbum->delete();
             return response()->json('Xóa thành công!', 200);
+        }
+    }
+
+    public function fetchImagePostTag($userId)
+    {
+        $tags = Tag::Where('user_id', $userId)->get('post_id');
+
+        if ($tags) {
+            $data = [];
+            foreach ($tags as $tag) {
+                $data[] = $tag->post_id;
+            }
+            $images = MediaFilePost::WhereIn('post_id', $data)->get();
+
+            foreach ($images as $image) {
+                $this->_renameMediaFile($image, 'media_file_name', $image->user_id);
+            }
+            return response()->json($images, 200);
+        } else {
+
+            return response()->json('Không có hình ảnh', 404);
         }
     }
 }

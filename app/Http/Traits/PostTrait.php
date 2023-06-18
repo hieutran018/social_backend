@@ -36,7 +36,8 @@ trait PostTrait
 
     private function _selectParentPost($post): void
     {
-        $post->created_at = Carbon::parse($post->created_at)->format('Y/m/d H:m:s');
+        $post->created_at =
+            $post->created_at = Carbon::parse($post->created_at)->toDateTimeString();;
 
         $post->totalMediaFile = $post->mediafile->count();
         $post->totalComment = $post->comment->count();
@@ -55,6 +56,7 @@ trait PostTrait
             }
         } else {
             $post->displayName = $post->user->displayName;
+            $post->isVerified = $post->user->isVerified ? 1 : 0;
             if ($post->icon) {
                 $post->iconName = $post->icon->icon_name;
                 $post->iconPatch =

@@ -18,9 +18,8 @@ class MediaFileController extends Controller
     {
 
         if ($limit != null) {
-            $lst = DB::table('media_file_posts')
-                ->select('*')
-                ->where('user_id', '=', $userId)
+
+            $lst = MediaFilePost::where('user_id', '=', $userId)
                 ->where('group_id', null)
                 ->Where(function ($query) {
                     $query->where('media_type', '=', 'png')
@@ -28,9 +27,7 @@ class MediaFileController extends Controller
                         ->orWhere('media_type', '=', 'jpeg');
                 })->orderBy('created_at', 'DESC')->limit(6)->get();
         } else {
-            $lst = DB::table('media_file_posts')
-                ->select('*')
-                ->where('user_id', '=', $userId)
+            $lst = MediaFilePost::where('user_id', '=', $userId)
                 ->where('group_id', null)
                 ->Where(function ($query) {
                     $query->where('media_type', '=', 'png')
@@ -39,8 +36,8 @@ class MediaFileController extends Controller
                 })->orderBy('created_at', 'DESC')->get();
         }
         foreach ($lst as $item) {
-            $item = collect($item);
-            $this->_renameMediaFile($item, 'media_file_name', $userId);
+
+            $this->_renameMediaFile($item, 'media_file_name', $item->user_id);
         }
         return response()->json($lst, 200);
     }
@@ -84,5 +81,13 @@ class MediaFileController extends Controller
 
             return response()->json($mediaFiles, 200);
         }
+    }
+    public function fetchImagesAvatar($userId)
+    {
+        $images = MediaFilePost::Where('user_id', $userId)->Where('isAvatar', 1)->get();
+        foreach ($images as $image) {
+            $this->_renameMediaFile($image, 'media_file_name', $image->user_id);
+        }
+        return response()->json($images, 200);
     }
 }

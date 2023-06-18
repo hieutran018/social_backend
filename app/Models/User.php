@@ -91,6 +91,11 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(Stories::class);
     }
 
+    public function isVerified()
+    {
+        return $this->hasOne(VerifiedProfile::class, 'user_id', 'id');
+    }
+
     public function renameAvatarUserFromUser(): void //nên return string
     {
         if ($this->avatar == null) {
