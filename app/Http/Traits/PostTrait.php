@@ -36,6 +36,7 @@ trait PostTrait
 
     private function _selectParentPost($post): void
     {
+        $this->_renameAvatarUserFromPost($post);
         $post->created_at = Carbon::parse($post->created_at)->format('Y/m/d H:m:s');
 
         $post->totalMediaFile = $post->mediafile->count();
@@ -48,8 +49,8 @@ trait PostTrait
         if ($post->group_id) {
             $post->groupName = $post->group->group_name;
             $post->displayName = $post->user->displayName;
-            $post->groupAvatar = $post->group->avatar === null ? URL::to('default/avatar_group_default.jpg') :
-                URL::to('media_file_post/' . $post->group->avatar);
+            $post->group->renameAvatar();
+            $post->groupAvatar = $post->group->avatar;
             foreach ($post->mediafile as $mediaFile) {
                 $this->_renameMediaFile($mediaFile, 'media_file_name');
             }
