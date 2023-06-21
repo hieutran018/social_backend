@@ -93,6 +93,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function renameAvatarUserFromUser(): void //nên return string
     {
+        //avatar
         if ($this->avatar == null) {
             $this->avatar = ($this->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png'));
         } else {
@@ -102,6 +103,19 @@ class User extends Authenticatable implements JWTSubject
                 $this->avatar = $this->avatar;
             } else {
                 $this->avatar = URL::to('media_file_post/' . $this->id . '/' . $this->avatar);
+            }
+        }
+
+        //coverImage
+        if ($this->cover_image == null) {
+            $this->coverImage = URL::to('default/cover_image_default.jpeg');
+        } else {
+            //check if user has coverImage is link http
+            $isHttp = !empty(parse_url($this->coverImage, PHP_URL_SCHEME));
+            if ($isHttp) {
+                $this->coverImage = $this->cover_image;
+            } else {
+                $this->coverImage = URL::to('media_file_post/' . $this->id . '/' . $this->cover_image);
             }
         }
     }
