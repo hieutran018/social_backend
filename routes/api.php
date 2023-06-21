@@ -27,7 +27,7 @@ use App\Http\Controllers\Admin\AdminGroupController;
 use App\Http\Controllers\Admin\AdminPostController;
 use App\Http\Controllers\Admin\AdminReportController;
 use App\Http\Controllers\Admin\AdminUserController;
-
+use App\Models\MediaFilePost;
 
 /*
 |--------------------------------------------------------------------------
@@ -123,6 +123,9 @@ Route::group(['middleware' => 'jwt.auth', 'prefix' => 'v1'], function () {
     Route::post('edit-album', [AlbumController::class, 'editAlbum']);
     //* XÓA ALBUM
     Route::post('delete-album', [AlbumController::class, 'deleteAlbum']);
+    //* DANH SÁC ẢNH NGƯỜI DÙNG ĐƯỢC TAG TỪ BÀI VIẾT
+    Route::GET('/fetch-image-from-post-tag/userId={userId}', [AlbumController::class, 'fetchImagePostTag']);
+    Route::GET('/fetch-image-avatar/userId={userId}', [MediaFileController::class, 'fetchImagesAvatar']);
     //* TẠP NHÓM MỚI
     Route::post('create-group', [GroupController::class, 'createGroup']);
     //*DANH SÁCH CÁC GROUP ĐÃ THAM GIA->TÍNH LUÔN CẢ GROUP ĐÃ TẠO

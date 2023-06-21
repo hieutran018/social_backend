@@ -24,6 +24,7 @@ class CommentController extends Controller
             $comment->userId = $comment->user_id;
             $this->_renameAvatarUserFromComment($comment);
             $comment->displayName = $comment->user->displayName;
+            $comment->isVerified = $comment->user->isVerified ? 1 : 0;
             if ($comment->file) {
                 $comment->fileName = URL::to('comment/' . $comment->file->media_file_name);
                 $comment->mediaType = $comment->file->media_type;
@@ -64,7 +65,7 @@ class CommentController extends Controller
         $comment->userId = $comment->user_id;
         $this->_renameAvatarUserFromComment($comment);
         $comment->displayName = $comment->user->displayName;
-
+        $comment->isVerified = $comment->user->isVerified ? 1 : 0;
         if ($comment->file) {
             $comment->fileName = URL::to('comment/' . $comment->file->media_file_name);
             $comment->mediaType = $comment->file->media_type;
@@ -91,7 +92,7 @@ class CommentController extends Controller
         $reply->userId = $reply->user_id;
         $this->_renameAvatarUserFromComment($reply);
         $reply->displayName = $reply->user->displayName;
-
+        $reply->isVerified = $reply->user->isVerified ? 1 : 0;
         if ($reply->file) {
             $reply->fileName = URL::to('comment/' . $reply->file->media_file_name);
             $reply->mediaType = $reply->file->media_type;
@@ -109,6 +110,7 @@ class CommentController extends Controller
             $comment->userId = $comment->user_id;
             $this->_renameAvatarUserFromComment($comment);
             $comment->displayName = $comment->user->displayName;
+            $comment->isVerified = $comment->user->isVerified ? 1 : 0;
             if ($comment->file) {
                 $comment->fileName = URL::to('comment/' . $comment->file->media_file_name);
                 $comment->mediaType = $comment->file->media_type;
@@ -130,21 +132,25 @@ trait CommentTrait
     private function _createNotification(CommentPost $comment)
     {
         $post = Post::Where('id', $comment->post_id)->first();
-        $noti = new Notification();
-        $noti->from = $comment->user_id;
-        $noti->to = $post->user_id;
-        $noti->title = 'đã bình luận về bài viết của bạn.';
-        $noti->unread = 1;
-        $noti->object_type = 'comment';
-        $noti->object_id = $post->id;
-        $noti->icon_url = 'icon.png';
-        $noti->created_at = Carbon::now('Asia/Ho_Chi_Minh');
-        $noti->save();
-        $noti->userNameFrom = $noti->user->displayName;
-        $noti->userAvatarFrom = $noti->user->avatar === null ?
-            ($noti->user->sex === 0 ?
-                URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')
-            ) : URL::to('media_file_post/' . $noti->user->id . '/' . $noti->user->avatar);
-        event(new NotificationEvent($noti->toArray()));
+        if ($comment->user_id === $post->user_id) {
+            return;
+        } else {
+            $noti = new Notification();
+            $noti->from = $comment->user_id;
+            $noti->to = $post->user_id;
+            $noti->title = 'đã bình luận về bài viết của bạn.';
+            $noti->unread = 1;
+            $noti->object_type = 'comment';
+            $noti->object_id = $post->id;
+            $noti->icon_url = 'icon.png';
+            $noti->created_at = Carbon::now('Asia/Ho_Chi_Minh');
+            $noti->save();
+            $noti->userNameFrom = $noti->user->displayName;
+            $noti->userAvatarFrom = $noti->user->avatar === null ?
+                ($noti->user->sex === 0 ?
+                    URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')
+                ) : URL::to('media_file_post/' . $noti->user->id . '/' . $noti->user->avatar);
+            event(new NotificationEvent($noti->toArray()));
+        }
     }
 }

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateAblumTable extends Migration
+class CreateVerifiedProfileTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,12 @@ class CreateAblumTable extends Migration
      */
     public function up()
     {
-        Schema::create('albums', function (Blueprint $table) {
+        Schema::create('verified_profiles', function (Blueprint $table) {
             $table->id();
-            $table->string('album_name');
             $table->foreignId('user_id');
-            $table->integer('privacy');
-            $table->boolean('isDefault');
+            $table->date('start_timestamp');
+            $table->date('expiration_timestamp');
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 
@@ -31,6 +29,6 @@ class CreateAblumTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('albums');
+        Schema::dropIfExists('verified_profiles');
     }
 }

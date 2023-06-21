@@ -5,14 +5,12 @@ namespace App\Http\Controllers;
 use App\Http\Traits\PostTrait;
 use Illuminate\Http\Request;
 use App\Models\Post;
-// use App\Models\CommentPost;
 use App\Models\FriendShip;
 use App\Models\MediaFilePost;
 use App\Models\PostLike;
 use App\Models\MemberGroup;
 use App\Models\Tag;
 use App\Models\PostHistory;
-use App\Models\Notification;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\URL;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -88,6 +86,7 @@ class PostController extends Controller
             }
         }
         $crPost->displayName = $crPost->user->displayName;
+        $crPost->isVerified = $crPost->user->isVerified ? 1 : 0;
         if ($crPost->icon) {
             $crPost->iconName = $crPost->icon->icon_name;
             $crPost->iconPatch =
@@ -150,9 +149,9 @@ class PostController extends Controller
         }
 
         $postShare->displayName = $postShare->user->displayName;
+        $postShare->isVerified = $postShare->user->isVerified ? 1 : 0;
 
-        $postShare->created_at = Carbon::parse($postShare->created_at)->format('Y/m/d H:m:s');
-
+        $postShare->created_at = Carbon::parse($postShare->created_at)->toDateTimeString();
         $this->_renameAvatarUserFromPost($postShare);
 
         $postShare->totalMediaFile = $postShare->mediafile->count();
@@ -160,7 +159,7 @@ class PostController extends Controller
         $postShare->totalLike = $postShare->like->count();
         $postShare->parent_post = Post::find($postShare->parent_post);
         $postShare->histories = $postShare->postHistory->count();
-        $postShare->parent_post->created_at = Carbon::parse($postShare->parent_post->created_at)->format('Y/m/d H:m:s');
+        $postShare->parent_post->created_at = Carbon::parse($postShare->parent_post->created_at)->toDateTimeString();
 
 
 
@@ -176,6 +175,7 @@ class PostController extends Controller
             }
         } else {
             $postShare->parent_post->displayName = $postShare->parent_post->user->displayName;
+            $postShare->parent_post->isVerified = $postShare->parent_post->user->isVerified ? 1 : 0;
             if ($postShare->parent_post->icon) {
                 $postShare->parent_post->iconName = $postShare->parent_post->icon->icon_name;
                 $postShare->parent_post->iconPatch =
@@ -249,6 +249,7 @@ class PostController extends Controller
             }
 
             $post->displayName = $post->user->displayName;
+            $post->isVerified = $post->user->isVerified ? 1 : 0;
             if ($post->icon) {
                 $post->iconName = $post->icon->icon_name;
                 $post->iconPatch =
@@ -302,9 +303,11 @@ class PostController extends Controller
         }
 
         if (!empty($gr)) {
-            $lstPost = Post::WhereIn('user_id', $data)->Where('privacy', '!=', 0)->orWhere('group_id', $gr)->orderBy('created_at', 'DESC')->paginate(10);
+            $lstPost = Post::WhereIn('user_id', $data)->orWhere('group_id', $gr)->orderBy('created_at', 'DESC')->paginate(10);
         } else {
-            $lstPost = Post::WhereIn('user_id', $data)->Where('privacy', '!=', 0)->orderBy('created_at', 'DESC')->paginate(10);
+            $lstPost = Post::WhereIn('user_id', $data)->orWhere(function ($query) use ($userId) {
+                $query->where('privacy', 0)->where('user_id', $userId)->get();
+            })->orderBy('created_at', 'DESC')->paginate(10);
         }
 
 
@@ -335,6 +338,7 @@ class PostController extends Controller
             }
 
             $post->displayName = $post->user->displayName;
+            $post->isVerified = $post->user->isVerified ? 1 : 0;
             if ($post->icon) {
                 $post->iconName = $post->icon->icon_name;
                 $post->iconPatch =
@@ -413,6 +417,7 @@ class PostController extends Controller
         }
 
         $post->displayName = $post->user->displayName;
+        $post->isVerified = $post->user->isVerified ? 1 : 0;
         if ($post->icon) {
             $post->iconName = $post->icon->icon_name;
             $post->iconPatch =
@@ -449,6 +454,7 @@ class PostController extends Controller
         $lst = Post::WHERE('group_id', $groupId)->orderBy('created_at', 'DESC')->paginate(10);
         foreach ($lst as $post) {
             $post->displayName = $post->user->displayName;
+            $post->isVerified = $post->user->isVerified ? 1 : 0;
 
             $this->_renameAvatarUserFromPost($post);
 
@@ -483,6 +489,7 @@ class PostController extends Controller
             })->orderBy('created_at', 'DESC')->paginate(10);
         foreach ($posts as $post) {
             $post->displayName = $post->user->displayName;
+            $post->isVerified = $post->user->isVerified ? 1 : 0;
 
             $this->_renameAvatarUserFromPost($post);
 
@@ -563,6 +570,7 @@ class PostController extends Controller
 
             $post->update();
             $post->displayName = $post->user->displayName;
+            $post->isVerified = $post->user->isVerified ? 1 : 0;
             $this->_renameAvatarUserFromPost($post);
             $post->totalMediaFile = $post->mediafile->count();
             $post->totalComment = $post->comment->count();
