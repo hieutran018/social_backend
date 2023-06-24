@@ -116,7 +116,7 @@ class User extends Authenticatable implements JWTSubject
             $this->coverImage = URL::to('default/cover_image_default.jpeg');
         } else {
             //check if user has coverImage is link http
-            $isHttp = !empty(parse_url($this->coverImage, PHP_URL_SCHEME));
+            $isHttp = !empty(parse_url($this->cover_image, PHP_URL_SCHEME));
             if ($isHttp) {
                 $this->coverImage = $this->cover_image;
             } else {

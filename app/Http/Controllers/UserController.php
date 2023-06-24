@@ -123,6 +123,7 @@ class UserController extends Controller
         $user->went_to = $data['wentTo'];
         $user->relationship = $data['relationship'];
         $user->phone = $data['phone'];
+        $user->displayName = $data['displayName'];
         $user->update();
         $user->renameAvatarUserFromUser();
 
