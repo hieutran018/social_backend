@@ -122,7 +122,12 @@ class AuthController extends Controller
         }
 
         if ($user->token === $token) {
-            $user->update(['status' => 1, 'token' => null, 'email_verified_at' => Carbon::now('Asia/Ho_Chi_Minh')]);
+            $isUser = User::find($user->id);
+            $isUser->email_verified_at = Carbon::now('Asia/Ho_Chi_Minh');
+            $isUser->token = null;
+            $isUser->status = 1;
+            $isUser->update();
+            // $user->update(['status' => 1, 'token' => null, 'email_verified_at' => Carbon::now('Asia/Ho_Chi_Minh')]);
             return Redirect::to('/')->with('success_verify', 'Xác minh thành công !');
         } else {
             return Redirect::to('/')->with('failed_verify', 'Xác minh thẩ bại, vui lòng thử lại !');

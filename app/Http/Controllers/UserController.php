@@ -188,6 +188,7 @@ class UserController extends Controller
                 $newAlbum->album_name = 'Ảnh đại diện';
                 $newAlbum->user_id = $userId;
                 $newAlbum->privacy = 1;
+                $newAlbum->isDefault = 1;
                 $newAlbum->created_at = Carbon::now('Asia/Ho_Chi_Minh');
                 $newAlbum->save();
 
@@ -248,6 +249,7 @@ class UserController extends Controller
                 $newAlbum->album_name = 'Ảnh bìa';
                 $newAlbum->user_id = $userId;
                 $newAlbum->privacy = 1;
+                $newAlbum->isDefault = 1;
                 $newAlbum->created_at = Carbon::now('Asia/Ho_Chi_Minh');
                 $newAlbum->save();
 

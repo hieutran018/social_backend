@@ -27,6 +27,7 @@ use App\Http\Controllers\Admin\AdminGroupController;
 use App\Http\Controllers\Admin\AdminPostController;
 use App\Http\Controllers\Admin\AdminReportController;
 use App\Http\Controllers\Admin\AdminUserController;
+use App\Http\Controllers\VerifiedProfleController;
 use App\Models\MediaFilePost;
 
 /*
@@ -67,6 +68,8 @@ Route::group(
 
 
 Route::group(['middleware' => 'jwt.auth', 'prefix' => 'v1'], function () {
+    //* XÁC MINH HỒ SƠ NGƯỜI DÙNG CHÍNH CHỦ HOẶC NỔI BẬT
+    Route::POST('/verified-profile', [VerifiedProfleController::class, 'verifiedProfile']);
     //* TRANG CÁ NHÂN NGƯỜI DÙNG
     Route::GET('/profile-user/userId={userId}', [UserController::class, 'profileUser']);
     //* DANH SÁCH GỢI Ý KẾT BẠN
