@@ -23,4 +23,9 @@ class Message extends Model
     {
         return $this->hasOne(User::class, 'id', 'user_id');
     }
+
+    public function mediaFile()
+    {
+        return $this->hasMany(MediaFileMessage::class, 'message_id', 'id');
+    }
 }
