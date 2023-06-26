@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Events\MessageEvent;
 use App\Models\Conversation;
+use App\Models\MediaFileMessage;
 use App\Models\Message;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Str;
 
 class ChatController extends Controller
 {
@@ -62,6 +64,47 @@ class ChatController extends Controller
         return response()->json($newMessage, 200);
     }
 
+    public function sendMessageHaveMediaFile(Request $request)
+    {
+        $userCurrent = JWTAuth::toUser($request->token)->id;
+        $newMessage = new Message();
+        $newMessage->user_id = $userCurrent;
+        $newMessage->conversation_id = $request->conversationId;
+        $newMessage->content = $request->contentMessage;
+        $newMessage->created_at = Carbon::now('Asia/Ho_Chi_Minh');
+        $newMessage->save();
+
+        //* Upload Files
+        if ($request->hasFile('files')) {
+            foreach ($request->file('files') as $key => $file) {
+                $fileExtentsion = $file->getClientOriginalExtension();
+                $random = Str::random(10);
+                $fileName = time() . $random . '.' . $fileExtentsion;
+                $file->move('media_file_message/', $fileName);
+
+                $media = new MediaFileMessage();
+                $media->media_file_name = $fileName;
+                $media->media_type = $fileExtentsion;
+                $media->message_id = $newMessage->id;
+                $media->user_id = JWTAuth::toUser($request->token)->id;
+                $media->created_at = Carbon::now("Asia/Ho_Chi_Minh");
+                $media->save();
+            }
+        }
+
+        $newMessage->userName = $newMessage->user->displayName;
+        $newMessage->avatar =
+            $newMessage->user->avatar === null ?
+            ($newMessage->user->sex === 0 ?
+                URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
+            URL::to('media_file_post/' . $newMessage->user->id . '/' . $newMessage->user->avatar);
+        foreach ($newMessage->mediaFile as $file) {
+            $file->media_file_name = URL::to('media_file_message/' . $file->media_file_name);
+        }
+        event(new MessageEvent($newMessage->toArray()));
+        return response()->json($newMessage, 200);
+    }
+
     public function fetchMessage(Request $request, $userId)
     {
         $userCurrent = JWTAuth::touser($request->token)->id;
@@ -94,6 +137,9 @@ class ChatController extends Controller
                     ($message->user->sex === 0 ?
                         URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
                     URL::to('media_file_post/' . $message->user->id . '/' . $message->user->avatar);
+                foreach ($message->mediaFile as $file) {
+                    $file->media_file_name = URL::to('media_file_message/' . $file->media_file_name);
+                }
             }
             return response()->json(['conversation' => $conversation, 'message' => $messages], 200);
         } else {

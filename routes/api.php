@@ -190,6 +190,8 @@ Route::group(['middleware' => 'jwt.auth', 'prefix' => 'v1'], function () {
     // Route::prefix('notification')->group(function () {
     //     Route::get('send-notifi-to-friends', [NotificationController::class, 'sendNotifiToFriends']);
     // });
+    //* GỬI FILE
+    Route::POST('/chats/sent-message-file', [ChatController::class, 'sendMessageHaveMediaFile']);
 
     //viết tạm để upload file cho message
     Route::post('message/upload-file', function (Request $request) {

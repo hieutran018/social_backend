@@ -16,7 +16,9 @@ class CreateConversationTable extends Migration
         Schema::create('conversations', function (Blueprint $table) {
             $table->id();
             $table->string('conversation_name')->nullable();
-            $table->boolean('conversation_type')->default(0); //? 1 = conversation group, 0 = conversation one to one
+            $table->boolean('conversation_type')->default(0);
+            $table->foreignId('user_one')->nullable();
+            $table->foreignId('user_two')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
