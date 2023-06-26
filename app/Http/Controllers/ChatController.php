@@ -59,7 +59,9 @@ class ChatController extends Controller
             ($newMessage->user->sex === 0 ?
                 URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
             URL::to('media_file_post/' . $newMessage->user->id . '/' . $newMessage->user->avatar);
-
+        foreach ($newMessage->mediaFile as $file) {
+            $file->media_file_name = URL::to('media_file_message/' . $file->media_file_name);
+        }
         event(new MessageEvent($newMessage->toArray()));
         return response()->json($newMessage, 200);
     }
@@ -95,7 +97,7 @@ class ChatController extends Controller
         $newMessage->userName = $newMessage->user->displayName;
         $newMessage->avatar =
             $newMessage->user->avatar === null ?
-            ($newMessage->user->sex === 0 ?
+            ($newMessage->user->sex == 0 ?
                 URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
             URL::to('media_file_post/' . $newMessage->user->id . '/' . $newMessage->user->avatar);
         foreach ($newMessage->mediaFile as $file) {
