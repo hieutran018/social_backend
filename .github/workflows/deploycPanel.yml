@@ -13,10 +13,8 @@ jobs:
       - uses: actions/setup-node@master
       - name: Copy .env
         run: php -r "file_exists('.env') || copy('.env.example', '.env');"
-      - name: Install JWTAuth
-        run: composer require tymon/jwt-auth:^1.0.0
       - name: Install Dependencies
-        run: composer update --ignore-platform-reqs
+        run: composer install
       - name: Generate key
         run: php artisan key:generate
       - name: Generate storage link
