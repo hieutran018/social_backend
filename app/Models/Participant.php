@@ -15,4 +15,9 @@ class Participant extends Model
 
     public $timeStamp = false;
     protected $table = 'participant';
+
+    public function user()
+    {
+        return $this->hasOne(User::class, 'id', 'user_id');
+    }
 }

@@ -33,4 +33,8 @@ class Conversation extends Model
     {
         return $this->hasOne(User::class, 'id', 'user_two');
     }
+    public function paticipaints()
+    {
+        return $this->hasMany(Participant::class, 'conversation_id', 'id');
+    }
 }

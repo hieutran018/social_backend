@@ -186,6 +186,9 @@ Route::group(['middleware' => 'jwt.auth', 'prefix' => 'v1'], function () {
     Route::POST('/chats/send-message', [ChatController::class, 'sendMessage']);
     Route::GET('/fetch-list-chats', [ChatController::class, 'fetchChats']);
     Route::GET('/fetch-message/userId={userId}', [ChatController::class, 'fetchMessage']);
+    Route::POST('/chats/create-group-chat', [ChatController::class, 'createGroupChat']);
+    //* TÌM KIẾM BẠN BÈ
+    Route::GET('/friend/search-friend/input={input}', [ChatController::class, 'findFriend']);
     //? NotificationController
     // Route::prefix('notification')->group(function () {
     //     Route::get('send-notifi-to-friends', [NotificationController::class, 'sendNotifiToFriends']);

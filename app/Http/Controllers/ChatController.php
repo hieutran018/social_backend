@@ -4,10 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Events\MessageEvent;
 use App\Models\Conversation;
+use App\Models\FriendShip;
 use App\Models\MediaFileMessage;
 use App\Models\Message;
+use App\Models\Participant;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Str;
@@ -18,25 +22,32 @@ class ChatController extends Controller
     public function fetchChats(Request $request)
     {
         $userCurrent = JWTAuth::toUser($request->token)->id;
-        $chats = Conversation::Where(function ($query) use ($userCurrent) {
-            $query->Where('user_one', $userCurrent)->orWhere('user_two', $userCurrent)->get();
-        })->orderBy('created_at', 'DESC')->get();
+        // $chats = Conversation::Where(function ($query) use ($userCurrent) {
+        //     $query->Where('user_one', $userCurrent)->orWhere('user_two', $userCurrent)->get();
+        // })->orderBy('created_at', 'DESC')->get();
 
+        $conversationRoom = Participant::Where('user_id', $userCurrent)->select('conversation_id')->get();
+        $data = [];
+        foreach ($conversationRoom as $conversation) {
+            $data[] = $conversation->conversation_id;
+        }
+
+        $chats = Conversation::WhereIn('id', $data)->orderBy('created_at', 'DESC')->get();
         foreach ($chats as $chat) {
-            if ($userCurrent === $chat->user_one) {
-                $chat->conversation_name = $chat->userTwo->displayName;
-                $chat->conversation_avatar = $chat->userTwo->avatar === null ?
-                    ($chat->userTwo->sex === 0 ?
-                        URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
-                    URL::to('media_file_post/' . $chat->userTwo->id . '/' . $chat->userTwo->avatar);
-                $chat->userId = $chat->userTwo->id;
+            if ($chat->conversation_type === 0) {
+                foreach ($chat->paticipaints as $paticipaint) {
+                    if ($userCurrent != $paticipaint->user->id) {
+                        $chat->conversation_name = $paticipaint->user->displayName;
+                        $chat->conversation_avatar =
+                            $paticipaint->user->avatar === null ?
+                            ($paticipaint->user->sex == 0 ?
+                                URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
+                            URL::to('media_file_post/' . $paticipaint->user->id . '/' . $paticipaint->user->avatar);
+                    }
+                }
             } else {
-                $chat->conversation_name = $chat->userOne->displayName;
-                $chat->conversation_avatar = $chat->userOne->avatar === null ?
-                    ($chat->userOne->sex === 0 ?
-                        URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
-                    URL::to('media_file_post/' . $chat->userOne->id . '/' . $chat->userOne->avatar);
-                $chat->userId = $chat->userOne->id;
+                $chat->conversation_name = 'Nhóm chat chưa đặt tên';
+                $chat->conversation_avatar = URL::to('default/avatar_chat_group_default.jpg');
             }
         }
 
@@ -110,28 +121,28 @@ class ChatController extends Controller
     public function fetchMessage(Request $request, $userId)
     {
         $userCurrent = JWTAuth::touser($request->token)->id;
-        $conversation = Conversation::where(function ($query) use ($userCurrent, $userId) {
-            $query->where('user_one', $userCurrent)->where('user_two', $userId);
-        })->orWhere(function ($query) use ($userCurrent, $userId) {
-            $query->where('user_one', $userId)->where('user_two', $userCurrent);
-        })->first();
-        if ($conversation) {
-            if ($userCurrent === $conversation->user_one) {
-                $conversation->conversation_name = $conversation->userTwo->displayName;
-                $conversation->conversation_avatar = $conversation->userTwo->avatar === null ?
-                    ($conversation->userTwo->sex === 0 ?
-                        URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
-                    URL::to('media_file_post/' . $conversation->userTwo->id . '/' . $conversation->userTwo->avatar);
-                $conversation->userId = $conversation->userTwo->id;
+
+        $conversation = Conversation::Where('id', $userId)->orderBy('created_at', 'DESC')->first();
+
+        if (!empty($conversation)) {
+            if ($conversation->conversation_type == 0) {
+                foreach ($conversation->paticipaints as $paticipaint) {
+                    if ($userCurrent != $paticipaint->user->id) {
+                        $conversation->conversation_name = $paticipaint->user->displayName;
+                        $conversation->userId = $paticipaint->user->id;
+                        $conversation->conversation_avatar =
+                            $paticipaint->user->avatar === null ?
+                            ($paticipaint->user->sex == 0 ?
+                                URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
+                            URL::to('media_file_post/' . $paticipaint->user->id . '/' . $paticipaint->user->avatar);
+                    }
+                }
             } else {
-                $conversation->conversation_name = $conversation->userOne->displayName;
-                $conversation->conversation_avatar = $conversation->userOne->avatar === null ?
-                    ($conversation->userOne->sex === 0 ?
-                        URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
-                    URL::to('media_file_post/' . $conversation->userOne->id . '/' . $conversation->userOne->avatar);
-                $conversation->userId = $conversation->userTwo->id;
+                $conversation->conversation_name = 'Nhóm chat chưa đặt tên';
+                $conversation->conversation_avatar = URL::to('default/avatar_chat_group_default.jpg');
             }
-            $messages = Message::Where('conversation_id', $conversation->id)->orderBy('created_at', 'DESC')->get();
+            $messages = Message::Where('conversation_id', $userId)->orderBy('created_at', 'DESC')->get();
+
             foreach ($messages as $message) {
                 $message->userName = $message->user->displayName;
                 $message->avatar =
@@ -145,12 +156,17 @@ class ChatController extends Controller
             }
             return response()->json(['conversation' => $conversation, 'message' => $messages], 200);
         } else {
-            $newConversation = new Conversation();
-            $newConversation->conversation_type = 0;  //? chat 1 - 1
-            $newConversation->user_one = $userCurrent;
-            $newConversation->user_two = $userId;
-            $newConversation->save();
-            return response()->json($newConversation, 200);
+            $user = User::find($userId);
+            if (!empty($user)) {
+                $newConversation = new Conversation();
+                $newConversation->conversation_type = 0;  //? chat 1 - 1
+                $newConversation->user_one = $userCurrent;
+                $newConversation->user_two = $userId;
+                $newConversation->save();
+                return response()->json($newConversation, 200);
+            } else {
+                return response()->json('Không tồn tại người dùng này', 200);
+            }
         }
     }
 
@@ -212,5 +228,72 @@ class ChatController extends Controller
             }
         }
         return response()->json('success', 200);
+    }
+
+    public function findFriend(Request $request, $input)
+    {
+        $userId = JWTAuth::toUser($request->token)->id;
+        $friends = FriendShip::Where('status', 1)->Where(function ($query) use ($userId) {
+            $query->Where('user_accept', $userId)->orWhere('user_request', $userId)->get();
+        })->get();
+        foreach ($friends as $fr) {
+            if ($fr->user_accept == $userId) {
+                foreach ($fr->user as $user) {
+                    $fr->friendId = $user->id;
+                    $fr->displayName = $user->displayName;
+                    $user->renameAvatarUserFromUser();
+                    $fr->avatar = $user->avatar;
+                }
+            } else {
+                foreach ($fr->users as $user) {
+                    $fr->friendId = $user->id;
+                    $fr->displayName = $user->displayName;
+                    $user->renameAvatarUserFromUser();
+                    $fr->avatar = $user->avatar;
+                }
+            }
+        }
+
+        $result = $friends->filter(function ($friend) use ($input) {
+            return stripos($friend['displayName'], $input) !== false;
+        });
+        $resultArray = $result->values()->all();
+        return response()->json($resultArray, 200);
+    }
+
+    public function createGroupChat(Request $request)
+    {
+        $userId = JWTAuth::toUser($request->token)->id;
+
+        $conversation = new Conversation();
+        if (count($request->members) > 1) {
+            $conversation->conversation_type = 1; //? Chat nhóm
+        } else {
+            $conversation->conversation_type = 0;
+            $conversation->user_one = $userId;
+            $conversation->user_two = $request->members[0];
+        }
+        $conversation->save();
+
+
+        $paticipaint = new Participant();
+        $paticipaint->conversation_id = $conversation->id;
+        $paticipaint->user_id = $userId;
+        $paticipaint->save();
+        foreach ($request->members as $member) {
+            $paticipaint = new Participant();
+            $paticipaint->conversation_id = $conversation->id;
+            $paticipaint->user_id = $member;
+            $paticipaint->save();
+        }
+
+        if ($request->contentMessage !== null) {
+            $newMessage = new Message();
+            $newMessage->user_id = $userId;
+            $newMessage->conversation_id = $conversation->id;
+            $newMessage->content = $request->contentMessage;
+            $newMessage->save();
+        }
+        return response([$conversation, $request->members], 200);
     }
 }
