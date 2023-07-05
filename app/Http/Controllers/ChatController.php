@@ -181,7 +181,7 @@ class ChatController extends Controller
         })->first();
 
         if ($isConversation) {
-            return response()->json('success', 200);
+            return response()->json($isConversation, 200);
         } else {
             //? Chưa từng có đoạn chat thì tạo một room mới -> tạo tin nhắn
             $newConversation = new Conversation();
@@ -189,7 +189,7 @@ class ChatController extends Controller
             $newConversation->user_one = $userCurrent;
             $newConversation->user_two = $request->userId;
             $newConversation->save();
-            return response()->json('success', 200);
+            return response()->json($newConversation, 200);
         }
     }
 
@@ -269,7 +269,8 @@ class ChatController extends Controller
         if (count($request->members) > 1) {
             $conversation->conversation_type = 1; //? Chat nhóm
         } else {
-            $conversation->conversation_type = 0;
+            $check =
+                $conversation->conversation_type = 0;
             $conversation->user_one = $userId;
             $conversation->user_two = $request->members[0];
         }
