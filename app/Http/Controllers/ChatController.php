@@ -99,6 +99,7 @@ class ChatController extends Controller
                 $media->media_file_name = $fileName;
                 $media->media_type = $fileExtentsion;
                 $media->message_id = $newMessage->id;
+                $media->conversation_id = $request->conversationId;
                 $media->user_id = JWTAuth::toUser($request->token)->id;
                 $media->created_at = Carbon::now("Asia/Ho_Chi_Minh");
                 $media->save();
@@ -265,16 +266,36 @@ class ChatController extends Controller
     {
         $userId = JWTAuth::toUser($request->token)->id;
 
-        $conversation = new Conversation();
+
         if (count($request->members) > 1) {
+            $conversation = new Conversation();
             $conversation->conversation_type = 1; //? Chat nhóm
+            $conversation->save();
         } else {
-            $check =
+            $userTwo = $request->members[0];
+            $isConversation = Conversation::where(function ($query) use ($userId, $userTwo) {
+                $query->where('user_one', $userId)->where('user_two', $userTwo);
+            })->orWhere(function ($query) use ($userId, $userTwo) {
+                $query->where('user_one', $userTwo)->where('user_two', $userId);
+            })->first();
+            if (!$isConversation) {
+                $conversation = new Conversation();
                 $conversation->conversation_type = 0;
-            $conversation->user_one = $userId;
-            $conversation->user_two = $request->members[0];
+                $conversation->user_one = $userId;
+                $conversation->user_two = $request->members[0];
+                $conversation->save();
+            } else {
+                if ($request->contentMessage !== null) {
+                    $newMessage = new Message();
+                    $newMessage->user_id = $userId;
+                    $newMessage->conversation_id = $isConversation->id;
+                    $newMessage->content = $request->contentMessage;
+                    $newMessage->save();
+                }
+                return response([$isConversation, $request->members], 200);
+            }
         }
-        $conversation->save();
+
 
 
         $paticipaint = new Participant();

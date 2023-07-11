@@ -58,6 +58,8 @@ Route::group(
         Route::GET('/fetch-post-by-id/postId={postId}', [AdminPostController::class, 'fetchPostById']);
         Route::GET('/fetch-list-user', [AdminUserController::class, 'fetchListUser']);
         Route::GET('/fetch-list-group', [AdminGroupController::class, 'fetchListGroup']);
+        Route::GET('/fetch-detail-group/groupId={groupId}', [AdminGroupController::class, 'fetchDetailGroup']);
+        Route::GET('/fetch-detail-user/userId={userId}', [AdminUserController::class, 'getchDetailUser']);
         Route::GET('/fetch-list-feel-and-activity', [AdminFeelAndActivityController::class, 'fetchListFeelAndActivity']);
         Route::POST('/create-feel-and-activity', [AdminFeelAndActivityController::class, 'createFeelAndActivity']);
         Route::GET('/fetch-list-report', [AdminReportController::class, 'fetchReport']);

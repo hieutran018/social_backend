@@ -22,4 +22,12 @@ class AdminGroupController extends Controller
         }
         return response()->json($groups, 200);
     }
+
+    public function fetchDetailGroup($groupId)
+    {
+        $group = Group::Where('id', $groupId)->first();
+        $group->postCount = Post::Where('group_id', $groupId)->count();
+        $group->adin = MemberGroup::Where('group_id', $groupId)->Where('isAdminGroup', 1)->first();
+        return response()->json($group, 200);
+    }
 }
