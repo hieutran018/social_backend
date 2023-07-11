@@ -190,6 +190,15 @@ class ChatController extends Controller
             $newConversation->user_one = $userCurrent;
             $newConversation->user_two = $request->userId;
             $newConversation->save();
+
+            $paticipaint = new Participant();
+            $paticipaint->conversation_id = $newConversation->id;
+            $paticipaint->user_id = $userId;
+            $paticipaint->save();
+            $paticipaint = new Participant();
+            $paticipaint->conversation_id = $newConversation->id;
+            $paticipaint->user_id = $userCurrent;
+            $paticipaint->save();
             return response()->json($newConversation, 200);
         }
     }
