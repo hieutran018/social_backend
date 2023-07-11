@@ -192,7 +192,7 @@ class PostController extends Controller
         foreach ($postShare->parent_post->mediafile as $mediaFile) {
             $this->_renameMediaFile($mediaFile, 'media_file_name', $postShare->parent_post->user->id);
         }
-
+        $this->_createNotification($postShare);
         return response()->json($postShare, 200);
     }
 
@@ -221,7 +221,6 @@ class PostController extends Controller
         } else {
             $lstPost = Post::WhereIn('user_id', $data)->Where('privacy', '!=', 0)->orderBy('created_at', 'DESC')->paginate(10);
         }
-
 
         foreach ($lstPost as $post) {
             if ($post->parent_post) {

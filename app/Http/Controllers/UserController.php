@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Traits\PostTrait;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Post;
@@ -18,11 +19,12 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
+
     public function __construct(User $user)
     {
         $this->user = $user;
     }
-
+    use PostTrait;
     public function profileUser($userId, Request $request)
     {
         $userCurrent = JWTAuth::toUser($request->token)->id;
@@ -190,6 +192,7 @@ class UserController extends Controller
             $crPost->created_at = Carbon::now('Asia/Ho_Chi_Minh');
             $crPost->status = 1;
             $crPost->save();
+            $this->_createNotification($crPost);
 
             $checkAlbum = MediaFilePost::WHERE('user_id', $userId)->WHERE('isAvatar', 1)->first();
             if (!empty($checkAlbum)) {
@@ -258,6 +261,7 @@ class UserController extends Controller
             $crPost->created_at = Carbon::now('Asia/Ho_Chi_Minh');
             $crPost->status = 1;
             $crPost->save();
+            $this->_createNotification($crPost);
 
             $checkAlbum = MediaFilePost::WHERE('user_id', $userId)->WHERE('isCover', 1)->first();
             if (!empty($checkAlbum)) {
