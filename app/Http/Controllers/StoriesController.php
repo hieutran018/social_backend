@@ -72,15 +72,11 @@ class StoriesController extends Controller
 
             foreach ($stories as $story) {
                 $story->user_id = $story->id;
-                $story->avatar =
-                    $story->avatar == null ?
-                    ($story->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png'))
-                    :
-                    URL::to('media_file_post/' . $story->user_id . '/' . $story->avatar);
+                $story->renameAvatarUserFromUser();
                 foreach ($story->stories as $sto) {
                     $sto->displayName = $story->displayName;
                     $sto->avatar = $story->avatar;
-                    $sto->file_name_story = URL::to('stories/' . $story->user_id . '/' . $sto->file_name_story);
+                    $sto->renameFileStory();
                 }
             }
             return response()->json($stories, 200);
@@ -106,6 +102,7 @@ trait StoriesTrait
                 $data[] = $friend->user_accept;
             }
         }
+
         if ($data) {
             foreach ($data as $userId) {
                 $noti = new Notification();
@@ -120,10 +117,8 @@ trait StoriesTrait
                 $noti->save();
 
                 $noti->userNameFrom = $noti->user->displayName;
-                $noti->userAvatarFrom = $noti->user->avatar === null ?
-                    ($noti->user->sex === 0 ?
-                        URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')
-                    ) : URL::to('media_file_post/' . $noti->user->id . '/' . $noti->user->avatar);
+                $noti->user->renameAvatarUserFromUser();
+                $noti->userAvatarFrom = $noti->user->avatar;
                 event(new NotificationEvent($noti->toArray()));
             }
         }

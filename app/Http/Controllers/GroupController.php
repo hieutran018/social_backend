@@ -16,6 +16,8 @@ use Illuminate\Support\Str;
 
 class GroupController extends Controller
 {
+    use GroupTrait;
+
     public function createGroup(Request $request)
     {
         $userId = JWTAuth::toUser($request->token)->id;
@@ -24,7 +26,6 @@ class GroupController extends Controller
         $newGroup->group_name = $request->groupName;
         $newGroup->privacy = $request->privacy;
         $newGroup->created_at = Carbon::now('Asia/Ho_Chi_Minh');
-
         $newGroup->save();
 
         $adminGroup = new MemberGroup();
@@ -45,7 +46,9 @@ class GroupController extends Controller
         $post->status = 1;
         $post->save();
 
-        $newGroup->avatar = URL::to('default/avatar_group_default.jpg');
+        $this->uploadImageGroup($request, $newGroup, $post);
+        $newGroup->save();
+        $newGroup->renameAvatar();
         return response()->json($newGroup, 200);
     }
 
@@ -55,6 +58,8 @@ class GroupController extends Controller
         $lstGroup = User::WHERE('id', $userId)->get();
         foreach ($lstGroup as $user) {
             foreach ($user->groups as $gr) {
+                $idAdmin = MemberGroup::WHERE('user_id', $userId)->WHERE('group_id', $gr->id)->WHERE('isAdminGroup', 1)->first();
+                $gr->isAdminGroup = !empty($idAdmin);
                 $gr->renameAvatar();
             }
         }
@@ -122,8 +127,8 @@ class GroupController extends Controller
         foreach ($listGroup as $gr) {
             $gr->groupId = $gr->group->id;
             $gr->groupName = $gr->group->group_name;
-            $gr->avatarGroup = $gr->group->avatar === null ? URL::to('default/avatar_group_default.jpg') :
-                URL::to('media_file_post/' . $gr->group->avatar);
+            $gr->group->renameAvatar();
+            $gr->avatarGroup = $gr->group->avatar;
         }
         return response()->json($listGroup, 200);
     }
@@ -138,38 +143,23 @@ class GroupController extends Controller
             $edit = Group::WHERE('id', $request->groupId)->first();
             $edit->group_name = $request->groupName === null ? $edit->group_name : $request->groupName;
             $edit->privacy = $request->privacy === null ? $edit->privacy : $request->privacy;
+            //
+            $crPost = new Post();
+            $crPost->user_id = JWTAuth::toUser($request->token)->id;
+            $crPost->post_content = 'Đã cập nhật ảnh của nhóm.';
+            $crPost->privacy = $request->privacy;
+            $crPost->parent_post = null;
+            $crPost->group_id = $edit->id;
+            $crPost->created_at = Carbon::now('Asia/Ho_Chi_Minh');
+            $crPost->status = 1;
+            $crPost->save();
 
-            if ($request->hasFile('file')) {
-                $file = $request->file;
-                $fileExtentsion = $file->getClientOriginalExtension();
-                $random = Str::random(10);
-                $fileName = time() . $random . '.' . $fileExtentsion;
-                $file->move('media_file_post/', $fileName);
-                $edit->avatar = $fileName;
+            $this->uploadImageGroup($request, $edit, $crPost);
 
-                $crPost = new Post();
-                $crPost->user_id = JWTAuth::toUser($request->token)->id;
-                $crPost->post_content = 'Đã cập nhật ảnh của nhóm.';
-                $crPost->privacy = $request->privacy;
-                $crPost->parent_post = null;
-                $crPost->group_id = $edit->id;
-                $crPost->created_at = Carbon::now('Asia/Ho_Chi_Minh');
-                $crPost->status = 1;
-                $crPost->save();
-                $media = new MediaFilePost();
-                $media->media_file_name = $fileName;
-                $media->media_type = $fileExtentsion;
-                $media->post_id = $crPost->id;
-                $media->group_id = $edit->id;
-                $media->user_id = JWTAuth::toUser($request->token)->id;
-                $media->created_at = Carbon::now('Asia/Ho_Chi_Minh');
-                $media->status = 1;
-                $media->save();
-            }
+
 
             $edit->update();
-            $edit->avatar = $edit->avatar === null ? URL::to('default/avatar_group_default.jpg') :
-                URL::to('media_file_post/' . $edit->avatar);
+            $edit->renameAvatar();
             return response()->json($edit, 200);
         } else {
             return response()->json('Yêu cầu không hợp lệ!', 400);
@@ -269,6 +259,32 @@ class GroupController extends Controller
                 $member->delete();
                 return response()->json('Xóa thành viên thành công!', 200);
             }
+        }
+    }
+}
+
+
+trait GroupTrait
+{
+    private function uploadImageGroup(Request $request, Group $group, Post $post)
+    {
+        if ($request->hasFile('file')) {
+            $file = $request->file;
+            $fileExtentsion = $file->getClientOriginalExtension();
+            $random = Str::random(10);
+            $fileName = time() . $random . '.' . $fileExtentsion;
+            $file->move('media_file_post/', $fileName);
+            $group->avatar = $fileName;
+            //
+            $media = new MediaFilePost();
+            $media->media_file_name = $fileName;
+            $media->media_type = $fileExtentsion;
+            $media->post_id = $post->id;
+            $media->group_id = $group->id;
+            $media->user_id = JWTAuth::toUser($request->token)->id;
+            $media->created_at = Carbon::now('Asia/Ho_Chi_Minh');
+            $media->status = 1;
+            $media->save();
         }
     }
 }

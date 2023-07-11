@@ -95,9 +95,8 @@ class PostController extends Controller
         $crPost->created_at = Carbon::parse($crPost->created_at)->toDateTimeString();
         if ($crPost->group_id != null) {
             $crPost->groupName = $crPost->group->group_name;
-            $crPost->groupAvatar = $crPost->group->avatar == null ?
-                URL::to('default/avatar_group_default.jpg') :
-                URL::to('media_file_post/' . $crPost->group->avatar);
+            $crPost->group->renameAvatar();
+            $crPost->groupAvatar = $crPost->group->avatar;
         }
 
         $this->_renameAvatarUserFromPost($crPost);
@@ -169,8 +168,8 @@ class PostController extends Controller
         if ($postShare->parent_post->group_id) {
             $postShare->parent_post->groupName = $postShare->parent_post->group->group_name;
             $postShare->parent_post->displayName = $postShare->user->displayName;
-            $postShare->parent_post->groupAvatar = $postShare->parent_post->group->avatar === null ? URL::to('default/avatar_group_default.jpg') :
-                URL::to('media_file_post/' . $postShare->parent_post->group->avatar);
+            $postShare->parent_post->group->renameAvatar();
+            $postShare->parent_post->groupAvatar = $postShare->parent_post->group->avatar;
             foreach ($postShare->parent_post->mediafile as $mediaFile) {
                 $this->_renameMediaFile($mediaFile, 'media_file_name');
             }
@@ -256,7 +255,7 @@ class PostController extends Controller
                 $post->iconPatch =
                     URL::to('icon/' . $post->icon->patch);
             }
-            $post->created_at = Carbon::parse($post->created_at)->format('Y/m/d H:m:s');
+            // $post->created_at = Carbon::parse($post->created_at)->format('Y/m/d H:m:s');
 
             $this->_renameAvatarUserFromPost($post);
 
@@ -268,8 +267,8 @@ class PostController extends Controller
 
             if ($post->group_id != null) {
                 $post->groupName = $post->group->group_name;
-                $post->groupAvatar = $post->group->avatar === null ? URL::to('default/avatar_group_default.jpg') :
-                    URL::to('media_file_post/' . $post->group->avatar);
+                $post->group->renameAvatar();
+                $post->groupAvatar = $post->group->avatar;
                 foreach ($post->mediafile as $mediaFile) {
                     $this->_renameMediaFile($mediaFile, 'media_file_name');
                 }
@@ -357,8 +356,8 @@ class PostController extends Controller
             $post->histories = $post->postHistory->count();
             if ($post->group_id != null) {
                 $post->groupName = $post->group->group_name;
-                $post->groupAvatar = $post->group->avatar === null ? URL::to('default/avatar_group_default.jpg') :
-                    URL::to('media_file_post/' . $post->group->avatar);
+                $post->group->renameAvatar();
+                $post->groupAvatar = $post->group->avatar;
                 foreach ($post->mediafile as $mediaFile) {
                     $this->_renameMediaFile($mediaFile, 'media_file_name');
                 }
@@ -436,8 +435,8 @@ class PostController extends Controller
         $post->histories = $post->postHistory->count();
         if ($post->group_id != null) {
             $post->groupName = $post->group->group_name;
-            $post->groupAvatar = $post->group->avatar === null ? URL::to('default/avatar_group_default.jpg') :
-                URL::to('media_file_post/' . $post->group->avatar);
+            $post->group->renameAvatar();
+            $post->groupAvatar = $post->group->avatar;
             foreach ($post->mediafile as $mediaFile) {
                 $this->_renameMediaFile($mediaFile, 'media_file_name');
             }
@@ -460,8 +459,8 @@ class PostController extends Controller
             $this->_renameAvatarUserFromPost($post);
 
             $post->groupName = $post->group->group_name;
-            $post->groupAvatar = $post->group->avatar === null ? URL::to('default/avatar_group_default.jpg') :
-                URL::to('media_file_post/' . $post->group->avatar);
+            $post->group->renameAvatar();
+            $post->groupAvatar = $post->group->avatar;
             $post->totalMediaFile = $post->mediafile->count();
             $post->totalComment = $post->comment->count();
             $post->totalLike = $post->like->count();
@@ -495,8 +494,10 @@ class PostController extends Controller
             $this->_renameAvatarUserFromPost($post);
 
             $post->groupName = $post->group->group_name;
-            $post->groupAvatar = $post->group->avatar === null ? URL::to('default/avatar_group_default.jpg') :
-                URL::to('media_file_post/' . $post->group->avatar);
+            //! chán đời, sửa code chổ này r, đi sửa lại y như củ ~~
+            $post->group->renameAvatar();
+            $post->groupAvatar = $post->group->avatar;
+
             $post->totalMediaFile = $post->mediafile->count();
             $post->totalComment = $post->comment->count();
             $post->totalLike = $post->like->count();

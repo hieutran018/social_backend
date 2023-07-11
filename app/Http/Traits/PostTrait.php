@@ -36,6 +36,7 @@ trait PostTrait
 
     private function _selectParentPost($post): void
     {
+        $this->_renameAvatarUserFromPost($post);
         $post->created_at =
             $post->created_at = Carbon::parse($post->created_at)->toDateTimeString();;
 
@@ -49,8 +50,8 @@ trait PostTrait
         if ($post->group_id) {
             $post->groupName = $post->group->group_name;
             $post->displayName = $post->user->displayName;
-            $post->groupAvatar = $post->group->avatar === null ? URL::to('default/avatar_group_default.jpg') :
-                URL::to('media_file_post/' . $post->group->avatar);
+            $post->group->renameAvatar();
+            $post->groupAvatar = $post->group->avatar;
             foreach ($post->mediafile as $mediaFile) {
                 $this->_renameMediaFile($mediaFile, 'media_file_name');
             }
@@ -97,10 +98,8 @@ trait PostTrait
                 $new->created_at = Carbon::now('Asia/Ho_Chi_Minh');
                 $new->save();
                 $new->userNameFrom = $new->user->displayName;
-                $new->userAvatarFrom = $new->user->avatar === null ?
-                    ($new->user->sex === 0 ?
-                        URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')
-                    ) : URL::to('media_file_post/' . $new->user->id . '/' . $new->user->avatar);
+                $new->user->renameAvatarUserFromUser();
+                $new->userAvatarFrom = $new->user->avatar;
                 event(new NotificationEvent($new->toArray()));
             }
         }

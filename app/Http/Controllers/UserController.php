@@ -36,9 +36,6 @@ class UserController extends Controller
                 $query->where('user_accept', $profile->id)->where('user_request', $userCurrent);
             })->first();
             $profile->renameAvatarUserFromUser();
-            $profile->coverImage = $profile->cover_image == null ?
-                URL::to('default/cover_image_default.jpeg') :
-                URL::to('media_file_post/' . $profile->id . '/' . $profile->cover_image);
             $profile->isFriend = !empty($isFriend);
             return response()->json($profile, 200);
         }
@@ -54,13 +51,7 @@ class UserController extends Controller
         } else {
             $userCurrent->displayName = $request->displayName;
             $userCurrent->update();
-            $userCurrent->avatar = $userCurrent->avatar == null ?
-                ($userCurrent->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png'))
-                :
-                URL::to('media_file_post/' . $userCurrent->id . '/' . $userCurrent->avatar);
-            $userCurrent->coverImage = $userCurrent->cover_image == null ?
-                URL::to('default/cover_image_default.jpeg') :
-                URL::to('media_file_post/' . $userCurrent->id . '/' . $userCurrent->cover_image);
+            $userCurrent->renameAvatarUserFromUser();
             return response()->json($userCurrent, 200);
         }
     }
@@ -74,13 +65,7 @@ class UserController extends Controller
         } else {
             $userCurrent->phone = $request->phone;
             $userCurrent->update();
-            $userCurrent->avatar = $userCurrent->avatar == null ?
-                ($userCurrent->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png'))
-                :
-                URL::to('media_file_post/' . $userCurrent->id . '/' . $userCurrent->avatar);
-            $userCurrent->coverImage = $userCurrent->cover_image == null ?
-                URL::to('default/cover_image_default.jpeg') :
-                URL::to('media_file_post/' . $userCurrent->id . '/' . $userCurrent->cover_image);
+            $userCurrent->renameAvatarUserFromUser();
             return response()->json($userCurrent, 200);
         }
     }
@@ -138,14 +123,9 @@ class UserController extends Controller
         $user->went_to = $data['wentTo'];
         $user->relationship = $data['relationship'];
         $user->phone = $data['phone'];
+        $user->displayName = $data['displayName'];
         $user->update();
-        $user->avatar = $user->avatar == null ?
-            ($user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png'))
-            :
-            URL::to('media_file_post/' . $user->id . '/' . $user->avatar);
-        $user->coverImage = $user->cover_image == null ?
-            URL::to('default/cover_image_default.jpeg') :
-            URL::to('media_file_post/' . $user->id . '/' . $user->cover_image);
+        $user->renameAvatarUserFromUser();
 
         return response()->json($user, 200);
     }
@@ -223,14 +203,7 @@ class UserController extends Controller
                 $upload->created_at = Carbon::now('Asia/Ho_Chi_Minh');
                 $upload->save();
             }
-
-            $update->avatar = $update->avatar == null ?
-                ($update->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png'))
-                :
-                URL::to('media_file_post/' . $update->id . '/' . $update->avatar);
-            $update->coverImage = $update->cover_image == null ?
-                URL::to('default/cover_image_default.jpeg') :
-                URL::to('media_file_post/' . $update->id . '/' . $update->cover_image);
+            $update->renameAvatarUserFromUser();
             return response()->json($update, 200);
         }
     }
@@ -291,13 +264,7 @@ class UserController extends Controller
                 $upload->created_at = Carbon::now('Asia/Ho_Chi_Minh');
                 $upload->save();
             }
-            $update->avatar = $update->avatar == null ?
-                ($update->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png'))
-                :
-                URL::to('media_file_post/' . $update->id . '/' . $update->avatar);
-            $update->coverImage = $update->cover_image == null ?
-                URL::to('default/cover_image_default.jpeg') :
-                URL::to('media_file_post/' . $update->id . '/' . $update->cover_image);
+            $update->renameAvatarUserFromUser();
             return response()->json($update, 200);
         }
     }

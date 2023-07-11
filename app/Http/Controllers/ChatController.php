@@ -36,13 +36,10 @@ class ChatController extends Controller
         foreach ($chats as $chat) {
             if ($chat->conversation_type === 0) {
                 foreach ($chat->paticipaints as $paticipaint) {
+                    $paticipaint->user->renameAvatarUserFromUser();
                     if ($userCurrent != $paticipaint->user->id) {
                         $chat->conversation_name = $paticipaint->user->displayName;
-                        $chat->conversation_avatar =
-                            $paticipaint->user->avatar === null ?
-                            ($paticipaint->user->sex == 0 ?
-                                URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
-                            URL::to('media_file_post/' . $paticipaint->user->id . '/' . $paticipaint->user->avatar);
+                        $chat->conversation_avatar = $paticipaint->user->avatar;
                     }
                 }
             } else {
@@ -64,12 +61,10 @@ class ChatController extends Controller
         $newMessage->created_at = Carbon::now('Asia/Ho_Chi_Minh');
         $newMessage->save();
 
+        $newMessage->user->renameAvatarUserFromUser();
         $newMessage->userName = $newMessage->user->displayName;
         $newMessage->avatar =
-            $newMessage->user->avatar === null ?
-            ($newMessage->user->sex === 0 ?
-                URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
-            URL::to('media_file_post/' . $newMessage->user->id . '/' . $newMessage->user->avatar);
+            $newMessage->user->avatar;
         foreach ($newMessage->mediaFile as $file) {
             $file->media_file_name = URL::to('media_file_message/' . $file->media_file_name);
         }
@@ -106,12 +101,9 @@ class ChatController extends Controller
             }
         }
 
+        $newMessage->user->renameAvatarUserFromUser();
         $newMessage->userName = $newMessage->user->displayName;
-        $newMessage->avatar =
-            $newMessage->user->avatar === null ?
-            ($newMessage->user->sex == 0 ?
-                URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
-            URL::to('media_file_post/' . $newMessage->user->id . '/' . $newMessage->user->avatar);
+        $newMessage->avatar = $newMessage->user->avatar;
         foreach ($newMessage->mediaFile as $file) {
             $file->media_file_name = URL::to('media_file_message/' . $file->media_file_name);
         }
@@ -128,14 +120,11 @@ class ChatController extends Controller
         if (!empty($conversation)) {
             if ($conversation->conversation_type == 0) {
                 foreach ($conversation->paticipaints as $paticipaint) {
+                    $paticipaint->user->renameAvatarUserFromUser();
                     if ($userCurrent != $paticipaint->user->id) {
                         $conversation->conversation_name = $paticipaint->user->displayName;
                         $conversation->userId = $paticipaint->user->id;
-                        $conversation->conversation_avatar =
-                            $paticipaint->user->avatar === null ?
-                            ($paticipaint->user->sex == 0 ?
-                                URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
-                            URL::to('media_file_post/' . $paticipaint->user->id . '/' . $paticipaint->user->avatar);
+                        $conversation->conversation_avatar = $paticipaint->user->avatar;
                     }
                 }
             } else {
@@ -145,12 +134,10 @@ class ChatController extends Controller
             $messages = Message::Where('conversation_id', $userId)->orderBy('created_at', 'DESC')->get();
 
             foreach ($messages as $message) {
+                $message->user->renameAvatarUserFromUser();
                 $message->userName = $message->user->displayName;
                 $message->avatar =
-                    $message->user->avatar === null ?
-                    ($message->user->sex === 0 ?
-                        URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
-                    URL::to('media_file_post/' . $message->user->id . '/' . $message->user->avatar);
+                    $message->user->avatar;
                 foreach ($message->mediaFile as $file) {
                     $file->media_file_name = URL::to('media_file_message/' . $file->media_file_name);
                 }

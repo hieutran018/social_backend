@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Traits\PostTrait;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Group;
@@ -15,6 +16,8 @@ use URL;
 
 class SearchController extends Controller
 {
+    use PostTrait;
+
     public function searchData(Request $request, $input = null)
     {
         $userId = JWTAuth::toUser($request->token)->id;
@@ -37,11 +40,8 @@ class SearchController extends Controller
                 $query->where('displayName', 'LIKE', "%$input%");
             })->limit(4)->get();
         foreach ($dataUser as $user) {
+            $user->renameAvatarUserFromUser();
             $user->displayName = $user->displayName;
-            $user->avatar = $user->avatar == null ?
-                ($user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png'))
-                :
-                URL::to('media_file_post/' . $user->id . '/' . $user->avatar);
             $user->isFriend = FriendShip::Where('status', 1)->where(function ($query) use ($user) {
                 $query->where('user_accept', $user->id)->orWhere('user_request', $user->id)->first();
             })->Where(function ($query) use ($userId) {
@@ -50,13 +50,13 @@ class SearchController extends Controller
         }
         $dataGroup = Group::WHERE('group_name', 'LIKE', "%$input%")->limit(4)->get();
         foreach ($dataGroup as $group) {
-            $group->avatar = $group->avatar == null ?
-                URL::to('default/avatar_group_default.jpg') :
-                URL::to('media_file_post/' . $group->avatar);
+            $group->renameAvatar();
             $group->totalMember = MemberGroup::WHERE('group_id', $group->id)->WHERE('status', 1)->count();
         }
         $dataPost = Post::WHERE('post_content', 'LIKE', "%$input%")->WHERE('status', 1)->orderBy('created_at', 'DESC')->limit(4)->get();
         foreach ($dataPost as $post) {
+            $post->user->renameAvatarUserFromUser();
+
             if ($post->parent_post) {
                 $post->parent_post = Post::find($post->parent_post);
                 if ($post->parent_post) {
@@ -76,9 +76,9 @@ class SearchController extends Controller
                 }
             }
             if ($post->group_id != null) {
+                $post->group->renameAvatar();
                 $post->groupName = $post->group->group_name;
-                $post->groupAvatar = $post->group->avatar === null ? URL::to('default/avatar_group_default.jpg') :
-                    URL::to('media_file_post/' . $post->group->avatar);
+                $post->groupAvatar = $post->group->avatar;
             }
             if ($post->tag) {
                 foreach ($post->tag as $tag) {
@@ -87,17 +87,15 @@ class SearchController extends Controller
             }
             $post->displayName = $post->user->displayName;
 
-            $post->created_at = Carbon::parse($post->created_at)->format('Y/m/d H:m:s');
-            $post->avatarUser = $post->user->avatar == null ?
-                ($post->user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
-                URL::to('media_file_post/' . $post->user->id . '/' . $post->user->avatar);
+            // $post->created_at = Carbon::parse($post->created_at)->format('Y/m/d H:m:s');
+            $post->avatarUser = $post->user->avatar;
             $post->totalMediaFile = $post->mediafile->count();
             $post->totalComment = $post->comment->count();
             $post->totalLike = $post->like->count();
             $post->totalShare = Post::WHERE('parent_post', $post->id)->count();
             $post->isLike = !empty(PostLike::WHERE('user_id', $userId)->WHERE('post_id', $post->id)->first());
             foreach ($post->mediafile as $mediaFile) {
-                $mediaFile->media_file_name = URL::to('media_file_post/' . $post->user->id . '/' . $mediaFile->media_file_name);
+                $this->_renameMediaFile($mediaFile, 'media_file_name', $post->user->id);
             }
         }
         return response(['users' => $dataUser, 'groups' => $dataGroup, 'posts' => $dataPost], 200);
