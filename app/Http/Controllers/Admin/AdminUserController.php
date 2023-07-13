@@ -34,7 +34,7 @@ class AdminUserController extends Controller
             ($user->sex === 0 ? URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png'))
             :
             URL::to('media_file_post/' . $user->id . '/' . $user->avatar);
-        $user->created_at = Carbon::parse($user->created_at)->toDateTimeString();
+        $user->created_at = Carbon::parse($user->created_at)->format('d/m/Y');
         return response()->json($user, 200);
     }
 }

@@ -90,7 +90,7 @@ trait PostTrait
                 $new = new Notification();
                 $new->from = $post->user_id;
                 $new->to = $user;
-                $new->title = 'đã đăng một bài viết mới.';
+                $new->title = $post->parent_post ? 'đã chia sẻ bài viết của bạn.' : 'đã đăng một bài viết mới.';
                 $new->unread = 1;
                 $new->object_type = 'crPost';
                 $new->object_id = $post->id;

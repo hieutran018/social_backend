@@ -58,6 +58,7 @@ Route::group(
         Route::GET('/fetch-post-by-id/postId={postId}', [AdminPostController::class, 'fetchPostById']);
         Route::GET('/fetch-list-user', [AdminUserController::class, 'fetchListUser']);
         Route::GET('/fetch-list-group', [AdminGroupController::class, 'fetchListGroup']);
+        Route::GET('/fetch-member-group/groupId={groupId}', [AdminGroupController::class, 'fetchMemberGroup']);
         Route::GET('/fetch-detail-group/groupId={groupId}', [AdminGroupController::class, 'fetchDetailGroup']);
         Route::GET('/fetch-detail-user/userId={userId}', [AdminUserController::class, 'getchDetailUser']);
         Route::GET('/fetch-list-feel-and-activity', [AdminFeelAndActivityController::class, 'fetchListFeelAndActivity']);
@@ -99,13 +100,15 @@ Route::group(['middleware' => 'jwt.auth', 'prefix' => 'v1'], function () {
     //* GỬI LỜI MỜI KẾT BẠN
     Route::post('request-add-friend', [FriendShipController::class, 'requestAddFriend']);
     //* DANH SÁCH LỜI MỚI KẾT BẠN
-    Route::post('fetch-friend-request-list', [FriendShipController::class, 'fetchFriendRequestList']);
+    Route::GET('fetch-friend-request-list/userId={userId}', [FriendShipController::class, 'fetchFriendRequestList']);
     //*CHẤP NHẬN LỜI MỜI KẾT BẠN
     Route::post('accept-friend-request', [FriendShipController::class, 'acceptFriendRequest']);
     //* HỦY KẾT BẠN
     Route::post('unfriend', [FriendShipController::class, 'unFriend']);
     //* HOÀN TÁC YÊU CẦU KẾT BẠN
     Route::post('cancle-add-friend', [FriendShipController::class, 'cancelAddFriend']);
+    //* TỪ CHỐI LỜI MỜI KẾT BẠN
+    Route::POST('/deny-friend-request', [FriendShipController::class, 'denyFriendRequest']);
     //* DANH SÁCH BẠN BÈ THEO ID NGƯỜI DÙNG
     Route::get('fetch-friend-by-user-id/{userId}/{limit?}', [FriendShipController::class, 'fetchListFriendByUser']);
     //*DANH SÁCH HÌNH ẢNH ĐÃ ĐĂNG TẢI
@@ -189,6 +192,10 @@ Route::group(['middleware' => 'jwt.auth', 'prefix' => 'v1'], function () {
     Route::GET('/fetch-list-chats', [ChatController::class, 'fetchChats']);
     Route::GET('/fetch-message/userId={userId}', [ChatController::class, 'fetchMessage']);
     Route::POST('/chats/create-group-chat', [ChatController::class, 'createGroupChat']);
+    //* LẤY TẤT CẢ THÀNH VIÊN CỦA CUỘC TRÒ CHUYỆN
+    Route::GET('/fetch-paticiants/conversationId={conversationId}', [ChatController::class, 'fetchPaticipants']);
+    //LẤY TẤT CẢ CÁC FILE THUỘC PHÒNG CHAT ĐÓ
+    Route::GET('/chats/fetch-file-message/conversationId={conversationId}', [ChatController::class, 'fetchFileMessage']);
     //* TÌM KIẾM BẠN BÈ
     Route::GET('/friend/search-friend/input={input}', [ChatController::class, 'findFriend']);
     //? NotificationController

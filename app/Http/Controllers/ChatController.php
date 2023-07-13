@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\HaveMessageEvent;
 use App\Events\MessageEvent;
 use App\Models\Conversation;
 use App\Models\FriendShip;
@@ -69,6 +70,12 @@ class ChatController extends Controller
             $file->media_file_name = URL::to('media_file_message/' . $file->media_file_name);
         }
         event(new MessageEvent($newMessage->toArray()));
+        $paticipants = Participant::Where('conversation_id', $request->conversationId)->get();
+        foreach ($paticipants as $paticipant) {
+            if ($paticipant->user_id != $userCurrent) {
+                event(new HaveMessageEvent($paticipant->user_id));
+            }
+        }
         return response()->json($newMessage, 200);
     }
 
@@ -182,6 +189,7 @@ class ChatController extends Controller
             $paticipaint->conversation_id = $newConversation->id;
             $paticipaint->user_id = $userId;
             $paticipaint->save();
+
             $paticipaint = new Participant();
             $paticipaint->conversation_id = $newConversation->id;
             $paticipaint->user_id = $userCurrent;
@@ -313,5 +321,30 @@ class ChatController extends Controller
             $newMessage->save();
         }
         return response([$conversation, $request->members], 200);
+    }
+    //Lấy tất cả file thuộc phòng trò chuyện
+    public function fetchFileMessage($conversationId)
+    {
+        $files = MediaFileMessage::Where('conversation_id', $conversationId)->get();
+        foreach ($files as $file) {
+            $file->media_file_name = URL::to('media_file_message/' . $file->media_file_name);
+        }
+        return response()->json($files, 200);
+    }
+
+    //* LẤY TẤT CẢ THÀNH VIÊN TRONG PHÒNG TRÒ CHUYỆN
+    public function fetchPaticipants($conversationId)
+    {
+        $paticipants = Participant::Where('conversation_id', $conversationId)->get();
+        foreach ($paticipants as $paticipant) {
+            $paticipant->userId = $paticipant->user->id;
+            $paticipant->displayName = $paticipant->user->displayName;
+            $paticipant->avatar =
+                $paticipant->user->avatar === null ?
+                ($paticipant->user->sex === 0 ?
+                    URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
+                URL::to('media_file_post/' . $paticipant->user->id . '/' . $paticipant->user->avatar);
+        }
+        return response()->json($paticipants, 200);
     }
 }
