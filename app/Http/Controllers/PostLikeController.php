@@ -54,7 +54,7 @@ trait LikeTrait
             $new->title = $typeReaction->type === 1 ? 'đã thích bài viết của bạn.' : 'đã bày tỏ cảm xúc về bài viết của bạn';
             $new->unread = 1;
             $new->object_type = 'reaction';
-            $new->object_id = $typeReaction->id;
+            $new->object_id = $typeReaction->post_id;
             $new->icon_url = 'icon.png';
             $new->created_at = Carbon::now('Asia/Ho_Chi_Minh');
             $new->save();

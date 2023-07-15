@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\NotificationEvent;
 use Illuminate\Http\Request;
 use App\Models\User;
-use App\Models\FriendShip; //TODO: SAU KHI CÓ DỮ LIỆU THAY BẰNG MODEL FRIENDSHIP
+use App\Models\FriendShip;
 use App\Models\MemberGroup;
 use App\Models\Notification;
 use URL;
 use JWTAuth;
 use Carbon\Carbon;
-use DB;
+
 
 class FriendShipController extends Controller
 {
@@ -108,9 +109,8 @@ class FriendShipController extends Controller
         return response()->json('success', 200);
     }
 
-    public function fetchFriendRequestList(Request $request)
+    public function fetchFriendRequestList($userId)
     {
-        $userId = JWTAuth::toUser($request->token)->id;
         $requestList = FriendShip::WHERE('user_accept', $userId)->WHERE('status', 0)->get();
 
         foreach ($requestList as $fr) {
@@ -165,6 +165,17 @@ class FriendShipController extends Controller
         }
         return response()->json('success', 200);
     }
+    //* TỪ CHỐI LỜI MỜI KẾT BẠN
+    public function denyFriendRequest(Request $request)
+    {
+        $userIdUnfr = JWTAuth::toUser($request->token)->id;
+        $search1 = FriendShip::WHERE('user_request', $request->userId)->WHERE('user_accept', $userIdUnfr)->first();
+
+        if ($search1) {
+            $search1->delete();
+        }
+        return response()->json('success', 200);
+    }
 
     public function fetchFriendToInviteGroup(Request $request, $groupId)
     {
@@ -209,14 +220,20 @@ trait FriendTrait
     private function _createNotification(FriendShip $invitation): void
     {
         $new = new Notification();
-        $new->from = $invitation->status === 0 ? $invitation->user_request : $invitation->user_accept;
-        $new->to = $invitation->status === 0 ? $invitation->user_accept : $invitation->user_request;
-        $new->title = $invitation->status === 0 ? 'đã gửi cho bạn lời mời kết bạn.' : 'đã chấp nhận yêu cầu kết bạn.';
+        $new->from = $invitation->status == 0 ? $invitation->user_request : $invitation->user_accept;
+        $new->to = $invitation->status == 0 ? $invitation->user_accept : $invitation->user_request;
+        $new->title = $invitation->status == 0 ? 'đã gửi cho bạn lời mời kết bạn.' : 'đã chấp nhận yêu cầu kết bạn.';
         $new->unread = 1;
-        $new->object_type = 'FrInvitation';
+        $new->object_type = $invitation->status == 0 ? 'FrInvitation' : 'FrAccept';
         $new->object_id = $invitation->id;
         $new->icon_url = 'icon.png';
         $new->created_at = Carbon::now('Asia/Ho_Chi_Minh');
         $new->save();
+        $new->userNameFrom = $new->user->displayName;
+        $new->userAvatarFrom = $new->user->avatar === null ?
+            ($new->user->sex === 0 ?
+                URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')
+            ) : URL::to('media_file_post/' . $new->user->id . '/' . $new->user->avatar);
+        event(new NotificationEvent($new->toArray()));
     }
 }

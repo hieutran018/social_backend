@@ -18,6 +18,7 @@ class CreateMediaFileMessageTable extends Migration
             $table->string('media_file_name');
             $table->string('media_type');
             $table->foreignId('message_id');
+            $table->foreignId('conversation_id');
             $table->foreignId('user_id');
             $table->timestamps();
         });

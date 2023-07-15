@@ -27,7 +27,7 @@ class AdminReportController extends Controller
 
     public function checkTheReport(Request $request)
     {
-        $change = $request->change; //? delete or not delete the reported object (1 or 0)
+        $change = $request->change;
         $report = Report::find($request->reportId);
         if ($change === 1) {
             if ($report) {
