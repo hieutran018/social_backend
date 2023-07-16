@@ -196,6 +196,8 @@ Route::group(['middleware' => 'jwt.auth', 'prefix' => 'v1'], function () {
     Route::GET('/fetch-paticiants/conversationId={conversationId}', [ChatController::class, 'fetchPaticipants']);
     //LẤY TẤT CẢ CÁC FILE THUỘC PHÒNG CHAT ĐÓ
     Route::GET('/chats/fetch-file-message/conversationId={conversationId}', [ChatController::class, 'fetchFileMessage']);
+    //ĐỔI TÊN NHÓM CHAT
+    Route::POST('/chats/update-name-group-chat', [ChatController::class, 'updateNameGroupChat']);
     //* TÌM KIẾM BẠN BÈ
     Route::GET('/friend/search-friend/input={input}', [ChatController::class, 'findFriend']);
     //? NotificationController

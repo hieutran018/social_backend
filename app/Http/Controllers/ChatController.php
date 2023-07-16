@@ -47,7 +47,7 @@ class ChatController extends Controller
                     }
                 }
             } else {
-                $chat->conversation_name = 'Nhóm chat chưa đặt tên';
+                $chat->conversation_name = $chat->conversation_name == null ? 'Nhóm chat chưa đặt tên' : $chat->conversation_name;
                 $chat->conversation_avatar = URL::to('default/avatar_chat_group_default.jpg');
             }
         }
@@ -146,7 +146,7 @@ class ChatController extends Controller
                     }
                 }
             } else {
-                $conversation->conversation_name = 'Nhóm chat chưa đặt tên';
+                $conversation->conversation_name = $conversation->conversation_name == null ? 'Nhóm chat chưa đặt tên' : $conversation->conversation_name;
                 $conversation->conversation_avatar = URL::to('default/avatar_chat_group_default.jpg');
             }
             $messages = Message::Where('conversation_id', $userId)->orderBy('created_at', 'DESC')->get();
@@ -295,6 +295,7 @@ class ChatController extends Controller
             })->orWhere(function ($query) use ($userId, $userTwo) {
                 $query->where('user_one', $userTwo)->where('user_two', $userId);
             })->first();
+
             if (!$isConversation) {
                 $conversation = new Conversation();
                 $conversation->conversation_type = 0;
@@ -309,7 +310,7 @@ class ChatController extends Controller
                     $newMessage->content = $request->contentMessage;
                     $newMessage->save();
                 }
-                return response([$isConversation, $request->members], 200);
+                return response($isConversation, 200);
             }
         }
 
@@ -333,7 +334,22 @@ class ChatController extends Controller
             $newMessage->content = $request->contentMessage;
             $newMessage->save();
         }
-        return response([$conversation, $request->members], 200);
+        if ($conversation->conversation_type === 0) {
+            foreach ($conversation->paticipaints as $paticipaint) {
+                if ($userId != $paticipaint->user->id) {
+                    $conversation->conversation_name = $paticipaint->user->displayName;
+                    $conversation->conversation_avatar =
+                        $paticipaint->user->avatar === null ?
+                        ($paticipaint->user->sex == 0 ?
+                            URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
+                        URL::to('media_file_post/' . $paticipaint->user->id . '/' . $paticipaint->user->avatar);
+                }
+            }
+        } else {
+            $conversation->conversation_name = $conversation->conversation_name == null ? 'Nhóm chat chưa đặt tên' : $conversation->conversation_name;
+            $conversation->conversation_avatar = URL::to('default/avatar_chat_group_default.jpg');
+        }
+        return response($conversation, 200);
     }
     //Lấy tất cả file thuộc phòng trò chuyện
     public function fetchFileMessage($conversationId)
@@ -343,6 +359,16 @@ class ChatController extends Controller
             $file->media_file_name = URL::to('media_file_message/' . $file->media_file_name);
         }
         return response()->json($files, 200);
+    }
+
+    //* ĐỔI TÊN NHÓM CHAT
+    public function updateNameGroupChat(Request $request)
+    {
+        $conversation = Conversation::Where('id', $request->conversationId)->first();
+        $conversation->conversation_name = $request->conversationName;
+        $conversation->update();
+        $conversation->conversation_avatar = URL::to('default/avatar_chat_group_default.jpg');
+        return response()->json($conversation, 200);
     }
 
     //* LẤY TẤT CẢ THÀNH VIÊN TRONG PHÒNG TRÒ CHUYỆN
