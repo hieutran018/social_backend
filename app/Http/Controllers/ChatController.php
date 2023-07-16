@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Events\HaveMessageEvent;
 use App\Events\MessageEvent;
+use App\Events\NewConversationEvent;
 use App\Models\Conversation;
 use App\Models\FriendShip;
 use App\Models\MediaFileMessage;
@@ -310,6 +311,16 @@ class ChatController extends Controller
                     $newMessage->content = $request->contentMessage;
                     $newMessage->save();
                 }
+                foreach ($isConversation->paticipaints as $paticipaint) {
+                    if ($userId != $paticipaint->user->id) {
+                        $isConversation->conversation_name = $paticipaint->user->displayName;
+                        $isConversation->conversation_avatar =
+                            $paticipaint->user->avatar === null ?
+                            ($paticipaint->user->sex == 0 ?
+                                URL::to('default/avatar_default_female.png') : URL::to('default/avatar_default_male.png')) :
+                            URL::to('media_file_post/' . $paticipaint->user->id . '/' . $paticipaint->user->avatar);
+                    }
+                }
                 return response($isConversation, 200);
             }
         }
@@ -320,6 +331,7 @@ class ChatController extends Controller
         $paticipaint->conversation_id = $conversation->id;
         $paticipaint->user_id = $userId;
         $paticipaint->save();
+
         foreach ($request->members as $member) {
             $paticipaint = new Participant();
             $paticipaint->conversation_id = $conversation->id;
@@ -349,6 +361,13 @@ class ChatController extends Controller
             $conversation->conversation_name = $conversation->conversation_name == null ? 'Nhóm chat chưa đặt tên' : $conversation->conversation_name;
             $conversation->conversation_avatar = URL::to('default/avatar_chat_group_default.jpg');
         }
+        foreach ($conversation->paticipaints as $paticipaint) {
+            if ($userId != $paticipaint->user_id) {
+                $conversation->userId = $paticipaint->user_id;
+                event(new NewConversationEvent($conversation->toArray()));
+            }
+        }
+
         return response($conversation, 200);
     }
     //Lấy tất cả file thuộc phòng trò chuyện
